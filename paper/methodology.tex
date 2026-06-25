@@ -161,6 +161,22 @@ weakest. Our empirical ensemble (Section~\ref{sec:eval:paradox}) uses majority
 ($k{=}2$, $N{=}3$) and confirms the collapse.
 \end{remark}
 
+Figure~\ref{fig:paradox} illustrates the paradox: three checkpoints with
+individual heretic scores of $0.942$, $0.967$, and $0.961$ combine under
+majority voting to produce an ensemble score of $0.931$---worse than any
+single model.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\textwidth]{fig-paradox.svg}
+  \caption{The Voting Ensemble Paradox. Three checkpoints (v3, v4, v5) with
+  individual heretic scores above $0.94$ combine under $k$-of-$N$ voting to
+  produce an ensemble ($0.931$) that is Pareto-dominated by the best single
+  model (v4, $0.967$). The collapse is stratum-dependent: each checkpoint is
+  weakest on different token classes.}
+  \label{fig:paradox}
+\end{figure}
+
 \subsection{Mechanism A: asymmetric loss modulation ($3.0\times$ penalty)}
 \label{sec:loss}
 
@@ -274,6 +290,21 @@ has learned what B was enforcing. A second iteration ($v5$) adds noise rather
 than signal (heretic $0.967\to0.961$), so the correctable-loop invariant halts
 the loop at $t{=}1$. This is self-distillation with a deterministic regex
 oracle rather than an LLM teacher, converging in one generation.
+
+Figure~\ref{fig:mechanisms} summarizes the three mechanisms and their
+positions in the training--inference pipeline.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\textwidth]{fig-mechanisms.svg}
+  \caption{Three mechanisms for resolving the Voting Ensemble Paradox.
+  Mechanism~A (training-time $3.0\times$ penalty) reduces false evictions.
+  Mechanism~B (inference-time regex override) provides a deterministic safety
+  net. Mechanism~C (self-labeling loop) closes the training loop by using A+B
+  as an oracle to relabel and retrain, internalizing B until
+  $\mathit{override\_delta}{=}0$.}
+  \label{fig:mechanisms}
+\end{figure}
 
 \paragraph{Production pathway: C3 self-distillation.} The self-labeling loop
 converged at v4/v5, but the production model v8 uses a stronger oracle: a

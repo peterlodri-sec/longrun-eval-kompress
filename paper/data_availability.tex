@@ -21,7 +21,15 @@ All artifacts are publicly available to support replication:
         the dataset and the research program that led to this paper.
   \item \textbf{Log registry \& replication vault:} chronological experiment
         logs, state specifications, and telemetry at
-        \url{https://pocoo.vaked.dev}.
+        \url{https://pocoo.vaked.dev}
+        \citep{lodri2026sapirwhorf,lodri2026selflabeling,lodri2026heretic,
+        lodri2026silverlabel,lodri2026loopkit,lodri2026loopshipped}.
+  \item \textbf{CI agent suite:} six automated agents
+        (\texttt{citation-guard}, \texttt{metric-watchdog},
+        \texttt{changelog-gen}, \texttt{hf-card-sync}, \texttt{latex-guard},
+        \texttt{doc-sync}) enforcing documentation--code consistency, citation
+        validity, and metric stability on every push. Invokable via CLI
+        (\texttt{tools/ci\_agents.py}) or MCP server.
   \item \textbf{Interactive companion:} marimo WASM notebook with paradox
         simulator, mechanism toggle, baseline comparison, and Pareto explorer at
         \url{https://peterlodri-sec.github.io/longrun-eval-kompress/}.

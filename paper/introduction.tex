@@ -23,7 +23,10 @@ implementation and operational playbook (persistent \texttt{STATE.md}
 tracking, \texttt{loop-cost} token gating, \texttt{loop-run-log.md}
 conventions) \citep{greyling2026loop}; and LangChain formalizes a four-tier
 stacked-loop taxonomy (agent, verification, event-driven, hill-climbing)
-\citep{langchain2026loops}. In this paradigm the pruning model is not a static
+\citep{langchain2026loops}. We applied these patterns to the kompress problem
+in \citet{lodri2026loopapplied}, mapping Osmani's five building blocks and
+Anthropic's agent patterns to a real compression fine-tuning pipeline. In this
+paradigm the pruning model is not a static
 preprocessing step but a component inside a recursive control structure, and
 its errors \emph{compound} across loop iterations---a single false eviction in
 one cycle can starve every subsequent cycle of the context needed to recover.
@@ -44,7 +47,11 @@ the dataset for this paper was built for under \$40 in token spend. The
  kompress fine-tuning experiments that followed added \$1.76 in GPU compute
  (Section~\ref{sec:loopkit:repro}). This paper is an inner loop of that
  broader program: the pruning model that makes the outer loops cheaper to
- run by compressing the context they accumulate.
+ run by compressing the context they accumulate. The full experiment log is
+ published at \url{https://pocoo.vaked.dev}---a chronological registry of
+ every training run, evaluation, and dead end
+ \citep{lodri2026sapirwhorf,lodri2026selflabeling,lodri2026heretic,
+ lodri2026silverlabel,lodri2026loopkit,lodri2026loopshipped}.
 
 \subsection{The Voting Ensemble Paradox}
 
@@ -96,7 +103,15 @@ This paper makes the following contributions:
   \item \textbf{LoopKit substrate.} An open-source four-phase autonomous
         state machine (Plan, Execute, Evaluate, Decide) with an asynchronous
         SQLite state kernel and an LLM Council operator, instantiating the
-        LangChain four-tier loop stack.
+        LangChain four-tier loop stack \citep{lodri2026loopkit}.
+  \item \textbf{CI agent suite.} Six automated agents
+        (\texttt{citation-guard}, \texttt{metric-watchdog},
+        \texttt{changelog-gen}, \texttt{hf-card-sync}, \texttt{latex-guard},
+        \texttt{doc-sync}) that enforce documentation--code consistency,
+        citation validity, and metric stability on every push. The agents
+        follow a layered abstraction (\texttt{CIAgent} base class, registry,
+        CLI + MCP interface) and are advisory by design---they report
+        pass/fail but never block the shipping loop.
   \item \textbf{Empirical validation.} Mechanism~A reaches $0.942$ (heretic,
         no override); mechanism~B lifts v3 $0.911\to0.965$ and v4
         $0.961\to0.965$; mechanism~C (v4) reaches $0.967$ with

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" width="800" height="350">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#555"/>
+    </marker>
+    <marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60"/>
+    </marker>
+  </defs>
+  
+  <rect width="800" height="350" fill="white"/>
+  
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" font-family="serif" font-size="16" font-weight="bold" fill="#2c3e50">Three Mechanisms for Resolving the Paradox</text>
+  
+  <!-- Mechanism A -->
+  <rect x="30" y="60" width="220" height="120" rx="8" fill="#ebf5fb" stroke="#3498db" stroke-width="2"/>
+  <text x="140" y="85" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" fill="#2980b9">A: 3.0× Penalty</text>
+  <text x="140" y="105" text-anchor="middle" font-family="serif" font-size="11" fill="#555">Training-time</text>
+  <text x="140" y="125" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">weighted CE on</text>
+  <text x="140" y="140" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">must-keep tokens</text>
+  <text x="140" y="165" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="#2980b9">Sapir–Whorf term</text>
+  
+  <!-- Mechanism B -->
+  <rect x="290" y="60" width="220" height="120" rx="8" fill="#fef9e7" stroke="#f39c12" stroke-width="2"/>
+  <text x="400" y="85" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" fill="#d68910">B: Regex Override</text>
+  <text x="400" y="105" text-anchor="middle" font-family="serif" font-size="11" fill="#555">Inference-time</text>
+  <text x="400" y="125" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">force-keep</text>
+  <text x="400" y="140" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">MUST_KEEP_RE matches</text>
+  <text x="400" y="165" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="#d68910">Deployment safety</text>
+  
+  <!-- Mechanism C -->
+  <rect x="550" y="60" width="220" height="120" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+  <text x="660" y="85" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" fill="#1e8449">C: Self-Labeling</text>
+  <text x="660" y="105" text-anchor="middle" font-family="serif" font-size="11" fill="#555">Training-time</text>
+  <text x="660" y="125" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">A+B as oracle →</text>
+  <text x="660" y="140" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">relabel → retrain</text>
+  <text x="660" y="165" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="#1e8449">Internalizes B</text>
+  
+  <!-- Arrows connecting mechanisms -->
+  <line x1="250" y1="120" x2="285" y2="120" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="510" y1="120" x2="545" y2="120" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  
+  <!-- Flow diagram below -->
+  <text x="400" y="215" text-anchor="middle" font-family="serif" font-size="13" fill="#7f8c8d">Pipeline</text>
+  
+  <!-- Training -->
+  <rect x="80" y="230" width="100" height="40" rx="6" fill="#3498db" opacity="0.85"/>
+  <text x="130" y="255" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="white">Train (A)</text>
+  
+  <!-- Evaluate -->
+  <rect x="220" y="230" width="100" height="40" rx="6" fill="#f39c12" opacity="0.85"/>
+  <text x="270" y="255" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="white">Eval (B)</text>
+  
+  <!-- Relabel -->
+  <rect x="360" y="230" width="100" height="40" rx="6" fill="#27ae60" opacity="0.85"/>
+  <text x="410" y="255" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="white">Relabel (C)</text>
+  
+  <!-- Retrain -->
+  <rect x="500" y="230" width="100" height="40" rx="6" fill="#9b59b6" opacity="0.85"/>
+  <text x="550" y="255" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="white">Retrain</text>
+  
+  <!-- Deploy -->
+  <rect x="640" y="230" width="100" height="40" rx="6" fill="#e74c3c" opacity="0.85"/>
+  <text x="690" y="255" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="white">Deploy</text>
+  
+  <!-- Arrows in pipeline -->
+  <line x1="180" y1="250" x2="215" y2="250" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="320" y1="250" x2="355" y2="250" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="460" y1="250" x2="495" y2="250" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="600" y1="250" x2="635" y2="250" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  
+  <!-- Loop arrow (C back to Train) -->
+  <path d="M 410,270 Q 410,310 130,310 Q 130,290 130,270" fill="none" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-green)"/>
+  <text x="270" y="320" text-anchor="middle" font-family="serif" font-size="10" fill="#27ae60">self-label loop</text>
+  
+  <!-- Caption -->
+  <text x="400" y="345" text-anchor="middle" font-family="serif" font-size="10" fill="#95a5a6">Mechanism C closes the loop: A+B generate oracle labels → retrain until override_delta = 0</text>
+</svg>

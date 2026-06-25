@@ -180,11 +180,13 @@ log, see the [pocoo.vaked.dev blog](https://pocoo.vaked.dev) — the chronologic
 log registry and replication vault for every experiment in this project.
 
 Key posts:
-- [Fine-tuning Kompress: the Sapir-Whorf case](https://pocoo.vaked.dev/posts/2026-06-25-fine-tuning-kompress-sapir-whorf.html)
-- [Iterative self-labeling](https://pocoo.vaked.dev/posts/2026-06-25-iterative-self-labeling.html)
-- [Heretic adversarial eval](https://pocoo.vaked.dev/posts/2026-06-25-kompress-heretic-eval.html)
-- [The silver label problem](https://pocoo.vaked.dev/posts/2026-06-25-the-silver-label-problem.html)
-- [LoopKit starter kit](https://pocoo.vaked.dev/posts/2026-06-25-loopkit.html)
+- [Fine-tuning Kompress: the Sapir-Whorf case](https://pocoo.vaked.dev/posts/2026-06-25-fine-tuning-kompress-sapir-whorf.html) — 3.0× penalty motivation
+- [Iterative self-labeling](https://pocoo.vaked.dev/posts/2026-06-25-iterative-self-labeling.html) — v3→v4 self-labeling loop
+- [Heretic adversarial eval](https://pocoo.vaked.dev/posts/2026-06-25-kompress-heretic-eval.html) — override lift 0.942→0.969
+- [The silver label problem](https://pocoo.vaked.dev/posts/2026-06-25-the-silver-label-problem.html) — 28% noise floor diagnostic
+- [LoopKit starter kit](https://pocoo.vaked.dev/posts/2026-06-25-loopkit.html) — open-source release
+- [The loop shipped](https://pocoo.vaked.dev/posts/2026-06-25-the-loop-shipped.html) — 17 models, $38.95 total
+- [Loop engineering applied](https://pocoo.vaked.dev/posts/2026-06-25-loop-engineering-applied.html) — Osmani + Anthropic patterns mapped
 
 ## License
 
