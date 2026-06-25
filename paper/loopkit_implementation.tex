@@ -17,30 +17,33 @@ operational conventions \citep{greyling2026loop}.
 
 Each loop iteration executes the deterministic state machine
 \textsc{Plan}~$\to$~\textsc{Execute}~$\to$~\textsc{Evaluate}~$\to$~\textsc{Decide},
-persisted by an asynchronous SQLite kernel. Algorithm~\ref{alg:fourphase}
+persisted by an asynchronous SQLite kernel. Table~\ref{alg:fourphase}
 gives the pseudocode.
 
-\begin{algorithm}[h]
-\caption{The LoopKit four-phase iteration}
+\begin{table}[h]
+\centering
+\caption{The LoopKit four-phase iteration.}
 \label{alg:fourphase}
-\begin{algorithmic}[1]
-\State \textbf{input:} hypothesis $h$, budget $B$, state $\Sigma$
-\State \textbf{Phase 1: Plan}
-  \State \quad $p \gets \mathrm{Plan}(h, \Sigma)$ \Comment{derive experiment spec from hypothesis + state}
-\State \textbf{Phase 2: Execute}
-  \State \quad $r \gets \mathrm{Execute}(p)$ \Comment{run training/eval per spec}
-  \State \quad $\Sigma \gets \mathrm{SQLiteWrite}(\Sigma, p, r)$ \Comment{async persist}
-\State \textbf{Phase 3: Evaluate}
-  \State \quad $m \gets \mathrm{eval\_heretic}(r)$ \Comment{adversarial benchmark}
-  \State \quad $\Sigma \gets \mathrm{SQLiteWrite}(\Sigma, m)$
-\State \textbf{Phase 4: Decide}
-  \State \quad $d \gets \mathrm{Council}(m, \Sigma, B)$ \Comment{LLM council: SHIP / RETRAIN / PIVOT}
-  \State \quad \textbf{if} $d = \textsc{Ship}$ \textbf{then} \Return $r$
-  \State \quad \textbf{if} $d = \textsc{Retrain}$ \textbf{then} $h \gets \mathrm{RefineHypothesis}(h, m)$
-  \State \quad \textbf{if} $d = \textsc{Pivot}$ \textbf{then} $h \gets \mathrm{NewHypothesis}(m, \Sigma)$
-\State \textbf{goto} Phase 1 \Comment{or halt if budget $B$ exhausted}
-\end{algorithmic}
-\end{algorithm}
+\begin{tabular}{@{}r@{\hspace{1em}}l@{}}
+\toprule
+1  & \textbf{input:} hypothesis $h$, budget $B$, state $\Sigma$ \\
+2  & \textbf{Phase 1: Plan} \\
+3  & \quad $p \gets \mathrm{Plan}(h, \Sigma)$ \hfill {\footnotesize\textit{derive spec from $h$+$\Sigma$}} \\
+4  & \textbf{Phase 2: Execute} \\
+5  & \quad $r \gets \mathrm{Execute}(p)$ \hfill {\footnotesize\textit{run training/eval per spec}} \\
+6  & \quad $\Sigma \gets \mathrm{SQLiteWrite}(\Sigma, p, r)$ \hfill {\footnotesize\textit{async persist}} \\
+7  & \textbf{Phase 3: Evaluate} \\
+8  & \quad $m \gets \mathrm{eval\_heretic}(r)$ \hfill {\footnotesize\textit{adversarial benchmark}} \\
+9  & \quad $\Sigma \gets \mathrm{SQLiteWrite}(\Sigma, m)$ \\
+10 & \textbf{Phase 4: Decide} \\
+11 & \quad $d \gets \mathrm{Council}(m, \Sigma, B)$ \hfill {\footnotesize\textit{SHIP / RETRAIN / PIVOT}} \\
+12 & \quad \textbf{if} $d = \textsc{Ship}$ \textbf{then return} $r$ \\
+13 & \quad \textbf{if} $d = \textsc{Retrain}$ \textbf{then} $h \gets \mathrm{RefineHypothesis}(h, m)$ \\
+14 & \quad \textbf{if} $d = \textsc{Pivot}$ \textbf{then} $h \gets \mathrm{NewHypothesis}(m, \Sigma)$ \\
+15 & \textbf{goto} 2 \hfill {\footnotesize\textit{or halt if budget $B$ exhausted}} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 The \textsc{Decide} phase is the outer loop: the council reviews the
 evaluation metric $m$ against the persistent state $\Sigma$ and remaining
@@ -66,7 +69,7 @@ updates the agent loop directly.}
 \toprule
 Tier & Loop & LoopKit primitive & Role in pruning pipeline \\
 \midrule
-L1 & Agent        & \texttt{Loop.run()}              & training/eval iteration (Alg.~\ref{alg:fourphase}) \\
+L1 & Agent        & \texttt{Loop.run()}              & training/eval iteration (Table~\ref{alg:fourphase}) \\
 L2 & Verification & \texttt{evals/heretic.py}        & adversarial grader for must-keep survival \\
 L3 & Event-driven & Telegram bot hook                & triggers on checkpoint events, /run /decide \\
 L4 & Hill-climbing& LLM Council + trace rewriting    & decides SHIP/RETRAIN/PIVOT from eval traces \\
@@ -75,7 +78,7 @@ L4 & Hill-climbing& LLM Council + trace rewriting    & decides SHIP/RETRAIN/PIVO
 \end{table}
 
 \paragraph{Tier 1 (Agent loop).} \texttt{Loop.run()} implements
-Algorithm~\ref{alg:fourphase}. The abstract \texttt{Loop} class in
+Table~\ref{alg:fourphase}. The abstract \texttt{Loop} class in
 \texttt{loops/base.py} is subclassed per project (e.g.,
 \texttt{loops/kompress/} for the pruning pipeline). Each call to
 \texttt{run()} executes one full four-phase cycle.
@@ -117,7 +120,7 @@ invariant applied at the meta-level.
 \label{sec:loopkit:sqlite}
 
 The state kernel (\texttt{bot/memory.py}) persists every transition of
-Algorithm~\ref{tab:loops} to an asynchronous SQLite database, serving as the
+Table~\ref{tab:loops} to an asynchronous SQLite database, serving as the
 durable memory spine that Osmani identifies as the sixth building block
 \citep{osmani2026loop} and that Greyling operationalizes as
 \texttt{STATE.md} \citep{greyling2026loop}. Each loop iteration writes:
