@@ -30,13 +30,19 @@ The fix is called **kompress-v8**. It's a small AI model (149M parameters) that 
 | `paper/` | LaTeX manuscript (9 files, ~1600 lines) — the actual paper |
 | `baselines/` | Baseline comparison scripts + results (TextRank, LLMLingua-2, random, kompress-v8) |
 | `notebook.py` | [marimo](https://marimo.io) interactive notebook — explore the paradox, mechanisms, baselines |
+| `site/` | marimo WASM export — interactive notebook running in-browser (no server) |
 | `mcp_server/` | MCP server for agent interaction (7 tools) |
+| `Taskfile.yml` | Task runner — 16 commands for paper, site, baselines, CI |
+| `flake.nix` | Nix flake — reproducible dev shell with Python, LaTeX, treefmt, pre-commit hooks |
 | `AGENTS.md` | Operating instructions for AI agents working in this repo |
 
 ## Interactive notebook (marimo)
 
 This repo ships with a [marimo](https://marimo.io) notebook (`notebook.py`)
-that turns the paper into an interactive experience:
+that turns the paper into an interactive experience. It's also deployed as a
+standalone WASM site — no server needed:
+
+**Live:** [peterlodri-sec.github.io/longrun-eval-kompress](https://peterlodri-sec.github.io/longrun-eval-kompress/)
 
 - **Paradox simulator** — adjust k (voting threshold) and N (voters) to watch
   the ensemble collapse in real time
@@ -56,7 +62,7 @@ marimo edit notebook.py
 marimo run notebook.py
 
 # Export as standalone HTML (WebAssembly, no server needed)
-marimo export html notebook.py -o notebook.html
+marimo export html-wasm notebook.py -o site --no-execute
 ```
 
 > marimo notebooks are pure Python, Git-friendly, and reproducible — no hidden
@@ -70,16 +76,25 @@ marimo export html notebook.py -o notebook.html
 git clone https://github.com/peterlodri-sec/longrun-eval-kompress.git
 cd longrun-eval-kompress
 
+# Option A: Nix (reproducible, all deps included)
+nix develop          # enter dev shell with Python, LaTeX, task, treefmt
+task paper:build     # compile PDF
+task site:build      # export marimo → WASM
+task ci              # run all checks
+
+# Option B: pip + system LaTeX
+pip install marimo
+task paper:build     # or: cd paper && latexmk -pdf main.tex
+task nb:edit         # open marimo editor
+
 # Run baselines (takes ~30s-2min depending on model downloads)
 python baselines/run_baselines.py
-
-# Open interactive notebook (https://marimo.io)
-pip install marimo
-marimo edit notebook.py
 
 # Start MCP server (for agent interaction)
 python mcp_server/server.py
 ```
+
+See [Taskfile.yml](Taskfile.yml) for all 16 commands (`task --list`).
 
 ## Key results
 
