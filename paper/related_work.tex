@@ -69,7 +69,7 @@ show, invert the aggregation benefit into a collapse. To our knowledge this
 stratum-wise collapse under AND-voting with asymmetric training floors has not
 been previously formalized.
 
-\subsection{Silver labels, self-labeling, and teacher distillation}
+\subsection{Silver labels, self-labeling, and C3 self-distillation}
 \label{sec:rw:selflabel}
 
 The \textbf{ultrawhale-dogfood} corpus (\texttt{PeetPedro/ultrawhale-dogfood})
@@ -85,8 +85,9 @@ producing v4 with $\mathit{mk\_in\_ref}=0.823$ and
 $\mathit{override\_delta}{=}0$. This is self-distillation in the spirit of
 noisy-student self-training \citep{xie2020noisy} but with a deterministic
 regex oracle, converging in one generation. Second, for the production model
-v8, we return to LLM-teacher distillation: a \textbf{Qwen2.5}
-\citep{qwen2024qwen25} teacher generates compression labels on raw text,
-which the 149M-parameter ModernBERT student learns as a fast inference-time
-policy. The two pathways are complementary---self-labeling for the paradox
-evidence chain, teacher distillation for the production deployment.
+v8, we use \emph{C3 self-distillation} (Collect--Curate--Compress): a
+\textbf{Qwen2.5-7B-Instruct} \citep{qwen2024qwen25} teacher labels which
+tokens to keep on real agent tool outputs, producing higher-quality labels
+than self-labeling ($+0.012$ heretic). The two pathways are
+complementary---self-labeling for the paradox evidence chain, C3
+self-distillation with a Qwen teacher for the production deployment.

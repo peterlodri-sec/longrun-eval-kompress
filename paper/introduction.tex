@@ -87,8 +87,10 @@ This paper makes the following contributions:
         B so the inference override becomes redundant.
   \item \textbf{kompress-v8.} A 149M-parameter dual-head ModernBERT
         (token classifier + Span CNN) with an asymmetric modulation gate
-        between the two heads, trained on the ultrawhale-dogfood
-        silver-label corpus.
+        between the two heads, trained via C3 self-distillation
+        (Collect--Curate--Compress) with a Qwen2.5-7B teacher on real agent
+        tool outputs. The full version lineage (v2--v14) is the output of
+        the LoopKit hill-climbing loop, still running.
   \item \textbf{LoopKit substrate.} An open-source four-phase autonomous
         state machine (Plan, Execute, Evaluate, Decide) with an asynchronous
         SQLite state kernel and an LLM Council operator, instantiating the

@@ -195,7 +195,12 @@ planned for a revision.
 \label{sec:arch}
 
 \paragraph{Backbone.} kompress-v8 is a 149M-parameter ModernBERT
-\citep{warner2024modernbert} with two task heads sharing the encoder.
+\citep{warner2024modernbert} with two task heads sharing the encoder. The
+model lineage is \texttt{answerdotai/ModernBERT-base}
+$\to$ \texttt{chopratejas/kompress-v2-base} $\to$
+\texttt{PeetPedro/kompress-v8}. The v2-base adapter provides the initial
+compression prior; our fine-tuning shifts the heads' notion of salience
+toward agent-critical tokens via mechanisms~A--C.
 
 \begin{itemize}
   \item \textbf{Token-classifier head} $h_{\mathrm{tok}}$: per-token eviction
@@ -265,6 +270,20 @@ has learned what B was enforcing. A second iteration ($v5$) adds noise rather
 than signal (heretic $0.967\to0.961$), so the correctable-loop invariant halts
 the loop at $t{=}1$. This is self-distillation with a deterministic regex
 oracle rather than an LLM teacher, converging in one generation.
+
+\paragraph{Production pathway: C3 self-distillation.} The self-labeling loop
+converged at v4/v5, but the production model v8 uses a stronger oracle: a
+\textbf{Qwen2.5-7B-Instruct} teacher that labels which tokens to keep on
+\emph{real agent tool outputs} (bash output, file reads, search results, JSON
+tool responses, error traces). This is \emph{C3 self-distillation}:
+\textbf{C}ollect real tool outputs from production traffic,
+\textbf{C}urate them with the Qwen teacher's keep/drop labels, and
+\textbf{C}ompress the result into the fast ModernBERT student. The training
+set is 97 Qwen-labeled pairs + 200 generic multi-domain pairs (33\% C3
+ratio), fine-tuned from v2-base for 3 epochs. Qwen teacher labels beat
+self-labels by $+0.012$ heretic ($0.955$ vs $0.943$ on the 32-prompt set),
+making v8 the production recommendation with agent
+$\mathit{mk\_in\_ref}{=}1.000$ under the override.
 
 \subsection{Training procedure}
 \label{sec:train}
