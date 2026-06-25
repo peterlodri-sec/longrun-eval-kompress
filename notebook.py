@@ -21,6 +21,15 @@ app = marimo.App(width="medium", title="Voting Ensemble Paradox — Interactive 
 def _():
     import marimo as mo
     mo.md("""
+    **[Paper PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)** | **[GitHub](https://github.com/peterlodri-sec/longrun-eval-kompress)** | **[Experiment Logs](https://pocoo.vaked.dev)** | **[Model](https://huggingface.co/PeetPedro/kompress-v8)** | **[Dataset](https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood)**
+    """)
+    return (mo,)
+
+
+@app.cell
+def _():
+    import marimo as mo
+    mo.md("""
     # Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox
     ### Interactive Research Paper — kompress-v8 + LoopKit
 
