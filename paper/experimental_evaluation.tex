@@ -500,6 +500,21 @@ defer these to a revision with GPU resources.
         AutoCompressors and Gisting require separate training on large corpora
         and are not runnable on a single M1 Pro without significant
         infrastructure; we defer these to a revision with GPU resources.
+  \item \textbf{Iso-compression gap.} The baseline comparison reports each
+        method at its natural operating point, not at matched compression
+        ratios. A precision--compression curve for every method would be the
+        fairer comparison; we provide single-point results and note that
+        kompress-v8's operating point (keep\_rate $0.854$) differs from
+        random ($0.835$) and LLMLingua-2 ($1.55$). Future work should
+        report iso-compression curves.
+  \item \textbf{Statistical uncertainty.} Results are reported to three
+        decimal places without confidence intervals. The 8-prompt heretic
+        set is small enough that single-prompt swings can dominate headline
+        numbers; the 32-prompt expansion reduces variance but remains
+        author-constructed. We note that v4/v6/v7 differences on the
+        32-prompt set (${\le}0.002$) are within apparent measurement noise.
+        Seeded variance (3+ seeds per model) and bootstrap confidence
+        intervals are left to future work with larger eval sets.
 \end{itemize}
 
 \begin{table}[h]

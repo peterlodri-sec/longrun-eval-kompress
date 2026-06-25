@@ -41,6 +41,21 @@ on stratum $S_k$ the weakest voter rejects a superset of every other voter's
 rejections.
 \end{definition}
 
+\begin{remark}[Empirical status of Definition~\ref{def:monotone}]
+Definition~\ref{def:monotone} is a sufficient condition, not a necessary one.
+In practice, voters disagree in non-nested ways: two checkpoints may each
+evict tokens the other keeps on the same stratum. The ensemble collapse we
+observe (Section~\ref{sec:eval:paradox}) is consistent with, but does not
+strictly require, Definition~\ref{def:monotone} holding exactly. We
+\emph{assume} it as a modeling simplification that yields a clean closed-form
+(Theorem~\ref{thm:paradox}); the empirical $0.961\to0.931$ regression
+demonstrates that \emph{some} form of per-stratum weakest-voter dominance
+is present in the v3/v4/v5 ensemble, even if the strict inclusion
+$R_{i^{\star}_k}\cap S_k \supseteq R_i\cap S_k$ does not hold for every
+token. A full empirical verification (per-stratum rejection-set inclusion
+matrices) is left to future work with larger eval sets.
+\end{remark}
+
 This encodes the empirical observation that a checkpoint trained on a lower
 floor over-evicts on the strata its training data under-represented, while a
 higher-floor checkpoint is more selective on those same strata. Crucially, the
@@ -106,26 +121,21 @@ sub-event $x \in S_k \cap K^{\star}$.
 
 \begin{corollary}[Stratum-wise Pareto collapse]
 \label{cor:pareto}
-For each stratum $S_k$ the ensemble's recall and precision equal those of the
+For each stratum $S_k$ the ensemble's recall equals that of the
 weakest voter $V_{i^{\star}_k}$:
 \[
-  \mathrm{Recall}_{S_k}(\hat V)=\mathrm{Recall}_{S_k}(V_{i^{\star}_k}),
-  \qquad
-  \mathrm{Precision}_{S_k}(\hat V)=\mathrm{Precision}_{S_k}(V_{i^{\star}_k}).
+  \mathrm{Recall}_{S_k}(\hat V)=\mathrm{Recall}_{S_k}(V_{i^{\star}_k}).
 \]
-With stratum weights $w_k = \Pr[x \in S_k]$, the global operating point is
-\[
-  \bigl(\mathrm{Recall}(\hat V),\,\mathrm{Precision}(\hat V)\bigr)
-  \;=\;
-  \sum_{k=1}^{K} w_k\,
-  \bigl(\mathrm{Recall}_{S_k}(V_{i^{\star}_k}),\,
-        \mathrm{Precision}_{S_k}(V_{i^{\star}_k})\bigr),
-\]
-a convex combination of per-stratum \emph{weakest}-voter operating points.
-Whenever the weakest voter differs across strata
-($i^{\star}_k \neq i^{\star}_{k'}$ for some $k,k'$), this point is occupied by
-no individual checkpoint and is Pareto-dominated by the frontier of any single
-strong voter.
+Globally, recall is the stratum-weighted sum
+$\mathrm{Recall}(\hat V) = \sum_k w_k\,\mathrm{Recall}_{S_k}(V_{i^{\star}_k})$.
+Precision is not linear in stratum weights (it is a ratio of weighted sums),
+but the ensemble's global precision satisfies
+$\mathrm{Precision}(\hat V) \le \max_j \mathrm{Precision}(V_j)$
+whenever the weakest voter differs across strata---the ensemble cannot
+exceed the best single-model precision. Whenever $i^{\star}_k \neq
+i^{\star}_{k'}$ for some $k,k'$, the global operating point is occupied by
+no individual checkpoint and is Pareto-dominated by the frontier of any
+single strong voter.
 \end{corollary}
 
 \begin{proof}[Sketch]

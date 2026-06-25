@@ -21,7 +21,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Check if Pages is enabled
         id: pages-check
         env:
@@ -34,6 +34,21 @@ jobs:
             echo "enabled=false" >> $GITHUB_OUTPUT
             echo "::notice::GitHub Pages is not enabled. Enable it in Settings → Pages → Source: GitHub Actions"
           fi
+
+      - name: Compile LaTeX paper
+        if: steps.pages-check.outputs.enabled == 'true'
+        run: |
+          sudo apt-get update && sudo apt-get install -y texlive-full
+          cd paper
+          rm -f *.aux *.bbl *.blg *.log *.out 2>/dev/null || true
+          latexmk -pdf main.tex
+
+      - name: Copy PDF to site
+        if: steps.pages-check.outputs.enabled == 'true'
+        run: |
+          mkdir -p site/paper
+          cp paper/main.pdf site/paper/main.pdf
+
       - name: Setup Pages
         if: steps.pages-check.outputs.enabled == 'true'
         uses: actions/configure-pages@v6

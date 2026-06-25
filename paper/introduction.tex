@@ -5,13 +5,14 @@
 Long-context agents increasingly rely on automated context pruning to remain
 within effective working windows. The pruning decision, however, is not
 semantically neutral: it removes tokens, and tokens constitute the vocabulary
-in which an agent can reason. We adopt the linguistic-relativity lens---colloquially
-the Sapir--Whorf hypothesis---as a framing device. A downstream agent cannot
+in which an agent can reason. A downstream agent cannot
 reason about a signal name, file path, or exit code that has been evicted from
 its context; token eviction is therefore an act of \emph{representational
 impoverishment}, and its harm concentrates on the \emph{critical-syntactic}
 token class---identifiers, paths, exit codes, delimiters---that anchors agent
-tool-use and control flow.
+tool-use and control flow. (We note the parallel to the linguistic-relativity
+hypothesis---that the vocabulary available to a reasoner shapes what it can
+reason about---without claiming a deeper connection.)
 
 This framing is sharpened by the emergence of \emph{Loop Engineering}
 \citep{osmani2026loop}, the mid-2026 shift from hand-crafting prompts to
@@ -87,7 +88,7 @@ This paper makes the following contributions:
         functions and conditional probabilities over token strata.
   \item \textbf{Three complementary correctives.} We introduce and
         separate: (A) a $3.0\times$ weighted cross-entropy penalty on
-        critical-syntactic tokens during fine-tuning---the Sapir--Whorf
+        critical-syntactic tokens during fine-tuning---the critical-token penalty; (B)
         term; (B) a post-inference regex override that surgically
         force-keeps must-keep tokens at deployment; and (C) a self-labeling
         loop that uses A+B as an oracle to relabel and retrain, internalizing

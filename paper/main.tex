@@ -93,7 +93,7 @@ indicator functions and trace it to per-stratum monotone-rejection
 refinement across asymmetric floors. As a corrective, we introduce three
 complementary mechanisms: \textbf{(A)} a $3.0\times$ weighted
 cross-entropy penalty on critical-syntactic tokens (signal names, file
-paths, exit codes) during fine-tuning---the Sapir--Whorf term; \textbf{(B)}
+paths, exit codes) during fine-tuning---the critical-token penalty; \textbf{(B)}
 a post-inference regex override that surgically force-keeps must-keep
 tokens at deployment; and \textbf{(C)} a self-labeling loop that uses
 A+B as an oracle to relabel the training data, internalizing B so the
