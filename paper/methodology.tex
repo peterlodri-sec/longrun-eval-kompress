@@ -287,5 +287,35 @@ $\mathit{mk\_in\_ref}{=}1.000$ under the override.
 
 \subsection{Training procedure}
 \label{sec:train}
-% TODO: LoRA r=16 on last 4 attention layers, 3 epochs, vast.ai RTX 4090,
-% ONNX export + HF upload, full hyperparameters.
+
+We freeze the ModernBERT encoder (it already understands language) and
+apply LoRA fine-tuning to the last 4 of 22 attention layers, plus retrain
+both task heads from scratch. Total trainable parameters: ${\sim}2$M out of
+149M.
+
+\begin{itemize}
+  \item \textbf{LoRA config:} $r{=}16$, $\alpha{=}32$, target modules
+        \texttt{query}, \texttt{key}, \texttt{value},
+        \texttt{layers\_transform=\{18,19,20,21\}} (last 4 of 22).
+  \item \textbf{Rationale:} lower layers encode syntactic structure and basic
+        semantics---already correct. Higher layers encode task-specific
+        salience: what is ``important'' for the current task. We shift that
+        prior (``\texttt{SIGILL} is more salient than the'') without rewiring
+        grammar.
+  \item \textbf{Loss:} $\mathcal{L} = \mathcal{L}_{\mathrm{token}} + 0.3
+        \cdot \mathcal{L}_{\mathrm{span}}$, where
+        $\mathcal{L}_{\mathrm{token}}$ is the $3.0\times$-weighted
+        cross-entropy (Mechanism~A) and $\mathcal{L}_{\mathrm{span}}$ is BCE
+        between the span-head output and the keep mask.
+  \item \textbf{Schedule:} 3 epochs, AdamW, learning rate $2\mathrm{e}{-4}$,
+        batch size 16. The correctable-loop invariant halts at 3 epochs;
+        v3.3 showed that near-memorization (loss $0.0007$) does not improve
+        the heretic metric.
+  \item \textbf{Hardware:} vast.ai RTX~4090 at \$0.38/hr, ${\sim}15$--25
+        minutes per run. Total v3$\to$v4$\to$v5 chain: \$0.55.
+  \item \textbf{Export:} fp32 ONNX, pushed to HuggingFace Hub
+        (\texttt{PeetPedro/kompress-v*}).
+  \item \textbf{v8 specifics:} 97 Qwen2.5-7B-labeled C3 pairs + 200 generic
+        multi-domain pairs (33\% C3 ratio), fine-tuned from
+        \texttt{kompress-v2-base}, loss $0.490\to0.431$.
+\end{itemize}

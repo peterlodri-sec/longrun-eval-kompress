@@ -52,5 +52,25 @@ the incentive distortions of grant-driven milestone scheduling. We thank the
 community council and the donors who made the compute runs possible.
 
 \subsection{Acknowledgments}
-% TODO: named contributors, the community council, compute donors,
-% Qwen2.5 / ModernBERT / LangChain / Osmani / Greyling ecosystem acknowledgments.
+
+We thank the open-source community that made this work possible:
+\begin{itemize}
+  \item \textbf{JerrettDavis} for reviewing and improving the must-keep
+        override (headroom PR \#1400), including batched path coverage,
+        regex tightening with negative lookbehind/lookahead, and 78 new
+        behavioral test lines.
+  \item \textbf{Addy Osmani}, \textbf{Boris Cherny}, \textbf{Peter
+        Steinberger}, and \textbf{Cobus Greyling} for defining and
+        operationalizing the Loop Engineering paradigm that frames this work.
+  \item \textbf{LangChain} for the four-tier stacked loop taxonomy.
+  \item The \textbf{Answer.AI} team for ModernBERT, and
+        \textbf{chopratejas} for the kompress-v2-base adapter.
+  \item The \textbf{Alibaba Qwen} team for Qwen2.5-7B-Instruct, used as the
+        C3 self-distillation teacher.
+  \item The \textbf{vast.ai} platform for affordable GPU compute.
+  \item The \textbf{community council} and donors who sustain the
+        decentralized funding model.
+  \item The \textbf{headroom} project (\texttt{headroomlabs-ai/headroom})
+        for the production compression infrastructure where kompress-v8 is
+        deployed.
+\end{itemize}
