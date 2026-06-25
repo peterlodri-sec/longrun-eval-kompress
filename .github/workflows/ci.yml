@@ -18,7 +18,7 @@ jobs:
     name: LaTeX environment balance
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check begin/end balance
         run: |
           cd paper
@@ -39,7 +39,7 @@ jobs:
     name: No TODOs or placeholders
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check for TODOs
         run: |
           if grep -rn "TODO" paper/*.tex 2>/dev/null; then
@@ -58,7 +58,7 @@ jobs:
     name: Citation verification
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check for unverified citations
         run: |
           if grep -rn "VERIFY" paper/references.bib 2>/dev/null; then
@@ -70,7 +70,7 @@ jobs:
     name: Python syntax check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -84,7 +84,7 @@ jobs:
     name: Agent readiness (AGENTS.md + MCP)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check AGENTS.md exists
         run: test -f AGENTS.md && echo "AGENTS.md OK"
       - name: Check MCP server exists
