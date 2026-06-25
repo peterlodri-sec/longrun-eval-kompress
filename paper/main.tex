@@ -1,0 +1,134 @@
+% ============================================================================
+% main.tex --- Master manuscript file
+% Title: Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox
+%        in Learned Context-Pruning Ensembles
+% Target venue: ICLR 2027 (double-blind) ; arXiv preprint host
+% Lead thesis: Voting Ensemble Paradox + 3.0x asymmetric loss modulation fix
+% Frame: Loop Engineering paradigm (Osmani 2026 ; Greyling 2026 ; LangChain 2026)
+% Substrate: kompress-v8 (PeetPedro/kompress-v8) + LoopKit (peterlodri-sec/loopkit)
+% Dataset: ultrawhale-dogfood (PeetPedro/ultrawale-dogfood)
+% Logs: https://pocoo.vaked.dev
+% ----------------------------------------------------------------------------
+% Build:  pdflatex main && bibtex main && pdflatex main && pdflatex main
+% ============================================================================
+\documentclass[10pt,letterpaper]{article}
+
+% --- If the ICLR style file is available, swap the line below for the venue
+%     style and remove the manual geometry. For anonymized double-blind
+%     submission use:  \usepackage{iclr2027_conference}
+\usepackage[margin=1in]{geometry}
+
+% --- Core packages ---
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage[round,authoryear]{natbib}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,citecolor=teal!60!black,urlcolor=blue!60!black}
+
+% --- Theorem environments ---
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+% --- Custom notation shortcuts ---
+\newcommand{\I}{\mathbb{I}}          % indicator
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Pr}{\mathbb{P}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\Lcrit}{\mathcal{L}_{\mathrm{crit}}}
+\newcommand{\Lbase}{\mathcal{L}_{\mathrm{base}}}
+\newcommand{\tbd}{\textcolor{red}{TBD}}  % placeholder for pending data
+
+% ============================================================================
+% Metadata
+% ============================================================================
+\title{Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox\\
+       in Learned Context-Pruning Ensembles}
+
+% Anonymized for double-blind review (ICLR 2027).
+\author{Anonymous Authors\\
+        Paper under double-blind review\\
+        \texttt{anonymous}}  % anonymous
+
+% --- Camera-ready author block (uncomment for non-anonymous version) -------
+% \author{Peter Lodri%
+%   \thanks{Independent, community-funded research. Decentralized open-source
+%   funding model: community-council-guided donations; no institutional grant.}%
+%   \\[2pt]
+%   \texttt{contact via https://pocoo.vaked.dev}}
+% ----------------------------------------------------------------------------
+
+\date{}
+
+\begin{document}
+\maketitle
+
+% ============================================================================
+% Abstract
+% ============================================================================
+\begin{abstract}
+Learned context pruning improves long-context agent efficiency but introduces
+a failure mode we term the \emph{Voting Ensemble Paradox}: when multiple
+compression checkpoints with asymmetric training-data floors are combined
+under $k$-of-$N$ voting---a common safety-gating configuration---the
+ensemble's eviction decision collapses, stratum by stratum, to the
+per-stratum $k$-th weakest voter. The resulting global operating point is
+Pareto-dominated by the frontier of any single strong checkpoint and, when
+the weakest voter differs across strata, is occupied by no individual model.
+We formalize this collapse via a conditional-probability proof over
+indicator functions and trace it to per-stratum monotone-rejection
+refinement across asymmetric floors. As a corrective, we introduce three
+complementary mechanisms: \textbf{(A)} a $3.0\times$ weighted
+cross-entropy penalty on critical-syntactic tokens (signal names, file
+paths, exit codes) during fine-tuning---the Sapir--Whorf term; \textbf{(B)}
+a post-inference regex override that surgically force-keeps must-keep
+tokens at deployment; and \textbf{(C)} a self-labeling loop that uses
+A+B as an oracle to relabel the training data, internalizing B so the
+inference override becomes redundant. We instantiate the method in
+\textbf{kompress-v8}, a 149M-parameter dual-head ModernBERT (token
+classifier + Span CNN) trained on the \textbf{ultrawhale-dogfood}
+silver-label corpus, and orchestrated by \textbf{LoopKit}, an open-source
+four-phase autonomous state machine realizing the recursive loop-stacking
+taxonomy of Loop Engineering
+\citep{osmani2026loop,greyling2026loop,langchain2026loops}. Empirically,
+mechanism~A raises must-keep survival from an unmeasured baseline to $0.942$
+(heretic, no override); mechanism~B lifts v3 from $0.911$ to $0.965$ and
+v4 from $0.961$ to $0.965$; mechanism~C (v4) reaches $0.967$ with
+$\mathit{override\_delta}{=}0$. A 3-checkpoint majority ensemble regresses
+to $0.931$---a $0.031$ paradox collapse below the best single model---which
+the higher-floor ensemble (v4-class only) avoids. We benchmark against
+LLMLingua-2, AutoCompressors, Gisting, and TextRank (pending).
+\end{abstract}
+
+% ============================================================================
+% Body --- modular via \include
+% ============================================================================
+\include{introduction}
+\include{related_work}
+\include{methodology}
+\include{experimental_evaluation}
+\include{loopkit_implementation}
+\include{data_availability}
+
+% ============================================================================
+% References
+%   NOTE: ML baseline entries below carry best-effort metadata and MUST be
+%         verified against the official sources before submission.
+% ============================================================================
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

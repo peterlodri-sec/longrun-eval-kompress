@@ -1,0 +1,98 @@
+% introduction.tex --- Section 1
+\section{Introduction}
+\label{sec:introduction}
+
+Long-context agents increasingly rely on automated context pruning to remain
+within effective working windows. The pruning decision, however, is not
+semantically neutral: it removes tokens, and tokens constitute the vocabulary
+in which an agent can reason. We adopt the linguistic-relativity lens---colloquially
+the Sapir--Whorf hypothesis---as a framing device. A downstream agent cannot
+reason about a signal name, file path, or exit code that has been evicted from
+its context; token eviction is therefore an act of \emph{representational
+impoverishment}, and its harm concentrates on the \emph{critical-syntactic}
+token class---identifiers, paths, exit codes, delimiters---that anchors agent
+tool-use and control flow.
+
+This framing is sharpened by the emergence of \emph{Loop Engineering}
+\citep{osmani2026loop}, the mid-2026 shift from hand-crafting prompts to
+designing autonomous systems that discover, execute, verify, and improve on a
+schedule or until a goal is met. As articulated by Osmani and echoed by
+Cherny and Steinberger, the engineer's role migrates from operator to system
+designer \citep{osmani2026oreilly}; Greyling provides the reference
+implementation and operational playbook (persistent \texttt{STATE.md}
+tracking, \texttt{loop-cost} token gating, \texttt{loop-run-log.md}
+conventions) \citep{greyling2026loop}; and LangChain formalizes a four-tier
+stacked-loop taxonomy (agent, verification, event-driven, hill-climbing)
+\citep{langchain2026loops}. In this paradigm the pruning model is not a static
+preprocessing step but a component inside a recursive control structure, and
+its errors \emph{compound} across loop iterations---a single false eviction in
+one cycle can starve every subsequent cycle of the context needed to recover.
+
+\subsection{The Voting Ensemble Paradox}
+
+A natural safety pattern in such systems is to gate pruning decisions through
+a \emph{multi-checkpoint voting ensemble}: several compression checkpoints must
+agree before a token is evicted. Intuitively this is conservative---more voters
+should mean fewer mistakes. We show that under a configuration that is
+ubiquitous in practice, unanimity-to-keep (AND) voting over checkpoints trained
+on \emph{asymmetric data floors}, the intuition inverts.
+
+Because weaker checkpoints (trained on lower-quality or lower-quantity silver
+labels) evict more aggressively, and because this aggression is
+\emph{stratum-dependent}---each checkpoint is weakest on the stratum its
+training set under-represented---AND voting lets the per-stratum most-evicting
+voter veto every keep. The ensemble's eviction set becomes a stratum-wise union
+of each weakest voter's rejections: a global operating point that is
+Pareto-dominated by any single strong checkpoint and, when the weakest voter
+differs across strata, is \emph{occupied by no individual model}. Adding
+stronger voters cannot help, because each stratum remains pinned by its own
+weakest voter. We call this the \textbf{Voting Ensemble Paradox}.
+
+\subsection{Contributions}
+
+This paper makes the following contributions:
+
+\begin{enumerate}
+  \item \textbf{Formalization of the Voting Ensemble Paradox.} We prove
+        (Theorem~\ref{thm:paradox}) that under per-stratum
+        monotone-rejection refinement and $k$-of-$N$ drop voting, the
+        ensemble eviction indicator equals the per-stratum $k$-th order
+        statistic of the voter indicators, yielding a stratum-wise Pareto
+        collapse (Corollary~\ref{cor:pareto}). The proof uses indicator
+        functions and conditional probabilities over token strata.
+  \item \textbf{Three complementary correctives.} We introduce and
+        separate: (A) a $3.0\times$ weighted cross-entropy penalty on
+        critical-syntactic tokens during fine-tuning---the Sapir--Whorf
+        term; (B) a post-inference regex override that surgically
+        force-keeps must-keep tokens at deployment; and (C) a self-labeling
+        loop that uses A+B as an oracle to relabel and retrain, internalizing
+        B so the inference override becomes redundant.
+  \item \textbf{kompress-v8.} A 149M-parameter dual-head ModernBERT
+        (token classifier + Span CNN) with an asymmetric modulation gate
+        between the two heads, trained on the ultrawhale-dogfood
+        silver-label corpus.
+  \item \textbf{LoopKit substrate.} An open-source four-phase autonomous
+        state machine (Plan, Execute, Evaluate, Decide) with an asynchronous
+        SQLite state kernel and an LLM Council operator, instantiating the
+        LangChain four-tier loop stack.
+  \item \textbf{Empirical validation.} Mechanism~A reaches $0.942$ (heretic,
+        no override); mechanism~B lifts v3 $0.911\to0.965$ and v4
+        $0.961\to0.965$; mechanism~C (v4) reaches $0.967$ with
+        $\mathit{override\_delta}{=}0$. A 3-checkpoint majority ensemble
+        regresses to $0.931$---a $0.031$ collapse below the best single
+        model---confirming the paradox. External baselines
+        (LLMLingua-2, AutoCompressors, Gisting, TextRank) are in progress.
+\end{enumerate}
+
+\subsection{Paper structure}
+
+Section~\ref{sec:related} situates the work among learned compression methods,
+the Loop Engineering paradigm, and ensemble theory.
+Section~\ref{sec:methodology} formalizes the paradox, derives the modulated
+loss, and details the dual-head architecture.
+Section~\ref{sec:evaluation} reports the empirical evaluation, including the
+override/no-override ablation and external baselines.
+Section~\ref{sec:loopkit} describes the LoopKit implementation as the
+experimental substrate and its mapping to the four-tier loop taxonomy.
+Section~\ref{sec:data} covers data availability, the decentralized funding
+model, and acknowledgments.

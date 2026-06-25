@@ -1,0 +1,89 @@
+% related_work.tex --- Section 2
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Learned context pruning and prompt compression}
+\label{sec:rw:compression}
+
+Context pruning methods divide into prompt-level and training-based families.
+\textbf{LLMLingua} and its successor \textbf{LLMLingua-2} perform prompt-level
+compression by scoring token importance and evicting low-information tokens
+without retraining the host model \citep{jiang2023llmlingua,pan2024llmlingua2}.
+\textbf{AutoCompressors} recurrently summarize context into summary tokens that
+condition subsequent generation \citep{chevalier2023autocompressors}.
+\textbf{Gisting} trains a model to compress prompts into a small set of gist
+tokens via cross-attention \citep{mu2023gisting}. Classical unsupervised
+summarization (\textbf{TextRank}, \citep{mihalcea2004textrank}) provides a
+non-learned floor. Our setting differs in three respects: (i) eviction targets
+\emph{critical-syntactic} tokens whose removal breaks agent tool-use rather
+than merely reducing fluency; (ii) we train a dedicated dual-head pruner rather
+than scoring tokens on the host LLM; and (iii) we study the ensemble behavior
+of multiple pruners, a regime the above methods do not address.
+
+\subsection{Loop Engineering and autonomous agent loops}
+\label{sec:rw:loopeng}
+
+Loop Engineering denotes the shift from turn-by-turn prompting to designing
+systems that prompt, verify, and improve agents autonomously
+\citep{osmani2026loop}. Osmani identifies five building blocks---automations,
+worktrees, skills, connectors, and sub-agents---plus an external memory spine,
+echoing remarks by Cherny (Anthropic) and Steinberger (OpenClaw) that the
+engineer's job is to write loops rather than prompts
+\citep{osmani2026oreilly}. Greyling operationalizes this into a reference
+repository with patterns and CLI tooling, introducing persistent
+\texttt{STATE.md} state tracking, \texttt{loop-cost} token gating, and the
+\texttt{loop-run-log.md} run-history convention \citep{greyling2026loop}.
+LangChain formalizes the recursive structure as a four-tier stacked loop
+model: (1) the agent loop, (2) a verification loop wrapping it with a grader,
+(3) an event-driven loop connecting the agent to external triggers, and (4) a
+hill-climbing loop that analyzes traces and rewrites the harness
+\citep{langchain2026loops,langchain2026harness}. Our LoopKit system
+(Section~\ref{sec:loopkit}) instantiates this four-tier stack and contributes
+an asynchronous SQLite state kernel as the durable memory spine, with the
+pruning ensemble operating inside the verification tier.
+
+\subsection{Token importance and structured eviction}
+\label{sec:rw:importance}
+
+Modern bidirectional encoders such as \textbf{ModernBERT} provide the
+long-context, memory-efficient backbone on which our pruner is built
+\citep{warner2024modernbert}. The dual-head design---a token classifier
+paired with a span CNN---separates \emph{per-token} eviction decisions from
+\emph{span-level} coherence, with an asymmetric modulation gate (Section
+\ref{sec:methodology}) controlling the information flow between heads. This
+extends the structured-eviction line by treating critical-syntactic token
+classes as a protected subset rather than scoring all tokens uniformly.
+
+\subsection{Ensembles, exchangeability, and the non-exchangeability gap}
+\label{sec:rw:ensembles}
+
+Classical ensemble theory assumes voters are approximately exchangeable, so
+variance reduction improves the aggregate
+\citep{dietterich2000ensemble,breiman1996bagging}. The Voting Ensemble Paradox
+arises precisely when this assumption is violated: checkpoints trained on
+asymmetric data floors are \emph{non-exchangeable}, and under unanimity-to-keep
+voting their rejection sets are nested per stratum rather than independent.
+Condorcet-style jury theorems also assume equal competence across voters
+\citep{condorcet1785}; asymmetric floors break equal competence and, as we
+show, invert the aggregation benefit into a collapse. To our knowledge this
+stratum-wise collapse under AND-voting with asymmetric training floors has not
+been previously formalized.
+
+\subsection{Silver labels and self-labeling}
+\label{sec:rw:selflabel}
+
+We do not distill from a generative teacher. Instead, the
+\textbf{ultrawhale-dogfood} corpus (\texttt{PeetPedro/ultrawhale-dogfood})
+supplies structural silver labels: a token in a verbose response is labeled
+\emph{keep} if its lowercase form appears in a paired compressed response,
+overridden to \emph{keep} for any $\mathit{MUST\_KEEP\_RE}$ match (numbers,
+ALLCAPS identifiers, dotted paths, file extensions, flags, CamelCase). This
+yields a label-quality proxy $\mathit{mk\_in\_ref}=0.72$, reflecting that 28\%
+of must-keep tokens in verbose text are absent from the compressed
+reference. To close this gap we use \emph{self-labeling}: the current model
+plus the inference override (mechanism~B) serves as its own oracle to
+relabel the training data, producing v4 with $\mathit{mk\_in\_ref}=0.823$ and
+$\mathit{override\_delta}{=}0$. This is self-distillation in the spirit of
+noisy-student self-training \citep{xie2020noisy} but with a deterministic
+regex oracle rather than an LLM teacher, and it converges in one generation
+rather than requiring many.

@@ -1,0 +1,34 @@
+% data_availability.tex --- Section 6
+\section{Data Availability, Funding, and Acknowledgments}
+\label{sec:data}
+
+\subsection{Open-source artifacts}
+
+All artifacts are publicly available to support replication:
+
+\begin{itemize}
+  \item \textbf{Model checkpoint:} \texttt{PeetPedro/kompress-v8} on
+        HuggingFace---149M-parameter dual-head ModernBERT.
+  \item \textbf{Training \& orchestration engine:}
+        \texttt{peterlodri-sec/loopkit} on GitHub---four-phase state machine,
+        SQLite kernel, LLM Council operator.
+  \item \textbf{Dataset:} \texttt{PeetPedro/ultrawhale-dogfood} on
+        HuggingFace---structural silver-label distributions with regex-driven
+        must-keep thresholds.
+  \item \textbf{Log registry \& replication vault:} chronological experiment
+        logs, state specifications, and telemetry at
+        \url{https://pocoo.vaked.dev}.
+\end{itemize}
+
+\subsection{Decentralized open-source research funding}
+
+This work was not supported by traditional institutional grants. We adopt a
+decentralized open-source funding model in which a community council guides
+donations to sustain infrastructure, compute, and maintainer time. This model
+aligns with the open-source ethos of the artifact ecosystem above and avoids
+the incentive distortions of grant-driven milestone scheduling. We thank the
+community council and the donors who made the compute runs possible.
+
+\subsection{Acknowledgments}
+% TODO: named contributors, the community council, compute donors,
+% Qwen2.5 / ModernBERT / LangChain / Osmani / Greyling ecosystem acknowledgments.

@@ -1,0 +1,191 @@
+% loopkit_implementation.tex --- Section 5
+% All structural details sourced from the LoopKit blog (pocoo.vaked.dev,
+% 2026-06-25) and the public repo github.com/peterlodri-sec/loopkit.
+\section{LoopKit Implementation}
+\label{sec:loopkit}
+
+LoopKit\footnote{\url{https://github.com/peterlodri-sec/loopkit}} is the
+open-source, Python-native experimental substrate that orchestrated every
+kompress training run, evaluation, and ensemble experiment in this paper. It
+realizes the four-phase autonomous lifecycle and maps onto the LangChain
+four-tier stacked loop taxonomy \citep{langchain2026loops}, aligning with
+Osmani's five building blocks \citep{osmani2026loop} and Greyling's
+operational conventions \citep{greyling2026loop}.
+
+\subsection{The four-phase state machine}
+\label{sec:loopkit:phases}
+
+Each loop iteration executes the deterministic state machine
+\textsc{Plan}~$\to$~\textsc{Execute}~$\to$~\textsc{Evaluate}~$\to$~\textsc{Decide},
+persisted by an asynchronous SQLite kernel. Algorithm~\ref{alg:fourphase}
+gives the pseudocode.
+
+\begin{algorithm}[h]
+\caption{The LoopKit four-phase iteration}
+\label{alg:fourphase}
+\begin{algorithmic}[1]
+\State \textbf{input:} hypothesis $h$, budget $B$, state $\Sigma$
+\State \textbf{Phase 1: Plan}
+  \State \quad $p \gets \mathrm{Plan}(h, \Sigma)$ \Comment{derive experiment spec from hypothesis + state}
+\State \textbf{Phase 2: Execute}
+  \State \quad $r \gets \mathrm{Execute}(p)$ \Comment{run training/eval per spec}
+  \State \quad $\Sigma \gets \mathrm{SQLiteWrite}(\Sigma, p, r)$ \Comment{async persist}
+\State \textbf{Phase 3: Evaluate}
+  \State \quad $m \gets \mathrm{eval\_heretic}(r)$ \Comment{adversarial benchmark}
+  \State \quad $\Sigma \gets \mathrm{SQLiteWrite}(\Sigma, m)$
+\State \textbf{Phase 4: Decide}
+  \State \quad $d \gets \mathrm{Council}(m, \Sigma, B)$ \Comment{LLM council: SHIP / RETRAIN / PIVOT}
+  \State \quad \textbf{if} $d = \textsc{Ship}$ \textbf{then} \Return $r$
+  \State \quad \textbf{if} $d = \textsc{Retrain}$ \textbf{then} $h \gets \mathrm{RefineHypothesis}(h, m)$
+  \State \quad \textbf{if} $d = \textsc{Pivot}$ \textbf{then} $h \gets \mathrm{NewHypothesis}(m, \Sigma)$
+\State \textbf{goto} Phase 1 \Comment{or halt if budget $B$ exhausted}
+\end{algorithmic}
+\end{algorithm}
+
+The \textsc{Decide} phase is the outer loop: the council reviews the
+evaluation metric $m$ against the persistent state $\Sigma$ and remaining
+budget $B$, then issues one of three verdicts. The kompress line produced 15
+models through this loop---each row in the version table is one
+\textsc{Plan}$\to$\textsc{Execute}$\to$\textsc{Evaluate}$\to$\textsc{Decide}
+cycle, with the council (or a human acting as council) choosing the next
+hypothesis.
+
+\subsection{Mapping to the four-tier loop taxonomy}
+\label{sec:loopkit:mapping}
+
+Table~\ref{tab:loops} maps LoopKit's primitives to the LangChain four-tier
+stacked loop model \citep{langchain2026loops}.
+
+\begin{table}[h]
+\centering
+\caption{LoopKit instantiation of the LangChain four-tier stacked loop model.
+Each tier wraps the one below it; the hill-climbing tier reaches inside and
+updates the agent loop directly.}
+\label{tab:loops}
+\begin{tabular}{llll}
+\toprule
+Tier & Loop & LoopKit primitive & Role in pruning pipeline \\
+\midrule
+L1 & Agent        & \texttt{Loop.run()}              & training/eval iteration (Alg.~\ref{alg:fourphase}) \\
+L2 & Verification & \texttt{evals/heretic.py}        & adversarial grader for must-keep survival \\
+L3 & Event-driven & Telegram bot hook                & triggers on checkpoint events, /run /decide \\
+L4 & Hill-climbing& LLM Council + trace rewriting    & decides SHIP/RETRAIN/PIVOT from eval traces \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Tier 1 (Agent loop).} \texttt{Loop.run()} implements
+Algorithm~\ref{alg:fourphase}. The abstract \texttt{Loop} class in
+\texttt{loops/base.py} is subclassed per project (e.g.,
+\texttt{loops/kompress/} for the pruning pipeline). Each call to
+\texttt{run()} executes one full four-phase cycle.
+
+\paragraph{Tier 2 (Verification loop).} \texttt{evals/heretic.py} is the
+grader: it runs the model on adversarial prompts dense with must-keep tokens
+and returns $\mathit{exact\_keep\_pct}$, $\mathit{keep\_rate}$, and
+$\mathit{override\_delta}$. If the metric falls below threshold
+($\mathit{exact\_keep\_pct} < 0.940$ on the 32-prompt set), the verification
+loop sends the result back to Tier~1 with feedback. This is the
+maker-checker separation: the training script (maker) never sees the
+evaluation script's (checker) reasoning, which is why the checker catches
+the silver-label ceiling that the maker could not
+\citep{osmani2026loop}.
+
+\paragraph{Tier 3 (Event-driven loop).} A Telegram bot
+(\texttt{bot/main.py}) serves as the event-driven trigger. Commands
+\texttt{/new}, \texttt{/run}, \texttt{/decide}, and \texttt{/history}
+create, execute, decide, and query loops from chat; natural-language
+messages query the council for advice. The bot reads and writes the SQLite
+state on every command, so loop state survives restarts. This realizes
+Osmani's automation primitive and Greyling's \texttt{loop-run-log.md}
+convention in a programmatic rather than markdown form
+\citep{greyling2026loop}.
+
+\paragraph{Tier 4 (Hill-climbing loop).} The LLM Council
+(\texttt{bot/council.py}) reviews evaluation traces and decides the next
+action: \textsc{Ship}, \textsc{Retrain}, or \textsc{Pivot}. By default it
+uses GLM-5.1, configurable to any LLM. The council's key property is that
+it \emph{reaches inside} the agent loop (Tier~1) and rewrites the next
+hypothesis---LangChain's insight that ``the return arrow doesn't just loop
+back to the top; it reaches inside and updates the agent loop directly''
+\citep{langchain2026loops}. In the kompress line, the council issued
+\textsc{Retrain} three times in succession at one junction, then
+\textsc{Pivot} when the metric stopped moving---the correctable-loop
+invariant applied at the meta-level.
+
+\subsection{Asynchronous SQLite state kernel}
+\label{sec:loopkit:sqlite}
+
+The state kernel (\texttt{bot/memory.py}) persists every transition of
+Algorithm~\ref{tab:loops} to an asynchronous SQLite database, serving as the
+durable memory spine that Osmani identifies as the sixth building block
+\citep{osmani2026loop} and that Greyling operationalizes as
+\texttt{STATE.md} \citep{greyling2026loop}. Each loop iteration writes:
+\begin{itemize}
+  \item the hypothesis $h$ and plan $p$ (Phase~1),
+  \item the raw result $r$ (Phase~2),
+  \item the evaluation metrics $m$ (Phase~3),
+  \item the council decision $d$ and refined hypothesis $h'$ (Phase~4).
+\end{itemize}
+This enables any future session to resume the loop without reconstructing
+context from git history---the ``agent forgets, the repo doesn't'' principle
+made concrete. The SQLite kernel is asynchronous so that long-running
+training jobs on remote GPUs (vast.ai) do not block the bot's event loop;
+state writes are queued and flushed when the training subprocess returns.
+
+\subsection{Alignment with the Loop Engineering ecosystem}
+\label{sec:loopkit:ecosystem}
+
+Table~\ref{tab:ecosystem} maps LoopKit's artifacts to Greyling's operational
+conventions, showing the substrate is a faithful instantiation of the
+emerging standard.
+
+\begin{table}[h]
+\centering
+\caption{LoopKit artifacts mapped to Greyling's Loop Engineering conventions
+\citep{greyling2026loop}. Markdown conventions become programmatic
+primitives; the persistence guarantee is stronger (SQLite vs.\ flat files).}
+\label{tab:ecosystem}
+\begin{tabular}{lll}
+\toprule
+Convention (Greyling) & LoopKit artifact & Enhancement \\
+\midrule
+\texttt{STATE.md}          & SQLite + \texttt{state.json} per loop & queryable, concurrent \\
+\texttt{loop-run-log.md}   & \texttt{Experiment} dataclass + history & structured, typed \\
+\texttt{loop-budget.md}    & Budget tracking in \texttt{state.json} & live, per-iteration \\
+\texttt{LOOP.md}           & \texttt{GUIDE.md} & same role \\
+\texttt{AGENTS.md}         & \texttt{concepts/} directory & executable reference impls \\
+\texttt{loop-audit}        & Council readiness check & LLM-graded, not rule-based \\
+\texttt{loop-cost}         & Budget tracking in \texttt{state.json} & live vs.\ pre-estimate \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The correctable-loop invariant}
+\label{sec:loopkit:correctable}
+
+The council enforces the correctable-loop invariant: if the evaluation
+metric does not improve within three iterations, halt the current direction
+and pivot. Applied to the self-labeling sequence
+(Section~\ref{sec:eval:C}):
+\begin{itemize}
+  \item v3$\to$v4: large jump ($0.942\to0.967$, $\delta$ $0.054\to0$) ---
+        continue,
+  \item v4$\to$v5: slight regression ($0.967\to0.961$) --- \textbf{stop}.
+\end{itemize}
+Two iterations, no improvement: the loop halted and pivoted to the ensemble
+experiment (which revealed the Voting Ensemble Paradox). This invariant
+prevents the loop from burning budget on diminishing returns---a failure
+mode Osmani identifies as ``the loop changes the work, it does not delete you
+from it'' \citep{osmani2026loop}.
+
+\subsection{Reproducibility and cost}
+\label{sec:loopkit:repro}
+
+All 15 kompress models were produced by LoopKit on vast.ai RTX~4090
+instances at \$0.38/hr. The total compute for the v3$\to$v4$\to$v5
+self-labeling chain (the paradox evidence) was \$0.55---one cold brew. The
+full loopkit repository, including the kompress loop that produced these
+models, is open-source at \url{https://github.com/peterlodri-sec/loopkit}
+with a Colab notebook for the minimal hello-loop
+(\texttt{notebooks/loopkit\_hello.ipynb}).

@@ -1,0 +1,272 @@
+% methodology.tex --- Section 3
+% Contains the full Voting Ensemble Paradox proof (stated constraint) and the
+% asymmetric loss modulation derivation. Architecture subsection is outlined
+% pending the remaining sections.
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Setup and notation}
+\label{sec:setup}
+
+Let $X$ be the space of tokens (or segments) subject to pruning. We partition
+$X$ into $K$ disjoint \emph{strata} $S_1,\dots,S_K$ by syntactic role
+(e.g., identifier, path literal, exit code, delimiter, prose). Let
+$V_1,\dots,V_N$ be $N$ compression checkpoints with asymmetric
+\textbf{training-data floors} $f_1 \le f_2 \le \dots \le f_N$, where lower $f_i$
+denotes a weaker training condition (less data or noisier silver labels).
+Let $\I_i(x) \in \{0,1\}$ be the \emph{eviction indicator} for voter $V_i$:
+$\I_i(x)=1$ iff $V_i$ evicts $x$. Denote the rejection set
+$R_i = \{x : \I_i(x)=1\}$. Let $K^{\star}\subseteq X$ be the ground-truth
+keep set (true-keep tokens).
+
+\begin{definition}[Asymmetric data floor]
+\label{def:floor}
+A checkpoint $V_i$ has training-data floor $f_i$, drawn from an ordered set
+$F=\{f_1<\dots<f_N\}$. Lower floors correspond to weaker training conditions
+and, empirically, to larger rejection sets on the strata those conditions
+under-represent.
+\end{definition}
+
+\begin{definition}[Per-stratum monotone-rejection refinement]
+\label{def:monotone}
+The voter pool satisfies \emph{per-stratum monotone-rejection refinement} if
+for every stratum $S_k$ there exists a voter $i^{\star}_k \in [N]$---the
+\emph{weakest voter on $S_k$}---such that for all $i \in [N]$ and all
+$x \in S_k$,
+\[
+  \I_{i^{\star}_k}(x) \;\ge\; \I_i(x).
+\]
+Equivalently, $R_{i^{\star}_k} \cap S_k \supseteq R_i \cap S_k$ for all $i$:
+on stratum $S_k$ the weakest voter rejects a superset of every other voter's
+rejections.
+\end{definition}
+
+This encodes the empirical observation that a checkpoint trained on a lower
+floor over-evicts on the strata its training data under-represented, while a
+higher-floor checkpoint is more selective on those same strata. Crucially, the
+identity of the weakest voter may differ across strata.
+
+\begin{definition}[Unanimity-to-keep (AND) ensemble]
+\label{def:and}
+The ensemble $\hat V$ evicts $x$ iff at least one voter evicts:
+\[
+  \I_{\mathrm{ens}}(x)
+  \;=\; \bigvee_{i=1}^{N} \I_i(x)
+  \;=\; 1 - \prod_{i=1}^{N}\bigl(1-\I_i(x)\bigr).
+\]
+A token is kept iff \emph{all} voters agree to keep it.
+\end{definition}
+
+\begin{definition}[$k$-of-$N$ drop ensemble]
+\label{def:kofn}
+For threshold $k\in\{1,\dots,N\}$, the $k$-of-$N$ drop ensemble evicts $x$ iff
+at least $k$ voters evict:
+\[
+  \I_{\mathrm{ens}}^{(k)}(x)
+  \;=\; \mathbb{1}\!\left[\textstyle\sum_{i=1}^{N} \I_i(x) \;\ge\; k\right].
+\]
+AND (Definition~\ref{def:and}) is the case $k{=}1$; majority of $3$ is $k{=}2$;
+unanimity-to-drop (OR-keep) is $k{=}N$.
+\end{definition}
+
+\subsection{The Voting Ensemble Paradox}
+\label{sec:paradox}
+
+\begin{theorem}[Voting Ensemble Paradox]
+\label{thm:paradox}
+Under per-stratum monotone-rejection refinement (Definition~\ref{def:monotone})
+and unanimity-to-keep voting (Definition~\ref{def:and}), for every stratum
+$S_k$ and every $x \in S_k$,
+\[
+  \I_{\mathrm{ens}}(x) \;=\; \I_{i^{\star}_k}(x).
+\]
+Consequently, conditioned on the true-keep event $x \in S_k \cap K^{\star}$,
+\[
+  \Pr\!\bigl[\I_{\mathrm{ens}}(x)=1 \;\big|\; x\in S_k\cap K^{\star}\bigr]
+  \;=\;
+  \Pr\!\bigl[\I_{i^{\star}_k}(x)=1 \;\big|\; x\in S_k\cap K^{\star}\bigr].
+\]
+\end{theorem}
+
+\begin{proof}
+Fix a stratum $S_k$ and a token $x \in S_k$. By
+Definition~\ref{def:monotone}, $\I_{i^{\star}_k}(x) \ge \I_i(x)$ for every
+$i \in [N]$. Because each $\I_i(x)$ is $\{0,1\}$-valued, the pointwise maximum
+equals the largest indicator:
+\[
+  \bigvee_{i=1}^{N} \I_i(x)
+  \;=\; \max_{i\in[N]} \I_i(x)
+  \;=\; \I_{i^{\star}_k}(x).
+\]
+By Definition~\ref{def:and} the left-hand side is $\I_{\mathrm{ens}}(x)$,
+giving the first equality. The conditional-probability statement follows by
+integrating both sides of $\I_{\mathrm{ens}}(x)=\I_{i^{\star}_k}(x)$ over the
+sub-event $x \in S_k \cap K^{\star}$.
+\end{proof}
+
+\begin{corollary}[Stratum-wise Pareto collapse]
+\label{cor:pareto}
+For each stratum $S_k$ the ensemble's recall and precision equal those of the
+weakest voter $V_{i^{\star}_k}$:
+\[
+  \mathrm{Recall}_{S_k}(\hat V)=\mathrm{Recall}_{S_k}(V_{i^{\star}_k}),
+  \qquad
+  \mathrm{Precision}_{S_k}(\hat V)=\mathrm{Precision}_{S_k}(V_{i^{\star}_k}).
+\]
+With stratum weights $w_k = \Pr[x \in S_k]$, the global operating point is
+\[
+  \bigl(\mathrm{Recall}(\hat V),\,\mathrm{Precision}(\hat V)\bigr)
+  \;=\;
+  \sum_{k=1}^{K} w_k\,
+  \bigl(\mathrm{Recall}_{S_k}(V_{i^{\star}_k}),\,
+        \mathrm{Precision}_{S_k}(V_{i^{\star}_k})\bigr),
+\]
+a convex combination of per-stratum \emph{weakest}-voter operating points.
+Whenever the weakest voter differs across strata
+($i^{\star}_k \neq i^{\star}_{k'}$ for some $k,k'$), this point is occupied by
+no individual checkpoint and is Pareto-dominated by the frontier of any single
+strong voter.
+\end{corollary}
+
+\begin{proof}[Sketch]
+Recall and precision on $S_k$ are deterministic functions of the eviction
+indicator restricted to $S_k$; by Theorem~\ref{thm:paradox} this restriction
+equals $\I_{i^{\star}_k}$, so the per-stratum metrics coincide. The global
+metrics are stratum-weighted averages by the law of total probability. The
+Pareto-domination claim holds because a strong voter $V_j$ with a high floor
+dominates each $V_{i^{\star}_k}$ on the strata where $j \neq i^{\star}_k$, and
+no single voter simultaneously realizes all per-stratum weakest operating
+points.
+\end{proof}
+
+\paragraph{Interpretation.}
+AND voting does not average voter competence; it takes, per stratum, the
+\emph{most aggressive} eviction decision. Under asymmetric floors this is the
+worst voter on that stratum. The ensemble is therefore a Frankenstein of
+per-stratum worst cases---precisely the failure that motivates the three
+correctives below.
+
+\begin{remark}[$k$-of-$N$ generalization]
+\label{rem:kofn}
+Under per-stratum monotone-rejection refinement, the $k$-of-$N$ drop ensemble
+(Definition~\ref{def:kofn}) evicts $x\in S_k$ iff the $k$-th largest indicator
+on $S_k$ is $1$, i.e.\ iff the per-stratum $k$-th weakest voter evicts. For
+AND ($k{=}1$) this is the weakest voter (Theorem~\ref{thm:paradox}); for
+majority of $3$ ($k{=}2$) it is the per-stratum \emph{median}; for
+unanimity-to-drop ($k{=}N$) it is the strongest. The Pareto collapse of
+Corollary~\ref{cor:pareto} holds for every $k<N$: the ensemble is a convex
+combination of per-stratum $k$-th-weakest operating points, dominated by any
+single strong voter on the strata where that voter is not itself $k$-th
+weakest. Our empirical ensemble (Section~\ref{sec:eval:paradox}) uses majority
+($k{=}2$, $N{=}3$) and confirms the collapse.
+\end{remark}
+
+\subsection{Mechanism A: asymmetric loss modulation ($3.0\times$ penalty)}
+\label{sec:loss}
+
+Let $T_{\mathrm{crit}} \subset X$ be the critical-syntactic token class
+(signal names, file paths, exit codes, delimiters) identified by the
+regex-driven must-keep thresholds of the ultrawhale-dogfood corpus. Define the
+\emph{false-eviction} indicator
+$\I^{\mathrm{fe}}_i(x) = \I_i(x)\,\mathbb{1}[x \in K^{\star}]$, which fires
+when $V_i$ evicts a token that should be kept. The modulated training loss for
+voter $V_i$ is
+\[
+  \mathcal{L}_i
+  \;=\;
+  \underbrace{\Lbase(\theta_i)}_{\text{standard pruning loss}}
+  \;+\;
+  \lambda\cdot
+  \underbrace{\frac{1}{|T_{\mathrm{crit}}|}
+              \sum_{x \in T_{\mathrm{crit}}} \I^{\mathrm{fe}}_i(x)}_{\Lcrit(\theta_i)},
+  \qquad \lambda = 3.0.
+\]
+$\Lcrit$ penalizes false evictions of \emph{protected} tokens only. Although
+the penalty is stratum-agnostic in its definition, false evictions concentrate
+on each voter's weakest strata (where its training floor induced
+over-eviction), so the gradient of $\Lcrit$ concentrates there as well. The
+net effect is to shrink $|R_i \cap S_k|$ fastest for the voter that is
+$i^{\star}_k$ on each stratum, lifting every per-stratum floor and raising the
+collapse point of Corollary~\ref{cor:pareto} uniformly. We fix $\lambda=3.0$
+throughout (the Sapir--Whorf term); a $\lambda\in\{0,1,2,3,4,5\}$ ablation is
+planned for a revision.
+
+\subsection{Dual-head architecture and the modulation gate}
+\label{sec:arch}
+
+\paragraph{Backbone.} kompress-v8 is a 149M-parameter ModernBERT
+\citep{warner2024modernbert} with two task heads sharing the encoder.
+
+\begin{itemize}
+  \item \textbf{Token-classifier head} $h_{\mathrm{tok}}$: per-token eviction
+        logits, producing $\I_i(x)$ at inference.
+  \item \textbf{Span-CNN head} $h_{\mathrm{span}}$: a convolutional head over
+        token windows that scores span-level coherence, enforcing that
+        evictions do not fragment protected syntactic units.
+\end{itemize}
+
+\paragraph{Asymmetric modulation gate.} The two heads are coupled by a gate
+$g$ that scales the token-head logits as a function of the span-head output:
+\[
+  \tilde{\I}_i(x)
+  \;=\;
+  \sigma\!\bigl(\mathrm{logit}_{\mathrm{tok}}(x)
+                - \gamma\, g\bigl(\mathrm{logit}_{\mathrm{span}}(x)\bigr)\bigr),
+\]
+where $\gamma$ controls how strongly span-level incoherence suppresses
+per-token eviction. The gate is \emph{asymmetric}: it can only \emph{inhibit}
+eviction of tokens within high-coherence spans, never promote it, which
+preserves the protected-token guarantee that $\Lcrit$ relies on.
+
+\subsection{Mechanism B: post-inference regex override}
+\label{sec:override}
+
+Mechanism~A reduces false evictions at training time but cannot eliminate
+them: the $3.0\times$ penalty is a soft signal, and subword tokenization can
+fragment multi-token must-keep patterns (e.g., \texttt{-O2} splits into
+\texttt{-}, \texttt{O}, \texttt{2}). Mechanism~B is a \emph{surgical}
+deterministic safety net applied after the model scores each token. Let
+$\mathit{MUST\_KEEP\_RE}$ be the regex over decoded text matching the
+critical-syntactic class (numbers, ALLCAPS identifiers, dotted paths, file
+extensions, flags, CamelCase, hex addresses). For each token the model would
+evict, a sliding window of $1$--$3$ subword tokens is decoded and checked
+against $\mathit{MUST\_KEEP\_RE}$; on a match, every token in the window is
+force-kept:
+\[
+  \I^{(B)}_i(x)
+  \;=\;
+  \I_i(x)\,\wedge\,\neg\,\mathrm{Match}_{\mathit{MUST\_KEEP\_RE}}\!\bigl(\mathrm{decode}(x)\bigr).
+\]
+B is inference-time, training-free, and costs one regex pass per chunk
+(${\sim}0.1$\,ms). It is the mechanism measured by the No-Override vs
+With-Override columns of Table~\ref{tab:override}. Crucially, B is
+\emph{conservative}: it can only prevent an eviction, never cause one, so it
+cannot degrade compression aggressiveness on non-must-keep tokens.
+
+\subsection{Mechanism C: self-labeling loop}
+\label{sec:selflabel}
+
+Mechanisms~A and B together form an oracle: a model trained with A and run
+with B produces compressions whose must-keep labels are near-correct. We use
+this oracle to \emph{relabel} the training data and retrain, internalizing B
+so the inference override becomes redundant. Given the current model
+$V^{(t)}$:
+\[
+  \mathrm{ref}^{(t+1)}_j
+  \;=\;
+  \mathrm{Compress}^{(B)}\!\bigl(\mathrm{text}_j;\, V^{(t)}\bigr),
+  \qquad
+  V^{(t+1)} \;=\; \arg\min_{\theta}\; \mathcal{L}\bigl(\theta;\, \mathrm{ref}^{(t+1)}\bigr) + \lambda\,\Lcrit(\theta).
+\]
+Starting from $V^{(0)}{=}v3$ (trained on noisy ultrawhale labels,
+$\mathit{mk\_in\_ref}{=}0.72$), one iteration yields $v4$ with
+$\mathit{mk\_in\_ref}{=}0.823$ and $\mathit{override\_delta}{=}0$---the model
+has learned what B was enforcing. A second iteration ($v5$) adds noise rather
+than signal (heretic $0.967\to0.961$), so the correctable-loop invariant halts
+the loop at $t{=}1$. This is self-distillation with a deterministic regex
+oracle rather than an LLM teacher, converging in one generation.
+
+\subsection{Training procedure}
+\label{sec:train}
+% TODO: LoRA r=16 on last 4 attention layers, 3 epochs, vast.ai RTX 4090,
+% ONNX export + HF upload, full hyperparameters.
