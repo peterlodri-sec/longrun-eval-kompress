@@ -1,5 +1,7 @@
 # longrun-eval-kompress
 
+> "ah and just one more this you know then I think we can close this loop [deepseek] xd"
+
 > **ICLR 2027 manuscript** — Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox in Learned Context-Pruning Ensembles.
 >
 > Open-source LaTeX paper + baseline scripts + marimo notebook + MCP server. Total research cost: **$38.95** ($37.19 DeepSeek + $1.76 GPU).
