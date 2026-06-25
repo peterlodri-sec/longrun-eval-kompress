@@ -1,0 +1,134 @@
+version: "3"
+
+vars:
+  PAPER_DIR: paper
+  SITE_DIR: site
+  NOTEBOOK: notebook.py
+
+tasks:
+  # ── Paper ──────────────────────────────────────────────
+  paper:build:
+    desc: Compile LaTeX paper to PDF
+    dir: "{{.PAPER_DIR}}"
+    cmds:
+      - rm -f *.aux *.bbl *.blg *.log *.out 2>/dev/null || true
+      - latexmk -pdf main.tex
+
+  paper:clean:
+    desc: Remove LaTeX build artifacts
+    dir: "{{.PAPER_DIR}}"
+    cmds:
+      - rm -f *.aux *.bbl *.blg *.log *.out *.toc *.fls *.fdb_latexmk *.synctex.gz
+
+  paper:check:
+    desc: Verify LaTeX environment balance, TODOs, citations
+    dir: "{{.PAPER_DIR}}"
+    cmds:
+      - |
+        echo "=== Environment balance ==="
+        for env in theorem proof corollary definition remark abstract document itemize table tabular; do
+          b=$(grep -c "\\begin{{$env}}" *.tex 2>/dev/null | awk -F: '{s+=$2} END{print s+0}')
+          e=$(grep -c "\\end{{$env}}" *.tex 2>/dev/null | awk -F: '{s+=$2} END{print s+0}')
+          if [ "$b" = "$e" ]; then
+            echo "  $env: $b/$e OK"
+          else
+            echo "  $env: $b/$e MISMATCH"
+          fi
+        done
+      - |
+        echo "=== TODOs ==="
+        grep -rn "TODO" *.tex || echo "  none"
+      - |
+        echo "=== VERIFY flags in refs ==="
+        grep -rn "VERIFY" references.bib || echo "  none"
+
+  # ── Site ───────────────────────────────────────────────
+  site:build:
+    desc: Export marimo notebook to WASM HTML site
+    cmds:
+      - marimo export html-wasm {{.NOTEBOOK}} -o {{.SITE_DIR}} --no-execute --no-show-code -f
+      - sed -i 's|content="a marimo app"|content="Voting Ensemble Paradox — kompress-v8"|' {{.SITE_DIR}}/index.html
+      - sed -i 's|<title>notebook</title>|<title>Voting Ensemble Paradox — kompress-v8</title>|' {{.SITE_DIR}}/index.html
+
+  site:serve:
+    desc: Serve site locally for preview
+    cmds:
+      - python3 -m http.server --directory {{.SITE_DIR}}
+
+  # ── Notebook ───────────────────────────────────────────
+  nb:edit:
+    desc: Open marimo notebook in interactive editor
+    cmds:
+      - marimo edit {{.NOTEBOOK}}
+
+  nb:run:
+    desc: Run marimo notebook as read-only web app
+    cmds:
+      - marimo run {{.NOTEBOOK}}
+
+  nb:check:
+    desc: Lint marimo notebook for issues
+    cmds:
+      - marimo check --fix {{.NOTEBOOK}}
+
+  # ── Baselines ──────────────────────────────────────────
+  baselines:run:
+    desc: Run all baseline comparisons
+    cmds:
+      - python baselines/run_baselines.py
+
+  # ── MCP Server ─────────────────────────────────────────
+  mcp:
+    desc: Start MCP server (stdio)
+    cmds:
+      - python mcp_server/server.py
+
+  # ── CI / Lint ──────────────────────────────────────────
+  ci:
+    desc: Run all CI checks locally
+    cmds:
+      - task: paper:check
+      - task: seal:verify
+      - |
+        echo "=== Python syntax ==="
+        python3 -m py_compile baselines/run_baselines.py && echo "  baselines: OK"
+        python3 -m py_compile mcp_server/server.py && echo "  mcp: OK"
+        python3 -m py_compile notebook.py && echo "  notebook: OK"
+
+  # ── Genesis Seal ───────────────────────────────────────
+  seal:verify:
+    desc: Verify genesis seal
+    cmds:
+      - python3 tools/genesis_seal.py --verify
+
+  seal:update:
+    desc: Regenerate genesis seal
+    cmds:
+      - python3 tools/genesis_seal.py
+
+  # ── Devcontainer ───────────────────────────────────────
+  dev:
+    desc: Open in VS Code devcontainer
+    cmds:
+      - code --folder-uri vscode-remote://dev-container+{{.WORKSPACE}}/
+
+  # ── One-shot: full rebuild ─────────────────────────────
+  all:
+    desc: Build paper + site + verify
+    cmds:
+      - task: paper:build
+      - task: site:build
+      - task: ci
+
+  # ── Publish ────────────────────────────────────────────
+  publish:
+    desc: Commit, push, and trigger Pages deploy
+    cmds:
+      - git add -A
+      - git status --short
+      - |
+        echo ""
+        read -p "Commit message: " msg
+        git commit -m "$msg"
+      - git push origin main
+      - echo "Pushed. Pages will deploy automatically."
