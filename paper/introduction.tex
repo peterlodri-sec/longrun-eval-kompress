@@ -40,13 +40,11 @@ dogfeed loop generates Q\&A training data by querying free LLMs every ten
 seconds and depositing the results as a living dataset on HuggingFace
 (\texttt{PeetPedro/ultrawhale-dogfood}). \textbf{vaked} is the broader
 capability-language and infrastructure framework within which ultrawhale
-operates. The entire ultrawhale project (v1.0.0$\to$v100.1.0) cost
-\textbf{\$37.19} in DeepSeek API fees---roughly \$0.24 per release across 150
-blocks---demonstrating that the outer loop which produced both the idea and
-the dataset for this paper was built for under \$40 in token spend. The
- kompress fine-tuning experiments that followed added \$1.76 in GPU compute
- (Section~\ref{sec:loopkit:repro}). This paper is an inner loop of that
- broader program: the pruning model that makes the outer loops cheaper to
+operates. The entire ultrawhale project (v1.0.0$\to$v100.1.0) was
+developed via loop engineering in 150 blocks, demonstrating that the outer
+loop produced both the idea and the dataset for this paper. This paper is
+an inner loop of that broader program: the pruning model that makes the
+outer loops cheaper to
  run by compressing the context they accumulate. The full experiment log is
  published at \url{https://pocoo.vaked.dev}---a chronological registry of
  every training run, evaluation, and dead end
@@ -133,7 +131,7 @@ Section~\ref{sec:methodology} formalizes the paradox, derives the modulated
 loss, and details the dual-head architecture.
 Section~\ref{sec:evaluation} reports the empirical evaluation, including the
 override/no-override ablation and external baselines.
-Section~\ref{sec:loopkit} describes the LoopKit implementation as the
+Appendix~\ref{sec:loopkit} describes the LoopKit implementation as the
 experimental substrate and its mapping to the four-tier loop taxonomy.
 Section~\ref{sec:data} covers data availability, the decentralized funding
 model, and acknowledgments. An interactive marimo companion with live paradox
