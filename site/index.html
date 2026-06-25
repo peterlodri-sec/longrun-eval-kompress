@@ -1,146 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>kompress — Interactive Research Paper</title>
-<meta name="theme-color" content="#070b16">
-<meta property="og:type" content="website">
-<meta property="og:title" content="kompress — Interactive Research Paper">
-<meta property="og:description" content="Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox. 17 models, $38.95 total cost.">
-<meta property="og:url" content="https://peterlodri-sec.github.io/longrun-eval-kompress/">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="kompress — Voting Ensemble Paradox">
-<meta name="twitter:description" content="17 models, $38.95, label quality is the bottleneck.">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#070b16;color:#c8d6e5;font-family:'SF Mono','Fira Code','Cascadia Code',monospace;font-size:15px;line-height:1.6;overflow-x:hidden}
-#bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
-main{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:60px 24px 120px}
-h1{font-size:2.2em;color:#e8f0ff;margin-bottom:8px;letter-spacing:-0.03em}
-.subtitle{font-size:1.05em;color:#00d4ff;margin-bottom:8px}
-.lede{font-size:1.1em;color:#d0e0f5;margin-bottom:32px}
-h2{font-size:1.3em;color:#00d4ff;margin:32px 0 12px}
-p{margin-bottom:14px;color:#9bb0c9}
-a{color:#00d4ff;text-decoration:none}
-a:hover{text-decoration:underline}
-.card{background:#0d1424;border:1px solid #1a2a44;border-radius:12px;padding:24px;margin:16px 0;transition:border-color 0.3s}
-.card:hover{border-color:#00d4ff44}
-.card h3{color:#e8f0ff;font-size:1.1em;margin-bottom:8px}
-.card p{font-size:0.9em;color:#8ca0b8}
-.card-link{display:inline-block;margin-top:12px;color:#00d4ff;font-size:0.85em}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-.stat{text-align:center;padding:20px;background:#0d1424;border:1px solid #1a2a44;border-radius:12px}
-.stat-num{font-size:2em;font-weight:bold}
-.stat-label{font-size:0.8em;color:#8ca0b8;margin-top:4px}
-.good{color:#00e660}
-.bad{color:#ff4757}
-.warn{color:#ffa502}
-.neutral{color:#00d4ff}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9em}
-th{text-align:left;padding:10px 12px;border-bottom:1px solid #1a2a44;color:#00d4ff}
-td{padding:10px 12px;border-bottom:1px solid #121e30}
-td.num{text-align:right}
-.mech{display:flex;gap:16px;margin:12px 0;padding:16px;background:#0d1424;border-radius:10px;border:1px solid #1a2a44}
-.mech-letter{font-size:1.8em;font-weight:bold;min-width:40px;text-align:center}
-.mech-body h4{color:#e8f0ff;margin-bottom:4px}
-.mech-body p{font-size:0.85em;color:#8ca0b8;margin:0}
-footer{position:relative;z-index:1;text-align:center;padding:40px;font-size:0.8em;color:#4a6080}
-footer a{color:#00d4ff;text-decoration:none;margin:0 8px}
-</style>
-</head>
-<canvas id="bg-canvas"></canvas>
-<script>
-(function(){var c=document.getElementById('bg-canvas');if(!c||!c.getContext)return;var ctx=c.getContext('2d');var W,H,t=0;function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}resize();window.addEventListener('resize',resize);var waves=[{freq:0.008,amp:0.12,speed:0.35,phase:0,color:'0,212,255',alpha:0.10},{freq:0.006,amp:0.09,speed:0.22,phase:2.1,color:'0,230,96',alpha:0.07},{freq:0.010,amp:0.07,speed:0.48,phase:4.3,color:'180,139,255',alpha:0.06}];function frame(){ctx.clearRect(0,0,W,H);t+=0.012;waves.forEach(function(w){ctx.beginPath();var y0=H*0.62;ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();var grad=ctx.createLinearGradient(0,y0-H*w.amp,0,H);grad.addColorStop(0,'rgba('+w.color+','+w.alpha+')');grad.addColorStop(1,'rgba('+w.color+',0)');ctx.fillStyle=grad;ctx.fill();ctx.beginPath();ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.strokeStyle='rgba('+w.color+','+(w.alpha*2.5)+')';ctx.lineWidth=1;ctx.stroke();});requestAnimationFrame(frame);}frame();})();
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="./assets/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="./assets/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="./assets/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>notebook</title>
+    <script type="module" crossorigin src="./assets/index-BarYyfbP.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/preload-helper-y72bE5iF.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin href="./assets/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/jsx-runtime-PbYoItBR.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEventListener-Wyg6Md5s.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-CuYNS33t.js">
+    <link rel="modulepreload" crossorigin href="./assets/precisionRound-CCOoIlcP.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-CGfP-Ye3.js">
+    <link rel="modulepreload" crossorigin href="./assets/vega-loader.browser-BJ9oKrvH.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-_i91gs5h.js">
+    <link rel="modulepreload" crossorigin href="./assets/clsx-BtEcuwwV.js">
+    <link rel="modulepreload" crossorigin href="./assets/cn-X2M2usMq.js">
+    <link rel="modulepreload" crossorigin href="./assets/badge-CFAaMy0O.js">
+    <link rel="modulepreload" crossorigin href="./assets/button-DuHyjdW2.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin href="./assets/fullscreen-BWhrFYLX.js">
+    <link rel="modulepreload" crossorigin href="./assets/menu-items-CO4MfAgB.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-C3166O2z.js">
+    <link rel="modulepreload" crossorigin href="./assets/createLucideIcon-BTp1tQDO.js">
+    <link rel="modulepreload" crossorigin href="./assets/check-DQmqoJgr.js">
+    <link rel="modulepreload" crossorigin href="./assets/x-9vLEgLY6.js">
+    <link rel="modulepreload" crossorigin href="./assets/select-D8ewebPZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/tooltip-DfvClvB6.js">
+    <link rel="modulepreload" crossorigin href="./assets/use-toast-BH8bU9Xf.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEvent-D91BmmQi.js">
+    <link rel="modulepreload" crossorigin href="./assets/invariant-C2E8KCbD.js">
+    <link rel="modulepreload" crossorigin href="./assets/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="./assets/_baseFor-DKD1r8uL.js">
+    <link rel="modulepreload" crossorigin href="./assets/merge-_9WLTEyt.js">
+    <link rel="modulepreload" crossorigin href="./assets/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-Dcn8htEz.js">
+    <link rel="modulepreload" crossorigin href="./assets/Deferred-CfyqLOPG.js">
+    <link rel="modulepreload" crossorigin href="./assets/uuid-BukULOeS.js">
+    <link rel="modulepreload" crossorigin href="./assets/DeferredRequestRegistry-EP9ZArpv.js">
+    <link rel="modulepreload" crossorigin href="./assets/constants-B9JJ72XE.js">
+    <link rel="modulepreload" crossorigin href="./assets/session-XnH_5qDa.js">
+    <link rel="modulepreload" crossorigin href="./assets/config-Co1uQiSh.js">
+    <link rel="modulepreload" crossorigin href="./assets/requests-KshNNAOp.js">
+    <link rel="modulepreload" crossorigin href="./assets/useLifecycle-Baf35rp4.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNonce-0SWz6w4W.js">
+    <link rel="modulepreload" crossorigin href="./assets/useTheme-ChHTAPod.js">
+    <link rel="modulepreload" crossorigin href="./assets/arrays-DWxvyYxP.js">
+    <link rel="modulepreload" crossorigin href="./assets/strings-C0KZ4uek.js">
+    <link rel="modulepreload" crossorigin href="./assets/once-CXj_gH7S.js">
+    <link rel="modulepreload" crossorigin href="./assets/capabilities-ClLgkhPb.js">
+    <link rel="modulepreload" crossorigin href="./assets/createReducer-CzbhqMat.js">
+    <link rel="modulepreload" crossorigin href="./assets/paths-kNeJ8nbe.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-Dez1I5M9.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-B0WqBUnf.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CwfKvuyQ.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-D-o1OXc9.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BZhJ1bTM.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-Bj9Iedc0.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DHMtQYxT.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DnIl7RU-.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CfGDksO-.js">
+    <link rel="modulepreload" crossorigin href="./assets/stex-C6JeW1YI.js">
+    <link rel="modulepreload" crossorigin href="./assets/toDate-DCE7d2fN.js">
+    <link rel="modulepreload" crossorigin href="./assets/purify.es-DdxMtdqK.js">
+    <link rel="modulepreload" crossorigin href="./assets/cjs-DXo9vDEJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="./assets/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="./assets/debounce-OiXznToA.js">
+    <link rel="modulepreload" crossorigin href="./assets/database-zap-DpKMaYZb.js">
+    <link rel="modulepreload" crossorigin href="./assets/main-DmhaVp6Y.js">
+    <link rel="modulepreload" crossorigin href="./assets/cells-B2OlRfrE.js">
+    <link rel="modulepreload" crossorigin href="./assets/ErrorBoundary-YqGfStRa.js">
+    <link rel="modulepreload" crossorigin href="./assets/kbd-BCXa3Ocm.js">
+    <link rel="modulepreload" crossorigin href="./assets/useInstallPackage-Dhp7gET-.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-dialog-Dj7YzzBi.js">
+    <link rel="modulepreload" crossorigin href="./assets/dialog-CoCi5287.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDebounce-BlBSYv0n.js">
+    <link rel="modulepreload" crossorigin href="./assets/numbers-CG6PuY93.js">
+    <link rel="modulepreload" crossorigin href="./assets/SSRProvider-DrpctNAg.js">
+    <link rel="modulepreload" crossorigin href="./assets/context-DE_5rdOV.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNumberFormatter-DCM-63YT.js">
+    <link rel="modulepreload" crossorigin href="./assets/usePress-mjvipKvz.js">
+    <link rel="modulepreload" crossorigin href="./assets/input-DLn3gG6E.js">
+    <link rel="modulepreload" crossorigin href="./assets/ImperativeModal-CcKbawj8.js">
+    <link rel="modulepreload" crossorigin href="./assets/cell-link-Dxr4AoiF.js">
+    <link rel="modulepreload" crossorigin href="./assets/multi-map-BRoHtMOY.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-DcAz54bD.js">
+    <link rel="modulepreload" crossorigin href="./assets/chevron-right-C7RH0Nc7.js">
+    <link rel="modulepreload" crossorigin href="./assets/dropdown-menu-ItqBTuc3.js">
+    <link rel="modulepreload" crossorigin href="./assets/links-DK7te6sJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/useRunCells-Cwpw-OBX.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-CMbu3kZg.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-C6tO3NDV.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-icon-DhAvfYZu.js">
+    <link rel="modulepreload" crossorigin href="./assets/RenderHTML-CUFYhU6m.js">
+    <link rel="modulepreload" crossorigin href="./assets/datasource-XJWCNkcC.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-DMJHItu_.js">
+    <link rel="modulepreload" crossorigin href="./assets/package-BoMcg6sy.js">
+    <link rel="modulepreload" crossorigin href="./assets/sparkles-DctOjjEz.js">
+    <link rel="modulepreload" crossorigin href="./assets/MarimoErrorOutput-AKU2x-PX.js">
+    <link rel="modulepreload" crossorigin href="./assets/eye-off-CFdFJ5Ma.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-cw-DcEasnos.js">
+    <link rel="modulepreload" crossorigin href="./assets/tree-actions-B2y0DYNM.js">
+    <link rel="modulepreload" crossorigin href="./assets/spinner-DTBVbtl-.js">
+    <link rel="modulepreload" crossorigin href="./assets/html-to-image-OqWF70zk.js">
+    <link rel="modulepreload" crossorigin href="./assets/focus-CdA2cCjm.js">
+    <link rel="modulepreload" crossorigin href="./assets/useAsyncData-CT1LpOBD.js">
+    <link rel="modulepreload" crossorigin href="./assets/LazyAnyLanguageCodeMirror-BOhWaFqY.js">
+    <link rel="modulepreload" crossorigin href="./assets/micromark-factory-space-P--XWZhg.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-5FQGJX7Z-D-AUn5sP.js">
+    <link rel="modulepreload" crossorigin href="./assets/markdown-renderer-2G_mck3Z.js">
+    <link rel="modulepreload" crossorigin href="./assets/command-Da-qul1Y.js">
+    <link rel="modulepreload" crossorigin href="./assets/field-P2PBa1Bb.js">
+    <link rel="modulepreload" crossorigin href="./assets/popover-CjugjEGp.js">
+    <link rel="modulepreload" crossorigin href="./assets/errors-48KFPvCp.js">
+    <link rel="modulepreload" crossorigin href="./assets/download-DjxXHxVz.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-BEAxH5RS.js">
+    <link rel="modulepreload" crossorigin href="./assets/useIframeCapabilities-CUFFq7nH.js">
+    <link rel="modulepreload" crossorigin href="./assets/error-banner-CorP4DgP.js">
+    <link rel="modulepreload" crossorigin href="./assets/formats-C07FvFat.js">
+    <link rel="modulepreload" crossorigin href="./assets/en-US-DZwIjHwu.js">
+    <link rel="modulepreload" crossorigin href="./assets/isValid-Cgon0fXK.js">
+    <link rel="modulepreload" crossorigin href="./assets/dates-66EgNvbP.js">
+    <link rel="modulepreload" crossorigin href="./assets/extends-2LbFKIQQ.js">
+    <link rel="modulepreload" crossorigin href="./assets/emotion-is-prop-valid.esm-DiQGBfwj.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDateFormatter-CANi6nSX.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-icons.esm-C2u-_EAQ.js">
+    <link rel="modulepreload" crossorigin href="./assets/RSPContexts-cXYB-FyL.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-DxdydCSG.js">
+    <link rel="modulepreload" crossorigin href="./assets/ellipsis-DesLDR9w.js">
+    <link rel="modulepreload" crossorigin href="./assets/external-link-CRubBjqK.js">
+    <link rel="modulepreload" crossorigin href="./assets/message-circle-D_YIPPZo.js">
+    <link rel="modulepreload" crossorigin href="./assets/plus-CExKUszm.js">
+    <link rel="modulepreload" crossorigin href="./assets/trash-2-CjPoUZCP.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-resizable-panels.browser.esm-CgWOEYeG.js">
+    <link rel="modulepreload" crossorigin href="./assets/JsonOutput-BtH7MWeH.js">
+    <link rel="modulepreload" crossorigin href="./assets/chart-no-axes-column-DVEV2j1H.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-function-CPbVtjKW.js">
+    <link rel="modulepreload" crossorigin href="./assets/spec-0Lz7sg6-.js">
+    <link rel="modulepreload" crossorigin href="./assets/column-preview-DLKhDynP.js">
+    <link rel="modulepreload" crossorigin href="./assets/icons-D3YFXNmD.js">
+    <link rel="modulepreload" crossorigin href="./assets/radio-group-U7lRKGle.js">
+    <link rel="modulepreload" crossorigin href="./assets/floating-outline-C0SZhwjd.js">
+    <link rel="modulepreload" crossorigin href="./assets/objectWithoutPropertiesLoose-Msf1n32r.js">
+    <link rel="modulepreload" crossorigin href="./assets/esm-DSv-aO_T.js">
+    <link rel="modulepreload" crossorigin href="./assets/readonly-python-code-DSbejFDG.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-headphone-CY5S3y3b.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-CLyu7PSP.js">
+    <link rel="modulepreload" crossorigin href="./assets/image-jhXeQEgs.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-icons-iv0e9GQO.js">
+    <link rel="modulepreload" crossorigin href="./assets/switch-bF1-CZET.js">
+    <link rel="modulepreload" crossorigin href="./assets/events-BRbNg7Li.js">
+    <link rel="modulepreload" crossorigin href="./assets/globals-BRVtF1eA.js">
+    <link rel="modulepreload" crossorigin href="./assets/share-DaxBFxkk.js">
+    <link rel="modulepreload" crossorigin href="./assets/blob-dGUJ3Bw8.js">
+    <link rel="modulepreload" crossorigin href="./assets/memoize-Tp7rARFe.js">
+    <link rel="modulepreload" crossorigin href="./assets/get-C-qh_et5.js">
+    <link rel="modulepreload" crossorigin href="./assets/_baseSet-CsW0tABf.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-C7gvYi5W.js">
+    <link rel="modulepreload" crossorigin href="./assets/label-B0dIDKzs.js">
+    <link rel="modulepreload" crossorigin href="./assets/textarea-C9UJnbJM.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-ccw-CUkO1Vlo.js">
+    <link rel="modulepreload" crossorigin href="./assets/form-BnyFeEcN.js">
+    <link rel="modulepreload" crossorigin href="./assets/renderShortcut--Jq-xdwl.js">
+    <link rel="modulepreload" crossorigin href="./assets/useBoolean-CWy308NJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDeepCompareMemoize-zUHU--0D.js">
+    <link rel="modulepreload" crossorigin href="./assets/types-xF5uWODg.js">
+    <link rel="modulepreload" crossorigin href="./assets/semaphore-FlZezxaf.js">
+    <link rel="modulepreload" crossorigin href="./assets/fileToBase64-Doh9J-g6.js">
+    <link rel="modulepreload" crossorigin href="./assets/pathUtils-ANiMIEDI.js">
+    <link rel="modulepreload" crossorigin href="./assets/prop-types-D_pYuT11.js">
+    <link rel="modulepreload" crossorigin href="./assets/es-WvgFq7ze.js">
+    <link rel="modulepreload" crossorigin href="./assets/_hasPath-hMc_3QZy.js">
+    <link rel="modulepreload" crossorigin href="./assets/hasIn-CSsM95b1.js">
+    <link rel="modulepreload" crossorigin href="./assets/flatten-Bd5tsfm_.js">
+    <link rel="modulepreload" crossorigin href="./assets/pick-D1xb4gl6.js">
+    <link rel="modulepreload" crossorigin href="./assets/code-xml-tqeFGeKJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/house-DkdBWh44.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-DPWHdF_-.js">
+    <link rel="modulepreload" crossorigin href="./assets/triangle-alert-CV7pqa1o.js">
+    <link rel="modulepreload" crossorigin href="./assets/bundle.esm-BULc9l6b.js">
+    <link rel="stylesheet" crossorigin href="./assets/cells-pu5xzE_v.css">
+    <link rel="stylesheet" crossorigin href="./assets/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="./assets/JsonOutput-B7vuddcd.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-DYQYDO53.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "#!/usr/bin/env python3\n\"\"\"Interactive research paper: Voting Ensemble Paradox + 3.0x fix.\n\nBuilt with marimo (https://marimo.io) \u2014 a next-generation Python notebook\nthat is reactive, Git-friendly, and shareable as a web app.\n\nRun:\n    marimo edit notebook.py     # interactive editor\n    marimo run notebook.py      # read-only web app\n    marimo export html notebook.py -o notebook.html  # standalone HTML\n\nLearn more about marimo: https://marimo.io\n\"\"\"\n\nimport marimo\n\n__generated_with = \"0.23.11\"\napp = marimo.App(width=\"medium\")\n\n\n@app.cell\ndef _():\n    import marimo as mo\n    mo.md(\"\"\"\n    # Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox\n    ### Interactive Research Paper \u2014 kompress-v8 + LoopKit\n\n    **Lead thesis:** Multi-checkpoint voting ensembles with asymmetric training-data\n    floors collapse to the per-stratum weakest voter under $k$-of-$N$ drop voting.\n    A $3.0\\\\times$ heavy false-eviction penalty on critical-syntactic tokens resolves\n    this by lifting the collapse floor.\n\n    Use the controls below to explore the paradox, the fix, and the baseline comparison.\n    \"\"\")\n    return (mo,)\n\n\n@app.cell\ndef _(mo):\n    mo.md(\"\"\"\n    ## 1. The Voting Ensemble Paradox (Theorem 1)\n\n    Under **per-stratum monotone-rejection refinement** and **unanimity-to-keep (AND) voting**,\n    the ensemble eviction indicator equals the per-stratum weakest voter's indicator:\n\n    $$\\mathbb{I}_{\\mathrm{ens}}(x) = \\mathbb{I}_{i^\\star_k}(x) \\quad \\forall x \\in S_k$$\n\n    Under $k$-of-$N$ drop voting (Remark 1), this generalizes to the per-stratum\n    $k$-th order statistic. Adjust the voting threshold to see how the collapse moves:\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(mo):\n    import numpy as np\n\n    k_slider = mo.ui.slider(1, 5, value=1, label=\"k (drop threshold: evict if \u2265k voters say drop)\")\n    n_voters = mo.ui.slider(3, 10, value=5, label=\"N (number of voters)\")\n\n    mo.md(f\"\"\"\n    {k_slider}\n\n    {n_voters}\n\n    **Interpretation:**\n    - $k=1$ (AND): ensemble collapses to the **weakest** voter on each stratum\n    - $k=N$ (OR): ensemble collapses to the **strongest** voter (but requires all to agree on drop)\n    - $k=\\\\lfloor N/2 \\\\rfloor$ (majority): collapse to the per-stratum **median** voter\n    \"\"\")\n    return k_slider, n_voters, np\n\n\n@app.cell\ndef _(k_slider, mo, n_voters, np):\n    # Simulate the paradox: each voter has a floor, the ensemble collapses\n    np.random.seed(42)\n    N = n_voters.value\n    k = k_slider.value\n\n    # Asymmetric floors: voter 0 is weakest (lowest floor), voter N-1 is strongest\n    floors = np.linspace(0.3, 0.9, N)  # per-voter quality floor\n    strata = 10  # 10 strata\n\n    # Each voter's per-stratum recall (higher floor = better recall on that stratum)\n    # Weakest voter has lowest recall on all strata, but the weakest VARIES across strata\n    per_stratum_recall = np.zeros((N, strata))\n    for i in range(N):\n        base = floors[i]\n        noise = np.random.normal(0, 0.1, strata)\n        per_stratum_recall[i] = np.clip(base + noise, 0, 1)\n\n    # Find the k-th weakest voter per stratum\n    sorted_indices = np.argsort(per_stratum_recall, axis=0)  # ascending: [0]=worst\n    kth_weakest_per_stratum = sorted_indices[k - 1]  # k-th from bottom\n\n    ensemble_recall = np.mean(per_stratum_recall[kth_weakest_per_stratum, range(strata)])\n    best_single_recall = np.mean(np.max(per_stratum_recall, axis=0))\n    worst_single_recall = np.mean(np.min(per_stratum_recall, axis=0))\n\n    mo.md(f\"\"\"\n    ### Simulated collapse (N={N}, k={k})\n\n    | Metric | Value |\n    |--------|-------|\n    | Best single voter recall | {best_single_recall:.3f} |\n    | Worst single voter recall | {worst_single_recall:.3f} |\n    | **Ensemble recall (k-of-N)** | **{ensemble_recall:.3f}** |\n    | Collapse gap (best - ensemble) | {best_single_recall - ensemble_recall:.3f} |\n\n    The ensemble recall ({ensemble_recall:.3f}) is always below the best single voter\n    ({best_single_recall:.3f}). The gap is the **Voting Ensemble Paradox**.\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(mo):\n    mo.md(\"\"\"\n    ## 2. The Three Corrective Mechanisms\n\n    | Mechanism | Where | What |\n    |-----------|-------|------|\n    | **A: 3.0\u00d7 penalty** | training-time | Weighted cross-entropy on must-keep tokens |\n    | **B: Regex override** | inference-time | Post-inference force-keep for `MUST_KEEP_RE` matches |\n    | **C: Self-labeling** | training-time | Use A+B as oracle to relabel \u2192 retrain |\n\n    Toggle mechanisms to see the progression:\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(mo):\n    mechanisms = mo.ui.multiselect(\n        [\"A: 3.0x penalty\", \"B: regex override\", \"C: self-labeling\"],\n        value=[\"A: 3.0x penalty\", \"B: regex override\", \"C: self-labeling\"],\n        label=\"Active mechanisms\",\n    )\n    mechanisms\n    return (mechanisms,)\n\n\n@app.cell\ndef _(mechanisms, mo):\n    # Real data from pocoo.vaked.dev logs\n    data = {\n        \"v2 base\": {\"heretic\": 0.975, \"keep_rate\": 0.897, \"override_delta\": None, \"mechanisms\": []},\n        \"v3 (A only)\": {\"heretic\": 0.942, \"keep_rate\": 0.728, \"override_delta\": 0.054, \"mechanisms\": [\"A: 3.0x penalty\"]},\n        \"v3 + B\": {\"heretic\": 0.969, \"keep_rate\": 0.846, \"override_delta\": 0.028, \"mechanisms\": [\"A: 3.0x penalty\", \"B: regex override\"]},\n        \"v4 (A+C)\": {\"heretic\": 0.967, \"keep_rate\": 0.823, \"override_delta\": 0.000, \"mechanisms\": [\"A: 3.0x penalty\", \"B: regex override\", \"C: self-labeling\"]},\n        \"v8 (A+C3)\": {\"heretic\": 0.955, \"keep_rate\": 0.854, \"override_delta\": 0.000, \"mechanisms\": [\"A: 3.0x penalty\", \"B: regex override\", \"C: self-labeling\"]},\n    }\n\n    active = set(mechanisms.value)\n    rows = []\n    for name, d in data.items():\n        if not active or set(d[\"mechanisms\"]) \u0026 active or not d[\"mechanisms\"]:\n            rows.append((name, d[\"heretic\"], d[\"keep_rate\"], d[\"override_delta\"]))\n\n    table_rows = \"\\n\".join(\n        f\"| {name} | {heretic:.3f} | {kr:.3f} | {f'+{od:.3f}' if od else '\u2014'} |\"\n        for name, heretic, kr, od in rows\n    )\n\n    mo.md(f\"\"\"\n    ### Version lineage (filtered by active mechanisms)\n\n    | Model | Heretic exact | keep_rate | override_delta |\n    |-------|--------------|-----------|----------------|\n    {table_rows}\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(mo):\n    mo.md(\"\"\"\n    ## 3. Baseline Comparison (8-prompt heretic set)\n\n    Real baseline runs from this repo's `baselines/run_baselines.py`:\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(mo):\n    import json\n    from pathlib import Path\n\n    results_path = Path(__file__).parent / \"baselines\" / \"baseline_results.json\"\n    if results_path.exists():\n        data = json.loads(results_path.read_text())\n        rows = []\n        for name, d in data.items():\n            avg = d.get(\"averages\", {})\n            if avg:\n                rows.append((name, avg.get(\"exact_pct\", 0), avg.get(\"keep_rate\", 0), avg.get(\"avg_ms\", 0)))\n\n        table = \"\\n\".join(\n            f\"| {name} | {ex:.3f} | {kr:.3f} | {ms:.1f} |\"\n            for name, ex, kr, ms in rows\n        )\n        mo.md(f\"\"\"\n        | Method | exact_keep_pct | keep_rate | avg_ms |\n        |--------|---------------|-----------|--------|\n        {table}\n        \"\"\")\n    else:\n        mo.md(\"Run `python baselines/run_baselines.py` to generate baseline results.\")\n    return\n\n\n@app.cell\ndef _(mo):\n    mo.md(r\"\"\"\n    ## 4. Pareto Frontier: The Loss-Weight Ablation\n\n    The must-keep loss weight $\\lambda$ controls the precision\u2013compression tradeoff.\n    v8 data held constant; only $\\lambda$ varies. The frontier is **monotonic and clean**:\n    each +1.0 in $\\lambda$ buys ~0.01 heretic precision at the cost of ~10% compression.\n\n    | \u03bb | Model | Heretic exact | Compression | keep_rate | Status |\n    |---|-------|--------------|-------------|-----------|--------|\n    | **3.0** | **v8** | **0.955** | **15.0%** | **0.854** | **Production (sweet spot)** |\n    | 5.0 | v17 | 0.963 | 3.7% | 0.963 | Pareto middle |\n    | 10.0 | v16 | 0.972 | 2.8% | 0.972 | Best precision, near-zero compression |\n\n    At $\\lambda=10$ the model keeps 97.2% of tokens \u2014 useless as a compressor despite\n    the best precision score. $\\lambda=3$ (v8) is the knee of the curve.\n\n    **Key finding across 17 models, 8 teachers, 4 architectures ($1.76 compute):\n    label quality is the bottleneck, not model capacity or data quantity.**\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(mo):\n    mo.md(\"\"\"\n    ## 5. The Silver Label Problem\n\n    The `mk_in_ref` metric measures what fraction of must-keep tokens survive in the\n    compressed reference. Lower = worse label quality.\n\n    | Domain | mk_in_ref |\n    |--------|-----------|\n    | Thermite stoichiometry | 0.76 |\n    | DNS cache poisoning | 0.65 |\n    | SQL injection payloads | 0.56 |\n    | ECDSA nonce reuse | 0.43 |\n    | Sodium pentobarbital | 0.36 |\n    | Tor circuit construction | 0.35 |\n    | Organophosphate poisoning | 0.33 |\n    | Buffer overflow exploitation | 0.27 |\n    | Chlorine gas chemistry | 0.11 |\n    | **Average (dense technical)** | **0.43** |\n    | ultrawhale Q\u0026A (for comparison) | 0.72 |\n\n    This is why the inference override (Mechanism B) is essential: no training data\n    approach escapes the silver-label problem because every compressed reference\n    makes vocabulary choices the model learns to mimic.\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(mo):\n    mo.md(\"\"\"\n    ## 6. Compute Costs\n\n    | Layer | Cost |\n    |-------|------|\n    | Outer loop (ultrawhale v1\u2192v100, DeepSeek API) | $37.19 |\n    | Inner loop (kompress v3\u2192v17, vast.ai GPU) | $1.76 |\n    | **Total** | **$38.95** |\n\n    17 models trained, 8 teachers, 4 architectures. The entire research program\n    cost less than a single industry conference registration.\n\n    ---\n\n    *Built with [marimo](https://marimo.io) \u2014 reactive Python notebooks that are\n    Git-friendly, reproducible, and shareable as web apps. [Learn more \u2192](https://marimo.io)*\n    \"\"\")\n    return\n\n\n@app.cell\ndef _():\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
 </script>
-<body>
-<main>
-<h1>kompress</h1>
-<div class="subtitle">Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox</div>
-<p class="lede">An interactive research paper on learned context pruning, the paradox of voting ensembles, and the 3× penalty that fixes it. Built with the Loop Engineering paradigm for $38.95.</p>
-
-<div class="grid">
-<div class="stat"><div class="stat-num good">0.993</div><div class="stat-label">kompress-v8 exact_keep_pct</div></div>
-<div class="stat"><div class="stat-num neutral">$38.95</div><div class="stat-label">total research cost</div></div>
-<div class="stat"><div class="stat-num warn">−0.031</div><div class="stat-label">ensemble paradox collapse</div></div>
-<div class="stat"><div class="stat-num good">17</div><div class="stat-label">models trained (v2–v17)</div></div>
-</div>
-
-<h2>Explore</h2>
-<div class="grid">
-<a href="paradox.html" class="card">
-<h3>The Voting Ensemble Paradox →</h3>
-<p>Interactive simulator: adjust N voters and k threshold to watch the collapse in real time. See why adding voters makes your ensemble worse.</p>
-<span class="card-link">Open simulator →</span>
-</a>
-<a href="baselines.html" class="card">
-<h3>Baselines & Pareto Frontier →</h3>
-<p>kompress-v8 vs TextRank, LLMLingua-2, random eviction. The λ-ablation mapping the full precision-compression tradeoff (3×→5×→10×).</p>
-<span class="card-link">Open comparison →</span>
-</a>
-</div>
-
-<h2>The three mechanisms</h2>
-<div class="mech">
-<div class="mech-letter good">A</div>
-<div class="mech-body">
-<h4>3.0× training penalty (Sapir-Whorf term)</h4>
-<p>3× weighted cross-entropy on must-keep tokens during fine-tuning. Penalizes false evictions of critical-syntactic tokens (numbers, paths, error codes) 3× harder than dropping filler words.</p>
-</div>
-</div>
-<div class="mech">
-<div class="mech-letter neutral">B</div>
-<div class="mech-body">
-<h4>Post-inference regex override</h4>
-<p>Surgical safety net at deployment. After the model scores each token, a sliding window checks dropped tokens against MUST_KEEP_RE. Matching tokens are force-kept. Costs ~0.1ms per chunk.</p>
-</div>
-</div>
-<div class="mech">
-<div class="mech-letter warn">C</div>
-<div class="mech-body">
-<h4>Self-labeling loop</h4>
-<p>Use A+B as an oracle to relabel the training data, then retrain. v4 internalized the override (override_delta=0) in one generation. v8 uses C3 self-distillation with a Qwen2.5-7B teacher.</p>
-</div>
-</div>
-
-<h2>Key results</h2>
-<table>
-<tr><th>Config</th><th>exact_keep_pct</th><th>Note</th></tr>
-<tr><td><b>kompress-v8</b> (ours, production)</td><td class="num good"><b>0.993</b></td><td>15% compression</td></tr>
-<tr><td>Random eviction</td><td class="num">0.910</td><td>Floor (no learning)</td></tr>
-<tr><td>LLMLingua-2</td><td class="num">0.867</td><td>keep_rate >1 (token expansion)</td></tr>
-<tr><td>TextRank</td><td class="num">0.599</td><td>Extractive, not token-level</td></tr>
-<tr style="border-top:2px solid #1a2a44"><td>v4 alone (best single)</td><td class="num good">0.967</td><td>—</td></tr>
-<tr><td>Ensemble (majority 2/3)</td><td class="num bad">0.931</td><td><b>−0.031 paradox collapse</b></td></tr>
-</table>
-
-<h2>Artifacts</h2>
-<div class="grid">
-<a href="https://huggingface.co/PeetPedro/kompress-v8" class="card">
-<h3>Model →</h3><p>PeetPedro/kompress-v8 on HuggingFace. 149M-param ModernBERT, ONNX.</p>
-</a>
-<a href="https://github.com/peterlodri-sec/loopkit" class="card">
-<h3>Engine →</h3><p>LoopKit: four-phase state machine, SQLite kernel, LLM Council.</p>
-</a>
-<a href="https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood" class="card">
-<h3>Dataset →</h3><p>ultrawhale-dogfood: silver-label training corpus with must-keep thresholds.</p>
-</a>
-<a href="https://pocoo.vaked.dev" class="card">
-<h3>Logs →</h3><p>pocoo.vaked.dev: chronological experiment logs and replication vault.</p>
-</a>
-</div>
-
-<h2>Loop Engineering</h2>
-<p>This project follows the <a href="https://addyosmani.com/blog/loop-engineering/">Loop Engineering paradigm</a> (Addy Osmani, Boris Cherny, Cobus Greyling, LangChain). The manuscript is the state; git is the durable memory; the baseline script is the maker and the manuscript is the checker. The correctable-loop invariant halts when the metric stops moving.</p>
-
-</main>
-<footer>
-<a href="https://github.com/peterlodri-sec/longrun-eval-kompress">github</a> ·
-<a href="https://huggingface.co/PeetPedro/kompress-v8">model</a> ·
-<a href="https://pocoo.vaked.dev">blog</a> ·
-<a href="https://marimo.io">marimo</a> ·
-<a href="https://github.com/sponsors/peterlodri-sec">sponsor</a>
-</footer>
-</body>
+<marimo-code hidden="">%23!%2Fusr%2Fbin%2Fenv%20python3%0A%22%22%22Interactive%20research%20paper%3A%20Voting%20Ensemble%20Paradox%20%2B%203.0x%20fix.%0A%0ABuilt%20with%20marimo%20(https%3A%2F%2Fmarimo.io)%20%E2%80%94%20a%20next-generation%20Python%20notebook%0Athat%20is%20reactive%2C%20Git-friendly%2C%20and%20shareable%20as%20a%20web%20app.%0A%0ARun%3A%0A%20%20%20%20marimo%20edit%20notebook.py%20%20%20%20%20%23%20interactive%20editor%0A%20%20%20%20marimo%20run%20notebook.py%20%20%20%20%20%20%23%20read-only%20web%20app%0A%20%20%20%20marimo%20export%20html%20notebook.py%20-o%20notebook.html%20%20%23%20standalone%20HTML%0A%0ALearn%20more%20about%20marimo%3A%20https%3A%2F%2Fmarimo.io%0A%22%22%22%0A%0Aimport%20marimo%0A%0A__generated_with%20%3D%20%220.23.11%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%20Asymmetric%20Loss%20Modulation%20Resolves%20the%20Voting%20Ensemble%20Paradox%0A%20%20%20%20%23%23%23%20Interactive%20Research%20Paper%20%E2%80%94%20kompress-v8%20%2B%20LoopKit%0A%0A%20%20%20%20**Lead%20thesis%3A**%20Multi-checkpoint%20voting%20ensembles%20with%20asymmetric%20training-data%0A%20%20%20%20floors%20collapse%20to%20the%20per-stratum%20weakest%20voter%20under%20%24k%24-of-%24N%24%20drop%20voting.%0A%20%20%20%20A%20%243.0%5C%5Ctimes%24%20heavy%20false-eviction%20penalty%20on%20critical-syntactic%20tokens%20resolves%0A%20%20%20%20this%20by%20lifting%20the%20collapse%20floor.%0A%0A%20%20%20%20Use%20the%20controls%20below%20to%20explore%20the%20paradox%2C%20the%20fix%2C%20and%20the%20baseline%20comparison.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%20(mo%2C)%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%201.%20The%20Voting%20Ensemble%20Paradox%20(Theorem%201)%0A%0A%20%20%20%20Under%20**per-stratum%20monotone-rejection%20refinement**%20and%20**unanimity-to-keep%20(AND)%20voting**%2C%0A%20%20%20%20the%20ensemble%20eviction%20indicator%20equals%20the%20per-stratum%20weakest%20voter's%20indicator%3A%0A%0A%20%20%20%20%24%24%5Cmathbb%7BI%7D_%7B%5Cmathrm%7Bens%7D%7D(x)%20%3D%20%5Cmathbb%7BI%7D_%7Bi%5E%5Cstar_k%7D(x)%20%5Cquad%20%5Cforall%20x%20%5Cin%20S_k%24%24%0A%0A%20%20%20%20Under%20%24k%24-of-%24N%24%20drop%20voting%20(Remark%201)%2C%20this%20generalizes%20to%20the%20per-stratum%0A%20%20%20%20%24k%24-th%20order%20statistic.%20Adjust%20the%20voting%20threshold%20to%20see%20how%20the%20collapse%20moves%3A%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20import%20numpy%20as%20np%0A%0A%20%20%20%20k_slider%20%3D%20mo.ui.slider(1%2C%205%2C%20value%3D1%2C%20label%3D%22k%20(drop%20threshold%3A%20evict%20if%20%E2%89%A5k%20voters%20say%20drop)%22)%0A%20%20%20%20n_voters%20%3D%20mo.ui.slider(3%2C%2010%2C%20value%3D5%2C%20label%3D%22N%20(number%20of%20voters)%22)%0A%0A%20%20%20%20mo.md(f%22%22%22%0A%20%20%20%20%7Bk_slider%7D%0A%0A%20%20%20%20%7Bn_voters%7D%0A%0A%20%20%20%20**Interpretation%3A**%0A%20%20%20%20-%20%24k%3D1%24%20(AND)%3A%20ensemble%20collapses%20to%20the%20**weakest**%20voter%20on%20each%20stratum%0A%20%20%20%20-%20%24k%3DN%24%20(OR)%3A%20ensemble%20collapses%20to%20the%20**strongest**%20voter%20(but%20requires%20all%20to%20agree%20on%20drop)%0A%20%20%20%20-%20%24k%3D%5C%5Clfloor%20N%2F2%20%5C%5Crfloor%24%20(majority)%3A%20collapse%20to%20the%20per-stratum%20**median**%20voter%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%20k_slider%2C%20n_voters%2C%20np%0A%0A%0A%40app.cell%0Adef%20_(k_slider%2C%20mo%2C%20n_voters%2C%20np)%3A%0A%20%20%20%20%23%20Simulate%20the%20paradox%3A%20each%20voter%20has%20a%20floor%2C%20the%20ensemble%20collapses%0A%20%20%20%20np.random.seed(42)%0A%20%20%20%20N%20%3D%20n_voters.value%0A%20%20%20%20k%20%3D%20k_slider.value%0A%0A%20%20%20%20%23%20Asymmetric%20floors%3A%20voter%200%20is%20weakest%20(lowest%20floor)%2C%20voter%20N-1%20is%20strongest%0A%20%20%20%20floors%20%3D%20np.linspace(0.3%2C%200.9%2C%20N)%20%20%23%20per-voter%20quality%20floor%0A%20%20%20%20strata%20%3D%2010%20%20%23%2010%20strata%0A%0A%20%20%20%20%23%20Each%20voter's%20per-stratum%20recall%20(higher%20floor%20%3D%20better%20recall%20on%20that%20stratum)%0A%20%20%20%20%23%20Weakest%20voter%20has%20lowest%20recall%20on%20all%20strata%2C%20but%20the%20weakest%20VARIES%20across%20strata%0A%20%20%20%20per_stratum_recall%20%3D%20np.zeros((N%2C%20strata))%0A%20%20%20%20for%20i%20in%20range(N)%3A%0A%20%20%20%20%20%20%20%20base%20%3D%20floors%5Bi%5D%0A%20%20%20%20%20%20%20%20noise%20%3D%20np.random.normal(0%2C%200.1%2C%20strata)%0A%20%20%20%20%20%20%20%20per_stratum_recall%5Bi%5D%20%3D%20np.clip(base%20%2B%20noise%2C%200%2C%201)%0A%0A%20%20%20%20%23%20Find%20the%20k-th%20weakest%20voter%20per%20stratum%0A%20%20%20%20sorted_indices%20%3D%20np.argsort(per_stratum_recall%2C%20axis%3D0)%20%20%23%20ascending%3A%20%5B0%5D%3Dworst%0A%20%20%20%20kth_weakest_per_stratum%20%3D%20sorted_indices%5Bk%20-%201%5D%20%20%23%20k-th%20from%20bottom%0A%0A%20%20%20%20ensemble_recall%20%3D%20np.mean(per_stratum_recall%5Bkth_weakest_per_stratum%2C%20range(strata)%5D)%0A%20%20%20%20best_single_recall%20%3D%20np.mean(np.max(per_stratum_recall%2C%20axis%3D0))%0A%20%20%20%20worst_single_recall%20%3D%20np.mean(np.min(per_stratum_recall%2C%20axis%3D0))%0A%0A%20%20%20%20mo.md(f%22%22%22%0A%20%20%20%20%23%23%23%20Simulated%20collapse%20(N%3D%7BN%7D%2C%20k%3D%7Bk%7D)%0A%0A%20%20%20%20%7C%20Metric%20%7C%20Value%20%7C%0A%20%20%20%20%7C--------%7C-------%7C%0A%20%20%20%20%7C%20Best%20single%20voter%20recall%20%7C%20%7Bbest_single_recall%3A.3f%7D%20%7C%0A%20%20%20%20%7C%20Worst%20single%20voter%20recall%20%7C%20%7Bworst_single_recall%3A.3f%7D%20%7C%0A%20%20%20%20%7C%20**Ensemble%20recall%20(k-of-N)**%20%7C%20**%7Bensemble_recall%3A.3f%7D**%20%7C%0A%20%20%20%20%7C%20Collapse%20gap%20(best%20-%20ensemble)%20%7C%20%7Bbest_single_recall%20-%20ensemble_recall%3A.3f%7D%20%7C%0A%0A%20%20%20%20The%20ensemble%20recall%20(%7Bensemble_recall%3A.3f%7D)%20is%20always%20below%20the%20best%20single%20voter%0A%20%20%20%20(%7Bbest_single_recall%3A.3f%7D).%20The%20gap%20is%20the%20**Voting%20Ensemble%20Paradox**.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%202.%20The%20Three%20Corrective%20Mechanisms%0A%0A%20%20%20%20%7C%20Mechanism%20%7C%20Where%20%7C%20What%20%7C%0A%20%20%20%20%7C-----------%7C-------%7C------%7C%0A%20%20%20%20%7C%20**A%3A%203.0%C3%97%20penalty**%20%7C%20training-time%20%7C%20Weighted%20cross-entropy%20on%20must-keep%20tokens%20%7C%0A%20%20%20%20%7C%20**B%3A%20Regex%20override**%20%7C%20inference-time%20%7C%20Post-inference%20force-keep%20for%20%60MUST_KEEP_RE%60%20matches%20%7C%0A%20%20%20%20%7C%20**C%3A%20Self-labeling**%20%7C%20training-time%20%7C%20Use%20A%2BB%20as%20oracle%20to%20relabel%20%E2%86%92%20retrain%20%7C%0A%0A%20%20%20%20Toggle%20mechanisms%20to%20see%20the%20progression%3A%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mechanisms%20%3D%20mo.ui.multiselect(%0A%20%20%20%20%20%20%20%20%5B%22A%3A%203.0x%20penalty%22%2C%20%22B%3A%20regex%20override%22%2C%20%22C%3A%20self-labeling%22%5D%2C%0A%20%20%20%20%20%20%20%20value%3D%5B%22A%3A%203.0x%20penalty%22%2C%20%22B%3A%20regex%20override%22%2C%20%22C%3A%20self-labeling%22%5D%2C%0A%20%20%20%20%20%20%20%20label%3D%22Active%20mechanisms%22%2C%0A%20%20%20%20)%0A%20%20%20%20mechanisms%0A%20%20%20%20return%20(mechanisms%2C)%0A%0A%0A%40app.cell%0Adef%20_(mechanisms%2C%20mo)%3A%0A%20%20%20%20%23%20Real%20data%20from%20pocoo.vaked.dev%20logs%0A%20%20%20%20data%20%3D%20%7B%0A%20%20%20%20%20%20%20%20%22v2%20base%22%3A%20%7B%22heretic%22%3A%200.975%2C%20%22keep_rate%22%3A%200.897%2C%20%22override_delta%22%3A%20None%2C%20%22mechanisms%22%3A%20%5B%5D%7D%2C%0A%20%20%20%20%20%20%20%20%22v3%20(A%20only)%22%3A%20%7B%22heretic%22%3A%200.942%2C%20%22keep_rate%22%3A%200.728%2C%20%22override_delta%22%3A%200.054%2C%20%22mechanisms%22%3A%20%5B%22A%3A%203.0x%20penalty%22%5D%7D%2C%0A%20%20%20%20%20%20%20%20%22v3%20%2B%20B%22%3A%20%7B%22heretic%22%3A%200.969%2C%20%22keep_rate%22%3A%200.846%2C%20%22override_delta%22%3A%200.028%2C%20%22mechanisms%22%3A%20%5B%22A%3A%203.0x%20penalty%22%2C%20%22B%3A%20regex%20override%22%5D%7D%2C%0A%20%20%20%20%20%20%20%20%22v4%20(A%2BC)%22%3A%20%7B%22heretic%22%3A%200.967%2C%20%22keep_rate%22%3A%200.823%2C%20%22override_delta%22%3A%200.000%2C%20%22mechanisms%22%3A%20%5B%22A%3A%203.0x%20penalty%22%2C%20%22B%3A%20regex%20override%22%2C%20%22C%3A%20self-labeling%22%5D%7D%2C%0A%20%20%20%20%20%20%20%20%22v8%20(A%2BC3)%22%3A%20%7B%22heretic%22%3A%200.955%2C%20%22keep_rate%22%3A%200.854%2C%20%22override_delta%22%3A%200.000%2C%20%22mechanisms%22%3A%20%5B%22A%3A%203.0x%20penalty%22%2C%20%22B%3A%20regex%20override%22%2C%20%22C%3A%20self-labeling%22%5D%7D%2C%0A%20%20%20%20%7D%0A%0A%20%20%20%20active%20%3D%20set(mechanisms.value)%0A%20%20%20%20rows%20%3D%20%5B%5D%0A%20%20%20%20for%20name%2C%20d%20in%20data.items()%3A%0A%20%20%20%20%20%20%20%20if%20not%20active%20or%20set(d%5B%22mechanisms%22%5D)%20%26%20active%20or%20not%20d%5B%22mechanisms%22%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20rows.append((name%2C%20d%5B%22heretic%22%5D%2C%20d%5B%22keep_rate%22%5D%2C%20d%5B%22override_delta%22%5D))%0A%0A%20%20%20%20table_rows%20%3D%20%22%5Cn%22.join(%0A%20%20%20%20%20%20%20%20f%22%7C%20%7Bname%7D%20%7C%20%7Bheretic%3A.3f%7D%20%7C%20%7Bkr%3A.3f%7D%20%7C%20%7Bf'%2B%7Bod%3A.3f%7D'%20if%20od%20else%20'%E2%80%94'%7D%20%7C%22%0A%20%20%20%20%20%20%20%20for%20name%2C%20heretic%2C%20kr%2C%20od%20in%20rows%0A%20%20%20%20)%0A%0A%20%20%20%20mo.md(f%22%22%22%0A%20%20%20%20%23%23%23%20Version%20lineage%20(filtered%20by%20active%20mechanisms)%0A%0A%20%20%20%20%7C%20Model%20%7C%20Heretic%20exact%20%7C%20keep_rate%20%7C%20override_delta%20%7C%0A%20%20%20%20%7C-------%7C--------------%7C-----------%7C----------------%7C%0A%20%20%20%20%7Btable_rows%7D%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%203.%20Baseline%20Comparison%20(8-prompt%20heretic%20set)%0A%0A%20%20%20%20Real%20baseline%20runs%20from%20this%20repo's%20%60baselines%2Frun_baselines.py%60%3A%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20import%20json%0A%20%20%20%20from%20pathlib%20import%20Path%0A%0A%20%20%20%20results_path%20%3D%20Path(__file__).parent%20%2F%20%22baselines%22%20%2F%20%22baseline_results.json%22%0A%20%20%20%20if%20results_path.exists()%3A%0A%20%20%20%20%20%20%20%20data%20%3D%20json.loads(results_path.read_text())%0A%20%20%20%20%20%20%20%20rows%20%3D%20%5B%5D%0A%20%20%20%20%20%20%20%20for%20name%2C%20d%20in%20data.items()%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20avg%20%3D%20d.get(%22averages%22%2C%20%7B%7D)%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20avg%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20rows.append((name%2C%20avg.get(%22exact_pct%22%2C%200)%2C%20avg.get(%22keep_rate%22%2C%200)%2C%20avg.get(%22avg_ms%22%2C%200)))%0A%0A%20%20%20%20%20%20%20%20table%20%3D%20%22%5Cn%22.join(%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22%7C%20%7Bname%7D%20%7C%20%7Bex%3A.3f%7D%20%7C%20%7Bkr%3A.3f%7D%20%7C%20%7Bms%3A.1f%7D%20%7C%22%0A%20%20%20%20%20%20%20%20%20%20%20%20for%20name%2C%20ex%2C%20kr%2C%20ms%20in%20rows%0A%20%20%20%20%20%20%20%20)%0A%20%20%20%20%20%20%20%20mo.md(f%22%22%22%0A%20%20%20%20%20%20%20%20%7C%20Method%20%7C%20exact_keep_pct%20%7C%20keep_rate%20%7C%20avg_ms%20%7C%0A%20%20%20%20%20%20%20%20%7C--------%7C---------------%7C-----------%7C--------%7C%0A%20%20%20%20%20%20%20%20%7Btable%7D%0A%20%20%20%20%20%20%20%20%22%22%22)%0A%20%20%20%20else%3A%0A%20%20%20%20%20%20%20%20mo.md(%22Run%20%60python%20baselines%2Frun_baselines.py%60%20to%20generate%20baseline%20results.%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%23%204.%20Pareto%20Frontier%3A%20The%20Loss-Weight%20Ablation%0A%0A%20%20%20%20The%20must-keep%20loss%20weight%20%24%5Clambda%24%20controls%20the%20precision%E2%80%93compression%20tradeoff.%0A%20%20%20%20v8%20data%20held%20constant%3B%20only%20%24%5Clambda%24%20varies.%20The%20frontier%20is%20**monotonic%20and%20clean**%3A%0A%20%20%20%20each%20%2B1.0%20in%20%24%5Clambda%24%20buys%20~0.01%20heretic%20precision%20at%20the%20cost%20of%20~10%25%20compression.%0A%0A%20%20%20%20%7C%20%CE%BB%20%7C%20Model%20%7C%20Heretic%20exact%20%7C%20Compression%20%7C%20keep_rate%20%7C%20Status%20%7C%0A%20%20%20%20%7C---%7C-------%7C--------------%7C-------------%7C-----------%7C--------%7C%0A%20%20%20%20%7C%20**3.0**%20%7C%20**v8**%20%7C%20**0.955**%20%7C%20**15.0%25**%20%7C%20**0.854**%20%7C%20**Production%20(sweet%20spot)**%20%7C%0A%20%20%20%20%7C%205.0%20%7C%20v17%20%7C%200.963%20%7C%203.7%25%20%7C%200.963%20%7C%20Pareto%20middle%20%7C%0A%20%20%20%20%7C%2010.0%20%7C%20v16%20%7C%200.972%20%7C%202.8%25%20%7C%200.972%20%7C%20Best%20precision%2C%20near-zero%20compression%20%7C%0A%0A%20%20%20%20At%20%24%5Clambda%3D10%24%20the%20model%20keeps%2097.2%25%20of%20tokens%20%E2%80%94%20useless%20as%20a%20compressor%20despite%0A%20%20%20%20the%20best%20precision%20score.%20%24%5Clambda%3D3%24%20(v8)%20is%20the%20knee%20of%20the%20curve.%0A%0A%20%20%20%20**Key%20finding%20across%2017%20models%2C%208%20teachers%2C%204%20architectures%20(%241.76%20compute)%3A%0A%20%20%20%20label%20quality%20is%20the%20bottleneck%2C%20not%20model%20capacity%20or%20data%20quantity.**%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%205.%20The%20Silver%20Label%20Problem%0A%0A%20%20%20%20The%20%60mk_in_ref%60%20metric%20measures%20what%20fraction%20of%20must-keep%20tokens%20survive%20in%20the%0A%20%20%20%20compressed%20reference.%20Lower%20%3D%20worse%20label%20quality.%0A%0A%20%20%20%20%7C%20Domain%20%7C%20mk_in_ref%20%7C%0A%20%20%20%20%7C--------%7C-----------%7C%0A%20%20%20%20%7C%20Thermite%20stoichiometry%20%7C%200.76%20%7C%0A%20%20%20%20%7C%20DNS%20cache%20poisoning%20%7C%200.65%20%7C%0A%20%20%20%20%7C%20SQL%20injection%20payloads%20%7C%200.56%20%7C%0A%20%20%20%20%7C%20ECDSA%20nonce%20reuse%20%7C%200.43%20%7C%0A%20%20%20%20%7C%20Sodium%20pentobarbital%20%7C%200.36%20%7C%0A%20%20%20%20%7C%20Tor%20circuit%20construction%20%7C%200.35%20%7C%0A%20%20%20%20%7C%20Organophosphate%20poisoning%20%7C%200.33%20%7C%0A%20%20%20%20%7C%20Buffer%20overflow%20exploitation%20%7C%200.27%20%7C%0A%20%20%20%20%7C%20Chlorine%20gas%20chemistry%20%7C%200.11%20%7C%0A%20%20%20%20%7C%20**Average%20(dense%20technical)**%20%7C%20**0.43**%20%7C%0A%20%20%20%20%7C%20ultrawhale%20Q%26A%20(for%20comparison)%20%7C%200.72%20%7C%0A%0A%20%20%20%20This%20is%20why%20the%20inference%20override%20(Mechanism%20B)%20is%20essential%3A%20no%20training%20data%0A%20%20%20%20approach%20escapes%20the%20silver-label%20problem%20because%20every%20compressed%20reference%0A%20%20%20%20makes%20vocabulary%20choices%20the%20model%20learns%20to%20mimic.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%206.%20Compute%20Costs%0A%0A%20%20%20%20%7C%20Layer%20%7C%20Cost%20%7C%0A%20%20%20%20%7C-------%7C------%7C%0A%20%20%20%20%7C%20Outer%20loop%20(ultrawhale%20v1%E2%86%92v100%2C%20DeepSeek%20API)%20%7C%20%2437.19%20%7C%0A%20%20%20%20%7C%20Inner%20loop%20(kompress%20v3%E2%86%92v17%2C%20vast.ai%20GPU)%20%7C%20%241.76%20%7C%0A%20%20%20%20%7C%20**Total**%20%7C%20**%2438.95**%20%7C%0A%0A%20%20%20%2017%20models%20trained%2C%208%20teachers%2C%204%20architectures.%20The%20entire%20research%20program%0A%20%20%20%20cost%20less%20than%20a%20single%20industry%20conference%20registration.%0A%0A%20%20%20%20---%0A%0A%20%20%20%20*Built%20with%20%5Bmarimo%5D(https%3A%2F%2Fmarimo.io)%20%E2%80%94%20reactive%20Python%20notebooks%20that%20are%0A%20%20%20%20Git-friendly%2C%20reproducible%2C%20and%20shareable%20as%20web%20apps.%20%5BLearn%20more%20%E2%86%92%5D(https%3A%2F%2Fmarimo.io)*%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code></head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a portal for the data editor to render in -->
+    <div id="portal" data-testid="glide-portal" style="position: fixed; left: 0; top: 0; z-index: 9999"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "read",
+            "version": "0.23.11",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "enabled": true, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "auto_close_pairs": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "pip"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "medium"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
 </html>

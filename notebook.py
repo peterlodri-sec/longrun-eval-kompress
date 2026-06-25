@@ -212,7 +212,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md("""
+    mo.md(r"""
     ## 4. Pareto Frontier: The Loss-Weight Ablation
 
     The must-keep loss weight $\lambda$ controls the precision–compression tradeoff.
