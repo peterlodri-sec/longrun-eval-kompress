@@ -120,6 +120,24 @@ tasks:
       - task: site:build
       - task: ci
 
+  # ── Doc Sync ───────────────────────────────────────────
+  doc:sync:
+    desc: Run doc-sync agent locally (simulates CI)
+    cmds:
+      - |
+        echo "=== Doc Sync (DeepSeek v4-flash) ==="
+        DIFF=$(git diff HEAD~1 --stat -- '*.tex' '*.py' '*.md' 'Taskfile.yml' 'flake.nix' | head -100)
+        FILES=$(git diff HEAD~1 --name-only -- '*.tex' '*.py' '*.md' 'Taskfile.yml' 'flake.nix')
+        if [ -z "$FILES" ]; then
+          echo "No relevant changes — skipping"
+          exit 0
+        fi
+        echo "Changed files:"
+        echo "$FILES"
+        echo ""
+        echo "To run the full agent, push to main or set DEEPSEEK_API_KEY and run:"
+        echo "  DEEPSEEK_API_KEY=... python tools/doc_sync.py"
+
   # ── Publish ────────────────────────────────────────────
   publish:
     desc: Commit, push, and trigger Pages deploy

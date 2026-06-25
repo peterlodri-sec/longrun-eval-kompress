@@ -182,6 +182,25 @@ prevents the loop from burning budget on diminishing returns---a failure
 mode Osmani identifies as ``the loop changes the work, it does not delete you
 from it'' \citep{osmani2026loop}.
 
+\subsection{Automated documentation sync}
+\label{sec:loopkit:docsync}
+
+The doc-sync workflow (\texttt{.github/workflows/doc-sync.yml}) extends the
+four-tier taxonomy with a continuous documentation maintenance loop. On every
+push to \texttt{main}, a DeepSeek v4-flash agent reviews the diff, compares it
+against the current README and author metadata, and auto-commits fixes if the
+documentation has drifted from the code. The workflow always succeeds
+(\texttt{continue-on-error: true}) and commits with \texttt{[skip ci]} to
+avoid cascading builds---it is advisory, never blocking.
+
+This is the maker-checker pattern applied to documentation: the code change
+(maker) and the doc sync (checker) are decoupled. The checker uses a cheap
+inference call (\$0.001 per push) and never blocks the shipping loop. It
+realizes Greyling's \texttt{loop-run-log.md} convention
+\citep{greyling2026loop} in a fully automated form: every push updates the
+living documentation without human intervention, closing the loop between
+code and narrative.
+
 \subsection{Reproducibility and cost}
 \label{sec:loopkit:repro}
 

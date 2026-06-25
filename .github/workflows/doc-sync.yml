@@ -1,0 +1,116 @@
+name: Doc Sync
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Never block — always succeeds
+continue-on-error: true
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    env:
+      DEEPSEEK_API_KEY: ${{ secrets.ci }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get diff
+        id: diff
+        run: |
+          DIFF=$(git diff HEAD~1 --stat -- '*.tex' '*.py' '*.md' 'Taskfile.yml' 'flake.nix' | head -100)
+          FILES=$(git diff HEAD~1 --name-only -- '*.tex' '*.py' '*.md' 'Taskfile.yml' 'flake.nix')
+          echo "diff<<EOF" >> $GITHUB_OUTPUT
+          echo "$DIFF" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Sync documentation via LLM
+        if: steps.diff.outputs.files != ''
+        env:
+          DIFF: ${{ steps.diff.outputs.diff }}
+          FILES: ${{ steps.diff.outputs.files }}
+        run: |
+          if [ -z "$DEEPSEEK_API_KEY" ]; then
+            echo "No DEEPSEEK_API_KEY — skipping doc sync"
+            exit 0
+          fi
+
+          # Read current docs
+          README=$(cat README.md 2>/dev/null || echo "")
+          AUTH=$(cat _AUTHOR.md 2>/dev/null || echo "")
+
+          PROMPT="You are a documentation assistant. A research repo just had code/paper changes.
+Review the diff and update README.md and _AUTHOR.md if needed to stay accurate.
+
+RULES:
+- Only fix factual inaccuracies, broken links, missing entries in tables
+- Do NOT add marketing fluff or unnecessary explanations
+- Keep the existing tone: concise, technical, honest
+- If nothing needs changing, output NOTHING (empty response)
+- If changes needed, output ONLY the changed files in this format:
+  ===FILE: path/to/file===
+  full file content
+  ===END FILE==="
+
+          RESPONSE=$(curl -s https://api.deepseek.com/chat/completions \
+            -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg diff "$DIFF" \
+              --arg files "$FILES" \
+              --arg readme "$README" \
+              --arg auth "$AUTH" \
+              --arg prompt "$PROMPT" \
+              '{
+                model: "deepseek-chat",
+                messages: [
+                  {role: "system", content: $prompt},
+                  {role: "user", content: ("Changed files:\n" + $files + "\n\nDiff:\n" + $diff + "\n\nCurrent README.md:\n" + $readme + "\n\nCurrent _AUTHOR.md:\n" + $auth)}
+                ],
+                max_tokens: 4096,
+                temperature: 0.1
+              }' 2>/dev/null)
+
+          # Extract content from response
+          CONTENT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty' 2>/dev/null)
+
+          if [ -z "$CONTENT" ] || [ "$CONTENT" = "null" ]; then
+            echo "No doc changes needed"
+            exit 0
+          fi
+
+          # Parse and write files
+          echo "$CONTENT" | awk '
+            /^===FILE:/ { file=$0; sub(/^===FILE: /, "", file); printing=1; content=""; next }
+            /^===END FILE===/ { 
+              if (printing && file != "") {
+                printf "%s", content > file
+                close(file)
+                print "Updated: " file
+              }
+              printing=0; file=""; content=""
+            }
+            printing { content = content $0 "\n" }
+          '
+
+      - name: Commit doc updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No doc changes to commit"
+          else
+            git commit -m "docs: auto-sync after push [skip ci]" --no-verify
+            git push
+          fi

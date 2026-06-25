@@ -66,6 +66,20 @@ this by lifting the collapse floor uniformly.
 
 ## Agent Operating Instructions
 
+### DevOps CI Bot (doc-sync)
+The doc-sync agent runs on every push to `main` via `.github/workflows/doc-sync.yml`.
+It uses DeepSeek v4-flash (`secrets.ci`) to review the diff and auto-fix drifted
+README.md / _AUTHOR.md. Key properties:
+- **Always succeeds** (`continue-on-error: true`) — never blocks shipping
+- **Commits with `[skip ci]`** — avoids cascading builds
+- **Cost:** ~$0.001 per push (DeepSeek v4-flash is nearly free)
+- **Local run:** `DEEPSEEK_API_KEY=... python tools/doc_sync.py`
+- **Dry run:** `python tools/doc_sync.py --dry-run`
+
+The bot is advisory, not authoritative. It fixes factual drift (broken links,
+stale numbers, missing table entries) but never adds content on its own.
+Human review is still expected before major releases.
+
 ### When editing the manuscript
 1. **Never fabricate numbers.** All metrics come from pocoo.vaked.dev blog posts or
    the baseline_results.json file. If a number is not sourced, mark it `\tbd`.

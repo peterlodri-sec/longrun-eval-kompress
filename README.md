@@ -163,6 +163,7 @@ This project follows the [Loop Engineering paradigm](https://addyosmani.com/blog
 - **State:** the manuscript is the state; git is the durable memory
 - **Skills:** `AGENTS.md` encodes project conventions once
 - **Maker/checker:** baseline script (maker) vs manuscript (checker)
+- **Automated doc sync:** DeepSeek v4-flash agent reviews every push, auto-fixes drifted docs, never blocks
 - **Correctable loop:** if the metric doesn't improve in 3 iterations, stop
 - **Hill climbing:** v9-v14 explored post-production; none surpassed v8
 
