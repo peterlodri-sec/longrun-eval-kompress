@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """Interactive research paper: Voting Ensemble Paradox + 3.0x fix.
 
-Run:  marimo edit notebook.py
-Or:   marimo run notebook.py  (read-only share)
+Built with marimo (https://marimo.io) — a next-generation Python notebook
+that is reactive, Git-friendly, and shareable as a web app.
+
+Run:
+    marimo edit notebook.py     # interactive editor
+    marimo run notebook.py      # read-only web app
+    marimo export html notebook.py -o notebook.html  # standalone HTML
+
+Learn more about marimo: https://marimo.io
 """
 import marimo
 
 __generated_with = "0.23.11"
-app = marimo.App(width="medium")
+app = marimo.App(width="medium", title="Voting Ensemble Paradox — Interactive Research Paper")
 
 
 @app.cell
@@ -206,7 +213,31 @@ def _(mo):
 @app.cell
 def _(mo):
     mo.md("""
-    ## 4. The Silver Label Problem
+    ## 4. Pareto Frontier: The Loss-Weight Ablation
+
+    The must-keep loss weight $\lambda$ controls the precision–compression tradeoff.
+    v8 data held constant; only $\lambda$ varies. The frontier is **monotonic and clean**:
+    each +1.0 in $\lambda$ buys ~0.01 heretic precision at the cost of ~10% compression.
+
+    | λ | Model | Heretic exact | Compression | keep_rate | Status |
+    |---|-------|--------------|-------------|-----------|--------|
+    | **3.0** | **v8** | **0.955** | **15.0%** | **0.854** | **Production (sweet spot)** |
+    | 5.0 | v17 | 0.963 | 3.7% | 0.963 | Pareto middle |
+    | 10.0 | v16 | 0.972 | 2.8% | 0.972 | Best precision, near-zero compression |
+
+    At $\lambda=10$ the model keeps 97.2% of tokens — useless as a compressor despite
+    the best precision score. $\lambda=3$ (v8) is the knee of the curve.
+
+    **Key finding across 17 models, 8 teachers, 4 architectures ($1.76 compute):
+    label quality is the bottleneck, not model capacity or data quantity.**
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    ## 5. The Silver Label Problem
 
     The `mk_in_ref` metric measures what fraction of must-keep tokens survive in the
     compressed reference. Lower = worse label quality.
@@ -235,15 +266,21 @@ def _(mo):
 @app.cell
 def _(mo):
     mo.md("""
-    ## 5. Compute Costs
+    ## 6. Compute Costs
 
     | Layer | Cost |
     |-------|------|
     | Outer loop (ultrawhale v1→v100, DeepSeek API) | $37.19 |
-    | Inner loop (kompress v3→v5, vast.ai GPU) | $0.55 |
-    | **Total** | **$37.74** |
+    | Inner loop (kompress v3→v17, vast.ai GPU) | $1.76 |
+    | **Total** | **$38.95** |
 
-    The entire research program cost less than a single conference registration.
+    17 models trained, 8 teachers, 4 architectures. The entire research program
+    cost less than a single industry conference registration.
+
+    ---
+
+    *Built with [marimo](https://marimo.io) — reactive Python notebooks that are
+    Git-friendly, reproducible, and shareable as web apps. [Learn more →](https://marimo.io)*
     """)
     return
 

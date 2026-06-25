@@ -14,7 +14,7 @@ Imagine you have a group of friends helping you decide which words to keep when 
 
 That's the **Voting Ensemble Paradox**. This paper proves it mathematically and shows how to fix it: penalize the friends 3x harder when they throw away important things like error codes and file paths. After the fix, everyone gets better, and the group finally works.
 
-The fix is called **kompress-v8**. It's a small AI model (149M parameters) that decides which words to keep when compressing text for other AI agents. It preserves 99.3% of critical tokens (numbers, error names, file paths) while removing filler. The whole project cost $37.74 — less than a conference ticket.
+The fix is called **kompress-v8**. It's a small AI model (149M parameters) that decides which words to keep when compressing text for other AI agents. It preserves 99.3% of critical tokens (numbers, error names, file paths) while removing filler. The whole project cost $38.95 — less than a conference ticket.
 
 ---
 
@@ -24,9 +24,39 @@ The fix is called **kompress-v8**. It's a small AI model (149M parameters) that 
 |------|------|
 | `paper/` | LaTeX manuscript (9 files, ~1600 lines) — the actual paper |
 | `baselines/` | Baseline comparison scripts + results (TextRank, LLMLingua-2, random, kompress-v8) |
-| `notebook.py` | Marimo interactive notebook — explore the paradox, mechanisms, baselines |
+| `notebook.py` | [marimo](https://marimo.io) interactive notebook — explore the paradox, mechanisms, baselines |
 | `mcp_server/` | MCP server for agent interaction (7 tools) |
 | `AGENTS.md` | Operating instructions for AI agents working in this repo |
+
+## Interactive notebook (marimo)
+
+This repo ships with a [marimo](https://marimo.io) notebook (`notebook.py`)
+that turns the paper into an interactive experience:
+
+- **Paradox simulator** — adjust k (voting threshold) and N (voters) to watch
+  the ensemble collapse in real time
+- **Mechanism toggle** — filter the version lineage by which mechanisms (A/B/C)
+  are active
+- **Baseline comparison** — live results from `baseline_results.json`
+- **Silver-label table** — per-domain `mk_in_ref` showing why label quality
+  is the bottleneck
+- **Compute costs** — the $38.95 breakdown
+
+```bash
+# Edit mode (interactive, you can modify cells)
+pip install marimo
+marimo edit notebook.py
+
+# Run mode (read-only, shareable as a web app)
+marimo run notebook.py
+
+# Export as standalone HTML (WebAssembly, no server needed)
+marimo export html notebook.py -o notebook.html
+```
+
+> marimo notebooks are pure Python, Git-friendly, and reproducible — no hidden
+> state. Learn more at [marimo.io](https://marimo.io) or browse the
+> [gallery](https://marimo.io/gallery/).
 
 ## Quick start
 
@@ -38,7 +68,7 @@ cd longrun-eval-kompress
 # Run baselines (takes ~30s-2min depending on model downloads)
 python baselines/run_baselines.py
 
-# Open interactive notebook
+# Open interactive notebook (https://marimo.io)
 pip install marimo
 marimo edit notebook.py
 
@@ -59,6 +89,21 @@ python mcp_server/server.py
 |-----------------|---------------|------|
 | v4 alone (best single) | 0.967 | — |
 | Ensemble (majority 2/3) | 0.931 | **-0.031 paradox collapse** |
+
+## Pareto frontier: loss-weight ablation
+
+The must-keep loss weight $\lambda$ controls the precision--compression tradeoff.
+v8 data held constant; only $\lambda$ varies. The frontier is monotonic and clean.
+
+| λ | Model | Heretic exact | Compression | keep_rate | Status |
+|---|-------|--------------|-------------|-----------|--------|
+| **3.0** | **v8** | **0.955** | **15.0%** | **0.854** | **Production (sweet spot)** |
+| 5.0 | v17 | 0.963 | 3.7% | 0.963 | Pareto middle |
+| 10.0 | v16 | 0.972 | 2.8% | 0.972 | Best precision, near-zero compression |
+
+Each +1.0 in λ buys ~0.01 heretic precision at the cost of ~10% compression.
+At λ=10 the model keeps 97.2% of tokens — useless as a compressor despite
+the best precision score. λ=3 (v8) is the knee of the curve.
 
 ## The three mechanisms
 
