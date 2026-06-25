@@ -28,6 +28,24 @@ preprocessing step but a component inside a recursive control structure, and
 its errors \emph{compound} across loop iterations---a single false eviction in
 one cycle can starve every subsequent cycle of the context needed to recover.
 
+\subsection{Origin: the vaked and ultrawhale outer loops}
+
+The research in this paper emerged from two outer-loop systems that preceded
+it. \textbf{ultrawhale}\footnote{\url{https://github.com/peterlodri-sec/ultrawhale}}
+is a self-building coding agent (150 blocks, 7 recursions, 14 protocols) whose
+dogfeed loop generates Q\&A training data by querying free LLMs every ten
+seconds and depositing the results as a living dataset on HuggingFace
+(\texttt{PeetPedro/ultrawhale-dogfood}). \textbf{vaked} is the broader
+capability-language and infrastructure framework within which ultrawhale
+operates. The entire ultrawhale project (v1.0.0$\to$v100.1.0) cost
+\textbf{\$37.19} in DeepSeek API fees---roughly \$0.24 per release across 150
+blocks---demonstrating that the outer loop which produced both the idea and
+the dataset for this paper was built for under \$40 in token spend. The
+ kompress fine-tuning experiments that followed added \$0.55 in GPU compute
+ (Section~\ref{sec:loopkit:repro}). This paper is an inner loop of that
+ broader program: the pruning model that makes the outer loops cheaper to
+ run by compressing the context they accumulate.
+
 \subsection{The Voting Ensemble Paradox}
 
 A natural safety pattern in such systems is to gate pruning decisions through

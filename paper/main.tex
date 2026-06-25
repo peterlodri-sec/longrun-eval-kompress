@@ -99,18 +99,21 @@ tokens at deployment; and \textbf{(C)} a self-labeling loop that uses
 A+B as an oracle to relabel the training data, internalizing B so the
 inference override becomes redundant. We instantiate the method in
 \textbf{kompress-v8}, a 149M-parameter dual-head ModernBERT (token
-classifier + Span CNN) trained on the \textbf{ultrawhale-dogfood}
-silver-label corpus, and orchestrated by \textbf{LoopKit}, an open-source
-four-phase autonomous state machine realizing the recursive loop-stacking
-taxonomy of Loop Engineering
+classifier + Span CNN) trained via Qwen2.5 teacher distillation on the
+\textbf{ultrawhale-dogfood} silver-label corpus, and orchestrated by
+\textbf{LoopKit}, an open-source four-phase autonomous state machine realizing
+the recursive loop-stacking taxonomy of Loop Engineering
 \citep{osmani2026loop,greyling2026loop,langchain2026loops}. Empirically,
 mechanism~A raises must-keep survival from an unmeasured baseline to $0.942$
 (heretic, no override); mechanism~B lifts v3 from $0.911$ to $0.965$ and
 v4 from $0.961$ to $0.965$; mechanism~C (v4) reaches $0.967$ with
+$\mathit{override\_delta}{=}0$. The production model v8 reaches $0.955$ with
 $\mathit{override\_delta}{=}0$. A 3-checkpoint majority ensemble regresses
 to $0.931$---a $0.031$ paradox collapse below the best single model---which
-the higher-floor ensemble (v4-class only) avoids. We benchmark against
-LLMLingua-2, AutoCompressors, Gisting, and TextRank (pending).
+the higher-floor ensemble (v4-class only) avoids. The entire research program
+cost \$37.19 in DeepSeek API fees (outer loop) plus \$0.55 in GPU compute
+(inner loop). We benchmark against LLMLingua-2, AutoCompressors, Gisting,
+and TextRank (pending).
 \end{abstract}
 
 % ============================================================================

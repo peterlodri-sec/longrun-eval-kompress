@@ -69,21 +69,24 @@ show, invert the aggregation benefit into a collapse. To our knowledge this
 stratum-wise collapse under AND-voting with asymmetric training floors has not
 been previously formalized.
 
-\subsection{Silver labels and self-labeling}
+\subsection{Silver labels, self-labeling, and teacher distillation}
 \label{sec:rw:selflabel}
 
-We do not distill from a generative teacher. Instead, the
-\textbf{ultrawhale-dogfood} corpus (\texttt{PeetPedro/ultrawhale-dogfood})
-supplies structural silver labels: a token in a verbose response is labeled
-\emph{keep} if its lowercase form appears in a paired compressed response,
-overridden to \emph{keep} for any $\mathit{MUST\_KEEP\_RE}$ match (numbers,
-ALLCAPS identifiers, dotted paths, file extensions, flags, CamelCase). This
-yields a label-quality proxy $\mathit{mk\_in\_ref}=0.72$, reflecting that 28\%
-of must-keep tokens in verbose text are absent from the compressed
-reference. To close this gap we use \emph{self-labeling}: the current model
-plus the inference override (mechanism~B) serves as its own oracle to
-relabel the training data, producing v4 with $\mathit{mk\_in\_ref}=0.823$ and
+The \textbf{ultrawhale-dogfood} corpus (\texttt{PeetPedro/ultrawhale-dogfood})
+supplies structural silver labels via two pathways. First, for the v3$\to$v5
+self-labeling chain, a token in a verbose response is labeled \emph{keep} if
+its lowercase form appears in a paired compressed response, overridden to
+\emph{keep} for any $\mathit{MUST\_KEEP\_RE}$ match. This yields a
+label-quality proxy $\mathit{mk\_in\_ref}=0.72$, reflecting that 28\% of
+must-keep tokens are absent from the compressed reference. To close this gap
+we use \emph{self-labeling}: the current model plus the inference override
+(mechanism~B) serves as its own oracle to relabel the training data,
+producing v4 with $\mathit{mk\_in\_ref}=0.823$ and
 $\mathit{override\_delta}{=}0$. This is self-distillation in the spirit of
 noisy-student self-training \citep{xie2020noisy} but with a deterministic
-regex oracle rather than an LLM teacher, and it converges in one generation
-rather than requiring many.
+regex oracle, converging in one generation. Second, for the production model
+v8, we return to LLM-teacher distillation: a \textbf{Qwen2.5}
+\citep{qwen2024qwen25} teacher generates compression labels on raw text,
+which the 149M-parameter ModernBERT student learns as a fast inference-time
+policy. The two pathways are complementary---self-labeling for the paradox
+evidence chain, teacher distillation for the production deployment.

@@ -261,6 +261,49 @@ across all models---the subword tokenizer splits \texttt{-O2} into
 is a tokenization mismatch, not a model-capability limit, and is addressed by
 the production regex safety net (Section~\ref{sec:eval:B}).
 
+\subsection{Production model: kompress-v8}
+\label{sec:eval:v8}
+
+The self-labeling chain (v3$\to$v4$\to$v5) and the agent-distribution
+experiments (v6, v7) established the mechanisms and the paradox. The
+production deployment model is \textbf{kompress-v8}
+(\texttt{PeetPedro/kompress-v8} on HuggingFace), trained with a Qwen2.5
+teacher distillation loop---a return to LLM-teacher labeling after the
+self-labeling chain reached its convergence ceiling. Table~\ref{tab:v8}
+reports v8 alongside the full version lineage.
+
+\begin{table}[h]
+\centering
+\caption{Full kompress version lineage on the heretic eval. v8 is the
+production model (Qwen2.5 teacher, $0.955$). The v3$\to$v4 jump is the
+self-labeling breakthrough (Mechanism~C); v4$\to$v5 is the convergence
+ceiling. v6/v7 are the agent-distribution dead end. v8 returns to
+teacher-based distillation and ships.}
+\label{tab:v8}
+\begin{tabular}{llccc}
+\toprule
+Version & Training method & Heretic $\mathit{exact\_pct}$ & $\mathit{override\_delta}$ & Decision \\
+\midrule
+v2  & base (generic text)           & $0.975$ & ---   & baseline \\
+v3  & ultrawhale Q\&A + A           & $0.942$ & $+0.054$ & override essential \\
+v4  & self-labeled (v3+B) + A       & $0.967$ & $0.000$  & ship (breakthrough) \\
+v5  & self-labeled (v4+B) + A       & $0.961$ & $0.000$  & converged --- halt \\
+v6  & agent-distribution + A        & $0.962$ & $0.000$  & dead end --- pivot \\
+v7  & sliding-window self-label + A & $0.956$ & $+0.002$ & dead end --- pivot \\
+\textbf{v8} & \textbf{Qwen2.5 teacher distillation} & $\mathbf{0.955}$ & $0.000$ & \textbf{production --- ship} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+v8 inherits the $3.0\times$ penalty (Mechanism~A) and the regex override
+(Mechanism~B) from the self-labeling chain but replaces the self-labeling
+oracle (Mechanism~C) with a Qwen2.5 teacher for label generation. Its
+heretic score of $0.955$ with $\mathit{override\_delta}{=}0$ confirms that
+the must-keep behavior is internalized---the model no longer needs the
+inference-time safety net. v8 is the deployed production checkpoint;
+the paradox evidence (Section~\ref{sec:eval:paradox}) was established on
+the v3/v4/v5 chain that preceded it.
+
 \subsection{External baselines}
 \label{sec:baselines}
 
@@ -277,7 +320,8 @@ Metric: $\mathit{exact\_keep\_pct}$ at matched $\mathit{keep\_rate}$.}
 \toprule
 Method & $\mathit{exact\_keep\_pct}$ & $\mathit{keep\_rate}$ \\
 \midrule
-\textbf{kompress-v4 + B (ours)} & $\mathbf{0.943}$ & $0.854$ \\
+\textbf{kompress-v8 (ours, production)} & $\mathbf{0.955}$ & \tbd \\
+\textbf{kompress-v4 + B (ours, best eval)} & $\mathbf{0.943}$ & $0.854$ \\
 \midrule
 LLMLingua-2    & \tbd & \tbd \\
 AutoCompressors & \tbd & \tbd \\
