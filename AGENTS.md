@@ -119,6 +119,9 @@ grep -rn "TODO" paper/*.tex
 # Check for unverified citations
 grep -rn "VERIFY" paper/references.bib
 
+# Verify genesis seal (honesty loop)
+python tools/genesis_seal.py --verify
+
 # Run baselines
 python baselines/run_baselines.py
 

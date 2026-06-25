@@ -38,8 +38,8 @@ Thumbs.db
 *.key
 *.pem
 
-# HuggingFace cache
-.cache/huggingface/
+# Genesis seal (DO track this — it's the honesty checkpoint)
+!.genesis_seal.json
 
 # Models (don't commit model weights)
 *.bin

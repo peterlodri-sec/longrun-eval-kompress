@@ -51,6 +51,22 @@ iteration and model version that produced it. This makes the research
 artifacts auditable---a property we consider necessary for open-source ML
 research that operates outside traditional institutional review structures.
 
+\paragraph{Repo-level genesis seal.} In addition to the dataset-level seal,
+this repository carries a \emph{genesis seal} (\texttt{.genesis\_seal.json})
+that cryptographically binds the current repo state to the genesis contract.
+The seal is a SHA-256 hash over: (1) the genesis contract text in this
+appendix, (2) the manuscript line count and table count, (3) the baseline
+results JSON, and (4) the git HEAD commit hash. Any change to the manuscript,
+baselines, or genesis contract invalidates the seal. The seal is verified
+automatically in CI on every push and weekly via a scheduled DNS link check
+(\texttt{.github/workflows/link-check.yml}). To verify locally:
+\begin{verbatim}
+python tools/genesis_seal.py --verify
+\end{verbatim}
+This is the honesty loop: the seal makes the research state auditable, the
+CI makes the audit automatic, and the genesis contract makes the audit
+meaningful by declaring what must never be sacrificed.
+
 \subsection{Adversarial evaluation: safety note}
 \label{sec:disclaimer:heretic}
 

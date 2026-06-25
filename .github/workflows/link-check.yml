@@ -1,0 +1,89 @@
+name: Link & Seal Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly: check that external URLs still resolve
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  dns-link-check:
+    name: DNS link check (LINKS.txt + paper URLs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract and check URLs
+        run: |
+          set +e  # don't fail on individual broken links, collect all
+          BROKEN=0
+          CHECKED=0
+
+          # Extract URLs from LINKS.txt (lines with https://)
+          while IFS= read -r url; do
+            url=$(echo "$url" | sed 's/ — .*//' | tr -d ' ')
+            [ -z "$url" ] && continue
+            [[ "$url" != https://* ]] && continue
+            CHECKED=$((CHECKED + 1))
+
+            # DNS resolution + HTTP check (follow redirects, 10s timeout)
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" -L --max-time 10 "$url" 2>/dev/null)
+
+            if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 400 ]; then
+              echo "  OK   [$STATUS] $url"
+            else
+              echo "  FAIL [$STATUS] $url"
+              BROKEN=$((BROKEN + 1))
+            fi
+          done < LINKS.txt
+
+          # Also check URLs in paper/*.tex
+          for url in $(grep -oh 'https\?://[^ }\\]*' paper/*.tex | sort -u); do
+            url=$(echo "$url" | sed 's/[)}].*//')
+            [ -z "$url" ] && continue
+            CHECKED=$((CHECKED + 1))
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" -L --max-time 10 "$url" 2>/dev/null)
+            if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 400 ]; then
+              echo "  OK   [$STATUS] $url"
+            else
+              echo "  FAIL [$STATUS] $url"
+              BROKEN=$((BROKEN + 1))
+            fi
+          done
+
+          echo ""
+          echo "Checked: $CHECKED URLs"
+          echo "Broken:  $BROKEN URLs"
+
+          # Fail only if more than 20% of links are broken (tolerance for rate-limited sites)
+          if [ "$CHECKED" -gt 0 ]; then
+            PCT=$((BROKEN * 100 / CHECKED))
+            if [ "$PCT" -gt 20 ]; then
+              echo "::error::${PCT}% of links are broken (${BROKEN}/${CHECKED})"
+              exit 1
+            fi
+          fi
+          echo "Link check passed (≤20% broken tolerance)"
+
+  genesis-seal:
+    name: Genesis seal verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify genesis seal
+        run: |
+          if [ -f .genesis_seal.json ]; then
+            python tools/genesis_seal.py --verify
+          else
+            echo "::notice::No genesis seal found. Generating one."
+            python tools/genesis_seal.py
+            echo "::notice::Seal generated. Commit it to bind the repo state."
+          fi

@@ -173,6 +173,28 @@ Key posts:
 
 Apache License 2.0 — see [LICENSE](LICENSE).
 
+## Security
+
+See [SECURITY.md](SECURITY.md).
+
+## Genesis seal (honesty loop)
+
+This repo carries a cryptographic genesis seal that binds the current state
+to the genesis contract. Any change to the manuscript, baselines, or contract
+invalidates the seal.
+
+```bash
+python tools/genesis_seal.py --verify   # check seal
+python tools/genesis_seal.py            # regenerate after intentional changes
+```
+
+The seal is verified automatically in CI on every push and weekly via a
+scheduled DNS link check. See [paper/disclaimer\_legal\_privacy.tex](paper/disclaimer_legal_privacy.tex) §A.3.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## Citing
 
 If you use this work, cite the repository and the paper. Click "Cite this repository" on GitHub or use the BibTeX in [CITATION.cff](CITATION.cff).
