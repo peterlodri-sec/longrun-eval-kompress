@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# LaTeX
+paper/aux/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.fdn
+
+# Jupyter / marimo
+.ipynb_checkpoints/
+.marimo/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# HuggingFace cache
+.cache/huggingface/
+
+# Models (don't commit model weights)
+*.bin
+*.onnx
+*.pt
+*.pth
+*.safetensors

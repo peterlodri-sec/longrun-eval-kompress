@@ -168,6 +168,24 @@ Key posts:
 
 Apache License 2.0 — see [LICENSE](LICENSE).
 
+## Use this as a template
+
+This repo is a **loop-experiment-researcher** template. Scaffold a new research
+project from an idea to a published manuscript:
+
+```bash
+git clone https://github.com/peterlodri-sec/longrun-eval-kompress.git my-research
+cd my-research
+python template/scaffold.py --name "my-research" --description "Studying X via loop Y"
+```
+
+You get: loop scaffold (STATE.md, SKILL.md, genesis.md, loop.py), LaTeX
+manuscript skeleton, baseline scripts, MCP server, marimo notebook, CI
+workflow, and a full devcontainer. See [template/README.md](template/README.md)
+for the full guide.
+
+Or click **"Use this template"** on GitHub to create a new repo from this one.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome.
