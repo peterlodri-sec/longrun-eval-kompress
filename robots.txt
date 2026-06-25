@@ -1,0 +1,6 @@
+# robots.txt — longrun-eval-kompress
+# This is a public open-source research repository. All content is crawlable.
+User-agent: *
+Allow: /
+Disallow: /paper/aux/
+Disallow: /.git/

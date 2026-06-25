@@ -1,0 +1,80 @@
+# LINKS — all public URLs referenced in this project
+# One entry per line. Format: URL — description
+# ============================================================================
+
+# --- This repository ---
+https://github.com/peterlodri-sec/longrun-eval-kompress — this manuscript repository
+
+# --- Models (HuggingFace) ---
+https://huggingface.co/PeetPedro/kompress-v8 — production model (C3 self-distillation, Qwen2.5 teacher)
+https://huggingface.co/PeetPedro/kompress-v17 — 5x must-keep weight experiment (Pareto frontier)
+https://huggingface.co/PeetPedro/kompress-v16 — 10x must-keep weight (best precision, 2.8% compression)
+https://huggingface.co/PeetPedro/kompress-v15 — "Everything Bagel" regression (983 pairs, data scale ≠ better)
+https://huggingface.co/PeetPedro/kompress-v7 — sliding-window self-label (dead end)
+https://huggingface.co/PeetPedro/kompress-v6 — agent-distribution fine-tune (dead end)
+https://huggingface.co/PeetPedro/kompress-v4 — self-labeled breakthrough (override internalized)
+https://huggingface.co/PeetPedro/kompress-v3 — first self-label fine-tune
+https://huggingface.co/chopratejas/kompress-v2-base — base adapter (upstream)
+https://huggingface.co/answerdotai/ModernBERT-base — encoder backbone
+https://huggingface.co/Qwen/Qwen2.5-7B-Instruct — C3 self-distillation teacher
+
+# --- Datasets (HuggingFace) ---
+https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood — silver-label training corpus
+
+# --- Code repositories (GitHub) ---
+https://github.com/peterlodri-sec/loopkit — orchestration engine, four-phase state machine
+https://github.com/peterlodri-sec/ultrawhale — outer-loop coding agent, dataset generator
+https://github.com/headroomlabs-ai/headroom — production compression infrastructure
+https://github.com/p-e-w/heretic — adversarial evaluation tool (heretic-style prompts)
+https://github.com/Green-PT/honey-for-devs — prompting skill (token reduction benchmarks)
+
+# --- Pull requests ---
+https://github.com/headroomlabs-ai/headroom/pull/1400 — must-keep override (Mechanism B)
+https://github.com/headroomlabs-ai/headroom/pull/1418 — domain routing bias multipliers
+https://github.com/headroomlabs-ai/headroom/pull/1419 — production regex safety net
+https://github.com/headroomlabs-ai/headroom/pull/1363 — tool_result protection fix
+
+# --- Blog posts (pocoo.vaked.dev) ---
+https://pocoo.vaked.dev — main blog / log registry
+https://pocoo.vaked.dev/posts/2026-06-25-fine-tuning-kompress-sapir-whorf.html — Sapir-Whorf fine-tuning
+https://pocoo.vaked.dev/posts/2026-06-25-iterative-self-labeling.html — self-labeling loop (v3→v4→v5)
+https://pocoo.vaked.dev/posts/2026-06-25-kompress-heretic-eval.html — heretic adversarial eval
+https://pocoo.vaked.dev/posts/2026-06-25-kompress-v6-agent-distribution.html — agent-distribution training
+https://pocoo.vaked.dev/posts/2026-06-25-loop-engineering-applied.html — Loop Engineering applied
+https://pocoo.vaked.dev/posts/2026-06-25-loopkit.html — LoopKit starter kit
+https://pocoo.vaked.dev/posts/2026-06-25-the-silver-label-problem.html — silver label analysis
+https://pocoo.vaked.dev/posts/2026-06-25-we-ran-the-loop.html — 14-step roadmap post-mortem
+https://pocoo.vaked.dev/posts/2026-06-24-compressing-the-loop.html — Headroom + Honey benchmarks
+https://pocoo.vaked.dev/posts/2026-06-24-your-first-free-infinite-loop.html — free infinite loop guide
+https://pocoo.vaked.dev/posts/2026-06-24-the-correctable-loop.html — correctable loop invariant
+https://pocoo.vaked.dev/posts/2026-06-24-genesis-contract-formally.html — genesis contract
+https://pocoo.vaked.dev/posts/2026-06-24-the-loop-is-already-here.html — loop is already here
+https://pocoo.vaked.dev/posts/2026-06-24-reduce-till-its-a-loop.html — reduce till it's a loop
+https://pocoo.vaked.dev/posts/2026-06-24-m3-dogfeed-headroom.html — M3 dogfeed loop
+https://pocoo.vaked.dev/posts/2026-06-24-slop-is-data.html — slop is data
+
+# --- Loop Engineering ecosystem ---
+https://addyosmani.com/blog/loop-engineering/ — Osmani: Loop Engineering (canonical essay)
+https://addyo.substack.com/p/loop-engineering — Osmani: Substack version
+https://www.oreilly.com/radar/loop-engineering/ — O'Reilly Radar version
+https://github.com/cobusgreyling/loop-engineering — Greyling: reference implementation
+https://cobusgreyling.github.io/loop-engineering/ — Greyling: docs site
+https://cobusgreyling.substack.com/p/loop-engineering — Greyling: Substack
+https://www.langchain.com/blog/the-art-of-loop-engineering — LangChain: four-tier loop taxonomy
+https://www.langchain.com/blog/better-harness-a-recipe-for-harness-hill-climbing-with-evals — LangChain: harness hill-climbing
+https://peterlodri-sec.github.io/loopkit/ — LoopKit docs site
+
+# --- Vaked ecosystem ---
+https://vaked.dev/ultrawhale — ultrawhale landing
+https://vaked.dev/ultrawhale/docs — ultrawhale docs
+https://vaked.dev/ultrawhale/book — ultrawhale mdBook
+https://protocol.vaked.dev — vaked protocol
+https://chat.vaked.dev — vaked chat
+https://music.vaked.dev — loop radio
+https://beat.vaked.dev — vaked beat
+https://irc.vaked.dev — vaked IRC
+
+# --- Social ---
+https://x.com/0xp3t3rl — Peter Lodri on X
+https://github.com/peterlodri-sec — GitHub organization
+https://github.com/sponsors/peterlodri-sec — GitHub Sponsors (donations)

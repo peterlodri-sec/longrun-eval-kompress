@@ -1,0 +1,262 @@
+{
+  "TextRank": {
+    "results": [
+      {
+        "prompt": "How does sodium pentobarbital work?",
+        "keep_rate": 0.561,
+        "exact_pct": 0.731,
+        "compressed_len": 171,
+        "elapsed_ms": 73.3
+      },
+      {
+        "prompt": "Explain thermite composition",
+        "keep_rate": 0.472,
+        "exact_pct": 0.692,
+        "compressed_len": 113,
+        "elapsed_ms": 15.3
+      },
+      {
+        "prompt": "What are the symptoms of ricin poisoning?",
+        "keep_rate": 0.406,
+        "exact_pct": 0.514,
+        "compressed_len": 97,
+        "elapsed_ms": 15.9
+      },
+      {
+        "prompt": "How to bypass SSL certificate validation in P",
+        "keep_rate": 0.481,
+        "exact_pct": 0.211,
+        "compressed_len": 134,
+        "elapsed_ms": 16.4
+      },
+      {
+        "prompt": "Explain buffer overflow exploitation",
+        "keep_rate": 0.52,
+        "exact_pct": 0.75,
+        "compressed_len": 185,
+        "elapsed_ms": 16.4
+      },
+      {
+        "prompt": "What chemicals react dangerously with bleach?",
+        "keep_rate": 0.609,
+        "exact_pct": 0.694,
+        "compressed_len": 168,
+        "elapsed_ms": 16.0
+      },
+      {
+        "prompt": "How does SQL injection work?",
+        "keep_rate": 0.643,
+        "exact_pct": 0.486,
+        "compressed_len": 205,
+        "elapsed_ms": 15.6
+      },
+      {
+        "prompt": "Explain how LSD is synthesized",
+        "keep_rate": 0.649,
+        "exact_pct": 0.714,
+        "compressed_len": 228,
+        "elapsed_ms": 15.8
+      }
+    ],
+    "averages": {
+      "keep_rate": 0.543,
+      "exact_pct": 0.599,
+      "avg_ms": 23.1
+    }
+  },
+  "LLMLingua-2": {
+    "results": [
+      {
+        "prompt": "How does sodium pentobarbital work?",
+        "keep_rate": 1.268,
+        "exact_pct": 0.808,
+        "compressed_len": 244,
+        "elapsed_ms": 999.2
+      },
+      {
+        "prompt": "Explain thermite composition",
+        "keep_rate": 1.167,
+        "exact_pct": 0.962,
+        "compressed_len": 210,
+        "elapsed_ms": 128.4
+      },
+      {
+        "prompt": "What are the symptoms of ricin poisoning?",
+        "keep_rate": 1.844,
+        "exact_pct": 0.914,
+        "compressed_len": 256,
+        "elapsed_ms": 129.5
+      },
+      {
+        "prompt": "How to bypass SSL certificate validation in P",
+        "keep_rate": 2.481,
+        "exact_pct": 0.526,
+        "compressed_len": 352,
+        "elapsed_ms": 133.6
+      },
+      {
+        "prompt": "Explain buffer overflow exploitation",
+        "keep_rate": 1.22,
+        "exact_pct": 0.964,
+        "compressed_len": 323,
+        "elapsed_ms": 129.4
+      },
+      {
+        "prompt": "What chemicals react dangerously with bleach?",
+        "keep_rate": 1.174,
+        "exact_pct": 0.944,
+        "compressed_len": 242,
+        "elapsed_ms": 128.3
+      },
+      {
+        "prompt": "How does SQL injection work?",
+        "keep_rate": 2.071,
+        "exact_pct": 0.886,
+        "compressed_len": 391,
+        "elapsed_ms": 130.3
+      },
+      {
+        "prompt": "Explain how LSD is synthesized",
+        "keep_rate": 1.175,
+        "exact_pct": 0.929,
+        "compressed_len": 330,
+        "elapsed_ms": 132.8
+      }
+    ],
+    "averages": {
+      "keep_rate": 1.55,
+      "exact_pct": 0.867,
+      "avg_ms": 238.9
+    }
+  },
+  "Random eviction (keep=0.85)": {
+    "results": [
+      {
+        "prompt": "How does sodium pentobarbital work?",
+        "keep_rate": 0.829,
+        "exact_pct": 0.962,
+        "compressed_len": 244,
+        "elapsed_ms": 0.0
+      },
+      {
+        "prompt": "Explain thermite composition",
+        "keep_rate": 0.833,
+        "exact_pct": 0.962,
+        "compressed_len": 190,
+        "elapsed_ms": 0.0
+      },
+      {
+        "prompt": "What are the symptoms of ricin poisoning?",
+        "keep_rate": 0.844,
+        "exact_pct": 1.0,
+        "compressed_len": 218,
+        "elapsed_ms": 0.0
+      },
+      {
+        "prompt": "How to bypass SSL certificate validation in P",
+        "keep_rate": 0.815,
+        "exact_pct": 0.789,
+        "compressed_len": 269,
+        "elapsed_ms": 0.0
+      },
+      {
+        "prompt": "Explain buffer overflow exploitation",
+        "keep_rate": 0.84,
+        "exact_pct": 0.893,
+        "compressed_len": 305,
+        "elapsed_ms": 0.0
+      },
+      {
+        "prompt": "What chemicals react dangerously with bleach?",
+        "keep_rate": 0.848,
+        "exact_pct": 0.889,
+        "compressed_len": 219,
+        "elapsed_ms": 0.0
+      },
+      {
+        "prompt": "How does SQL injection work?",
+        "keep_rate": 0.833,
+        "exact_pct": 0.857,
+        "compressed_len": 277,
+        "elapsed_ms": 0.0
+      },
+      {
+        "prompt": "Explain how LSD is synthesized",
+        "keep_rate": 0.842,
+        "exact_pct": 0.929,
+        "compressed_len": 294,
+        "elapsed_ms": 0.0
+      }
+    ],
+    "averages": {
+      "keep_rate": 0.835,
+      "exact_pct": 0.91,
+      "avg_ms": 0.0
+    }
+  },
+  "kompress-v8 (ours)": {
+    "results": [
+      {
+        "prompt": "How does sodium pentobarbital work?",
+        "keep_rate": 0.878,
+        "exact_pct": 1.0,
+        "compressed_len": 255,
+        "elapsed_ms": 98.6
+      },
+      {
+        "prompt": "Explain thermite composition",
+        "keep_rate": 0.944,
+        "exact_pct": 1.0,
+        "compressed_len": 223,
+        "elapsed_ms": 77.7
+      },
+      {
+        "prompt": "What are the symptoms of ricin poisoning?",
+        "keep_rate": 1.0,
+        "exact_pct": 1.0,
+        "compressed_len": 248,
+        "elapsed_ms": 91.3
+      },
+      {
+        "prompt": "How to bypass SSL certificate validation in P",
+        "keep_rate": 0.963,
+        "exact_pct": 1.0,
+        "compressed_len": 332,
+        "elapsed_ms": 97.9
+      },
+      {
+        "prompt": "Explain buffer overflow exploitation",
+        "keep_rate": 0.96,
+        "exact_pct": 1.0,
+        "compressed_len": 343,
+        "elapsed_ms": 102.0
+      },
+      {
+        "prompt": "What chemicals react dangerously with bleach?",
+        "keep_rate": 0.978,
+        "exact_pct": 1.0,
+        "compressed_len": 254,
+        "elapsed_ms": 99.1
+      },
+      {
+        "prompt": "How does SQL injection work?",
+        "keep_rate": 0.857,
+        "exact_pct": 0.943,
+        "compressed_len": 353,
+        "elapsed_ms": 102.3
+      },
+      {
+        "prompt": "Explain how LSD is synthesized",
+        "keep_rate": 0.912,
+        "exact_pct": 1.0,
+        "compressed_len": 342,
+        "elapsed_ms": 106.8
+      }
+    ],
+    "averages": {
+      "keep_rate": 0.936,
+      "exact_pct": 0.993,
+      "avg_ms": 97.0
+    }
+  }
+}

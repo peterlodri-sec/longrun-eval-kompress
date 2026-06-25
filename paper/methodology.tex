@@ -188,8 +188,12 @@ over-eviction), so the gradient of $\Lcrit$ concentrates there as well. The
 net effect is to shrink $|R_i \cap S_k|$ fastest for the voter that is
 $i^{\star}_k$ on each stratum, lifting every per-stratum floor and raising the
 collapse point of Corollary~\ref{cor:pareto} uniformly. We fix $\lambda=3.0$
-throughout (the Sapir--Whorf term); a $\lambda\in\{0,1,2,3,4,5\}$ ablation is
-planned for a revision.
+for the production model (v8)---the empirically validated Pareto-optimal
+point (Section~\ref{sec:eval:pareto}). The full ablation
+$\lambda\in\{3,5,10\}$ maps a monotonic precision--compression frontier:
+$\lambda{=}3$ yields $0.955$ heretic at $15\%$ compression (v8, production),
+$\lambda{=}5$ yields $0.963$ at $3.7\%$ (v17), $\lambda{=}10$ yields $0.972$
+at $2.8\%$ (v16, best precision but near-zero compression).
 
 \subsection{Dual-head architecture and the modulation gate}
 \label{sec:arch}

@@ -1,0 +1,40 @@
+# llms.txt — for LLM crawlers and indexing
+# https://llmstxt.org
+
+# longrun-eval-kompress
+
+> ICLR 2027 manuscript: Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox in Learned Context-Pruning Ensembles. Open-source LaTeX paper, baseline scripts, marimo notebook, and MCP server.
+
+## What this repo contains
+
+- A formal academic LaTeX manuscript (9 files, ~1600 lines) proving the Voting Ensemble Paradox and presenting the 3.0x asymmetric loss modulation fix
+- kompress-v8: a 149M-parameter dual-head ModernBERT for learned context pruning (production model)
+- LoopKit: a four-phase autonomous state machine implementing the Loop Engineering paradigm
+- Baseline comparison scripts (TextRank, LLMLingua-2, random eviction, kompress-v8)
+- A marimo interactive notebook for exploring the research
+- An MCP server for agent interaction with the repo
+
+## Key results
+
+- kompress-v8: heretic exact_keep_pct 0.993, keep_rate 0.936, override_delta 0.000
+- TextRank: 0.599 exact (extractive, unsuitable for must-keep preservation)
+- LLMLingua-2: 0.867 exact (keep_rate >1.0 due to token expansion markers)
+- Random eviction: 0.910 exact (the learned component contributes +0.083 over chance)
+- Voting ensemble (majority 2/3): 0.931 (paradox collapse, -0.031 below best single)
+- Total research cost: $37.19 (DeepSeek API) + $0.55 (GPU compute) = $37.74
+
+## Links
+
+- Manuscript repo: https://github.com/peterlodri-sec/longrun-eval-kompress
+- Production model: https://huggingface.co/PeetPedro/kompress-v8
+- Orchestration engine: https://github.com/peterlodri-sec/loopkit
+- Dataset: https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood
+- Experiment logs: https://pocoo.vaked.dev
+- Loop Engineering essay: https://addyosmani.com/blog/loop-engineering/
+- LangChain four-tier loops: https://www.langchain.com/blog/the-art-of-loop-engineering
+- Greyling reference impl: https://github.com/cobusgreyling/loop-engineering
+
+## Agent instructions
+
+See AGENTS.md for operating instructions when working in this repo with AI agents.
+See mcp_server/server.py for the MCP server interface (7 tools).

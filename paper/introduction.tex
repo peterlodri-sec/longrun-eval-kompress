@@ -89,8 +89,10 @@ This paper makes the following contributions:
         (token classifier + Span CNN) with an asymmetric modulation gate
         between the two heads, trained via C3 self-distillation
         (Collect--Curate--Compress) with a Qwen2.5-7B teacher on real agent
-        tool outputs. The full version lineage (v2--v14) is the output of
-        the LoopKit hill-climbing loop, still running.
+        tool outputs. 17 models trained (v3--v17) across 8 teachers and 4
+        architectures; the $\lambda\in\{3,5,10\}$ ablation maps the full
+        Pareto frontier of precision vs compression. v8 at $\lambda{=}3$ is
+        the production sweet spot.
   \item \textbf{LoopKit substrate.} An open-source four-phase autonomous
         state machine (Plan, Execute, Evaluate, Decide) with an asynchronous
         SQLite state kernel and an LLM Council operator, instantiating the
@@ -98,10 +100,14 @@ This paper makes the following contributions:
   \item \textbf{Empirical validation.} Mechanism~A reaches $0.942$ (heretic,
         no override); mechanism~B lifts v3 $0.911\to0.965$ and v4
         $0.961\to0.965$; mechanism~C (v4) reaches $0.967$ with
-        $\mathit{override\_delta}{=}0$. A 3-checkpoint majority ensemble
-        regresses to $0.931$---a $0.031$ collapse below the best single
-        model---confirming the paradox. External baselines
-        (LLMLingua-2, AutoCompressors, Gisting, TextRank) are in progress.
+        $\mathit{override\_delta}{=}0$. The production model v8 reaches
+        $0.955$ with agent $\mathit{mk\_in\_ref}{=}1.000$. A
+        $\lambda\in\{3,5,10\}$ ablation maps the Pareto frontier
+        ($0.955\to0.963\to0.972$ at $15\%\to3.7\%\to2.8\%$ compression). A
+        3-checkpoint majority ensemble regresses to $0.931$---a $0.031$
+        collapse below the best single model---confirming the paradox.
+        Baselines: kompress-v8 $0.993$ vs LLMLingua-2 $0.867$ vs TextRank
+        $0.599$ vs random $0.910$.
 \end{enumerate}
 
 \subsection{Paper structure}
