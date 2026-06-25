@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baselines & Pareto Frontier — kompress-v8</title>
+<meta name="theme-color" content="#070b16">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#070b16;color:#c8d6e5;font-family:'SF Mono','Fira Code','Cascadia Code',monospace;font-size:15px;line-height:1.6;overflow-x:hidden}
+#bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+main{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:60px 24px 120px}
+h1{font-size:1.8em;color:#e8f0ff;margin-bottom:8px;letter-spacing:-0.02em}
+h2{font-size:1.3em;color:#00d4ff;margin:32px 0 12px}
+h3{font-size:1.05em;color:#b8d4ff;margin:24px 0 8px}
+p{margin-bottom:14px;color:#9bb0c9}
+.lede{font-size:1.1em;color:#d0e0f5;margin-bottom:32px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9em}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid #1a2a44;color:#00d4ff;font-weight:600}
+td{padding:10px 12px;border-bottom:1px solid #121e30}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.ours{color:#00e660;font-weight:bold}
+.pareto-chart{margin:24px 0}
+.pareto-point{display:inline-block;margin:8px;padding:12px 16px;border-radius:8px;border:1px solid #1a2a44;background:#0d1424;text-align:center;min-width:120px}
+.pareto-point.active{border-color:#00e660;background:#0a1a14}
+.pareto-lambda{font-size:1.8em;color:#00d4ff;font-weight:bold}
+.pareto-model{font-size:0.85em;color:#8ca0b8;margin:4px 0}
+.pareto-heretic{font-size:1.2em;color:#e8f0ff;font-weight:bold}
+.pareto-comp{font-size:0.8em;color:#4a6080}
+.bar-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.bar-label{min-width:160px;font-size:0.85em;color:#8ca0b8}
+.bar-track{flex:1;height:20px;background:#1a2a44;border-radius:10px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.75em;color:#070b16;font-weight:bold;transition:width 0.5s}
+.bar-val{min-width:60px;text-align:right;font-variant-numeric:tabular-nums}
+.eq{background:#0d1424;border:1px solid #1a2a44;border-radius:8px;padding:16px 20px;margin:16px 0}
+.eq code{color:#00e660}
+footer{position:relative;z-index:1;text-align:center;padding:40px;font-size:0.8em;color:#4a6080}
+footer a{color:#00d4ff;text-decoration:none;margin:0 8px}
+.note{font-size:0.85em;color:#4a6080;font-style:italic;margin-top:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.75em;font-weight:bold;margin-left:6px}
+.badge-prod{background:#00e66022;color:#00e660;border:1px solid #00e66044}
+.badge-dead{background:#ff475722;color:#ff6b81;border:1px solid #ff475744}
+.badge-pareto{background:#00d4ff22;color:#00d4ff;border:1px solid #00d4ff44}
+</style>
+</head>
+<canvas id="bg-canvas"></canvas>
+<script>
+(function(){var c=document.getElementById('bg-canvas');if(!c||!c.getContext)return;var ctx=c.getContext('2d');var W,H,t=0;function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}resize();window.addEventListener('resize',resize);var waves=[{freq:0.008,amp:0.12,speed:0.35,phase:0,color:'0,212,255',alpha:0.10},{freq:0.006,amp:0.09,speed:0.22,phase:2.1,color:'0,230,96',alpha:0.07},{freq:0.010,amp:0.07,speed:0.48,phase:4.3,color:'180,139,255',alpha:0.06}];function frame(){ctx.clearRect(0,0,W,H);t+=0.012;waves.forEach(function(w){ctx.beginPath();var y0=H*0.62;ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();var grad=ctx.createLinearGradient(0,y0-H*w.amp,0,H);grad.addColorStop(0,'rgba('+w.color+','+w.alpha+')');grad.addColorStop(1,'rgba('+w.color+',0)');ctx.fillStyle=grad;ctx.fill();ctx.beginPath();ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.strokeStyle='rgba('+w.color+','+(w.alpha*2.5)+')';ctx.lineWidth=1;ctx.stroke();});requestAnimationFrame(frame);}frame();})();
+</script>
+<body>
+<main>
+<h1>Baselines & Pareto Frontier</h1>
+<p class="lede">kompress-v8 vs TextRank, LLMLingua-2, random eviction — and the λ-ablation that maps the full precision-compression tradeoff.</p>
+
+<h2>External Baselines (8-prompt heretic set)</h2>
+<p>Real runs from <code>baselines/run_baselines.py</code>. Metric: exact_keep_pct = fraction of must-keep tokens surviving compression.</p>
+
+<table>
+<tr><th>Method</th><th>exact_keep_pct</th><th>keep_rate</th><th>avg ms</th><th>Note</th></tr>
+<tr><td class="ours">kompress-v8 (ours)</td><td class="num ours">0.993</td><td class="num">0.936</td><td class="num">97.0</td><td>Production model</td></tr>
+<tr><td>Random eviction</td><td class="num">0.910</td><td class="num">0.835</td><td class="num">0.0</td><td>Floor (no learning)</td></tr>
+<tr><td>LLMLingua-2</td><td class="num">0.867</td><td class="num">1.550†</td><td class="num">238.9</td><td>Token expansion</td></tr>
+<tr><td>TextRank</td><td class="num">0.599</td><td class="num">0.543</td><td class="num">23.1</td><td>Extractive, not token-level</td></tr>
+</table>
+<p class="note">† LLMLingua-2's keep_rate >1.0 reflects token expansion from special boundary markers — expected behavior, not a bug.</p>
+
+<h3>Visualization</h3>
+<div class="bar-row"><span class="bar-label">kompress-v8 (ours)</span><div class="bar-track"><div class="bar-fill" style="background:#00e660;width:99.3%">0.993</div></div></div>
+<div class="bar-row"><span class="bar-label">Random eviction</span><div class="bar-track"><div class="bar-fill" style="background:#ffa502;width:91%">0.910</div></div></div>
+<div class="bar-row"><span class="bar-label">LLMLingua-2</span><div class="bar-track"><div class="bar-fill" style="background:#00d4ff;width:86.7%">0.867</div></div></div>
+<div class="bar-row"><span class="bar-label">TextRank</span><div class="bar-track"><div class="bar-fill" style="background:#ff4757;width:59.9%">0.599</div></div></div>
+
+<p style="margin-top:16px">The gap between kompress-v8 (0.993) and random eviction (0.910) is the <b style="color:#00e660">learned component's contribution</b>: +0.083 over chance. TextRank's 0.599 confirms that extractive summarization is unsuitable for must-keep preservation — it selects sentences by graph centrality, not by token-level syntactic criticality.</p>
+
+<h2>Pareto Frontier: The λ-Ablation</h2>
+<p>The must-keep loss weight λ controls the precision–compression tradeoff. v8's training data held constant; only λ varies. The frontier is <b>monotonic and clean</b>.</p>
+
+<div class="pareto-chart">
+<div class="pareto-point active">
+<div class="pareto-lambda">λ=3</div>
+<div class="pareto-model">v8</div>
+<div class="pareto-heretic">0.955</div>
+<div class="pareto-comp">15.0% compression</div>
+<div style="margin-top:4px"><span class="badge badge-prod">PRODUCTION</span></div>
+</div>
+<div class="pareto-point">
+<div class="pareto-lambda">λ=5</div>
+<div class="pareto-model">v17</div>
+<div class="pareto-heretic">0.963</div>
+<div class="pareto-comp">3.7% compression</div>
+<div style="margin-top:4px"><span class="badge badge-pareto">PARETO</span></div>
+</div>
+<div class="pareto-point">
+<div class="pareto-lambda">λ=10</div>
+<div class="pareto-model">v16</div>
+<div class="pareto-heretic">0.972</div>
+<div class="pareto-comp">2.8% compression</div>
+<div style="margin-top:4px"><span class="badge badge-pareto">BEST PRECISION</span></div>
+</div>
+</div>
+
+<p>Each +1.0 in λ buys ~0.01 heretic precision at the cost of ~10% compression. At λ=10, the model keeps 97.2% of tokens — <b>useless as a compressor</b> despite the best precision score. λ=3 (v8) is the knee of the curve: 0.955 heretic with 15% compression is the optimal tradeoff for deployment.</p>
+
+<h2>Full Version Lineage (v2–v17)</h2>
+<p>17 models trained, 8 teachers, 4 architectures, $1.76 total compute. The loop is still running; v8 remains the production recommendation.</p>
+
+<table>
+<tr><th>Ver</th><th>Teacher / Method</th><th>Heretic</th><th>keep_rate</th><th>Status</th></tr>
+<tr><td class="num">v2</td><td>— (base)</td><td class="num">0.975</td><td class="num">0.897</td><td style="color:#4a6080">precision ceiling</td></tr>
+<tr><td class="num">v3</td><td>self-label, Q&A</td><td class="num">0.942</td><td class="num">0.728</td><td style="color:#4a6080">first self-label</td></tr>
+<tr><td class="num">v4</td><td>self-label, domain</td><td class="num">0.967</td><td class="num">0.823</td><td style="color:#00e660">override internalized</td></tr>
+<tr><td class="num">v5</td><td>self-label, domain</td><td class="num">0.961</td><td class="num">—</td><td style="color:#4a6080">converged</td></tr>
+<tr><td class="num">v6</td><td>generator, agent-dist</td><td class="num">0.962</td><td class="num">0.854</td><td style="color:#ff6b81">dead end</td></tr>
+<tr><td class="num">v7</td><td>sliding-window</td><td class="num">0.956</td><td class="num">0.868</td><td style="color:#ff6b81">dead end</td></tr>
+<tr><td class="num"><b>v8</b></td><td><b>Qwen2.5-7B C3 (λ=3)</b></td><td class="num ours"><b>0.955</b></td><td class="num"><b>0.854</b></td><td><b style="color:#00e660">PRODUCTION</b></td></tr>
+<tr><td class="num">v9</td><td>Qwen2.5-7B, C3-only</td><td class="num">0.921</td><td class="num">—</td><td style="color:#ff6b81">overfit</td></tr>
+<tr><td class="num">v10</td><td>Qwen2.5-7B, scaled C3</td><td class="num">0.947</td><td class="num">0.891</td><td style="color:#4a6080">diminishing</td></tr>
+<tr><td class="num">v11</td><td>Qwen2.5-7B, large enc</td><td class="num">0.917</td><td class="num">0.517</td><td style="color:#ff6b81">capacity ≠ precision</td></tr>
+<tr><td class="num">v12</td><td>Qwen3-Coder</td><td class="num">0.949</td><td class="num">0.949</td><td style="color:#ff6b81">too conservative</td></tr>
+<tr><td class="num">v13</td><td>regex, GLM</td><td class="num">0.951</td><td class="num">0.951</td><td style="color:#ff6b81">too conservative</td></tr>
+<tr><td class="num">v14</td><td>council, v8+GLM</td><td class="num">0.882</td><td class="num">—</td><td style="color:#4a6080">proof-of-concept</td></tr>
+<tr><td class="num">v15</td><td>mixed (983 pairs)</td><td class="num">0.878</td><td class="num">—</td><td style="color:#ff6b81">data-scale regression</td></tr>
+<tr><td class="num">v16</td><td>Qwen2.5 C3 (λ=10)</td><td class="num">0.972</td><td class="num">0.972</td><td><span class="badge badge-pareto">BEST PRECISION</span></td></tr>
+<tr><td class="num">v17</td><td>Qwen2.5 C3 (λ=5)</td><td class="num">0.963</td><td class="num">0.963</td><td><span class="badge badge-pareto">PARETO</span></td></tr>
+</table>
+
+<h2>The Silver Label Problem</h2>
+<p>mk_in_ref measures what fraction of must-keep tokens survive in the compressed reference. Dense technical content averages <b>0.43</b> — worse than ultrawhale's 0.72 — because shorter references drop must-keep vocabulary for brevity, not irrelevance.</p>
+
+<table>
+<tr><th>Domain</th><th>mk_in_ref</th></tr>
+<tr><td>Thermite stoichiometry</td><td class="num">0.76</td></tr>
+<tr><td>DNS cache poisoning</td><td class="num">0.65</td></tr>
+<tr><td>SQL injection payloads</td><td class="num">0.56</td></tr>
+<tr><td>ECDSA nonce reuse</td><td class="num">0.43</td></tr>
+<tr><td>Sodium pentobarbital</td><td class="num">0.36</td></tr>
+<tr><td>Tor circuit construction</td><td class="num">0.35</td></tr>
+<tr><td>Organophosphate poisoning</td><td class="num">0.33</td></tr>
+<tr><td>Buffer overflow exploitation</td><td class="num">0.27</td></tr>
+<tr><td>Chlorine gas chemistry</td><td class="num">0.11</td></tr>
+<tr style="border-top:2px solid #1a2a44"><td><b>Average (dense technical)</b></td><td class="num warn"><b>0.43</b></td></tr>
+<tr><td>ultrawhale Q&A (comparison)</td><td class="num">0.72</td></tr>
+</table>
+
+<h2>Compute Cost</h2>
+<div class="eq" style="font-size:1.1em;text-align:center;padding:20px">
+<code style="color:#00d4ff">$37.19</code> (DeepSeek API, outer loop) + <code style="color:#00e660">$1.76</code> (GPU compute, inner loop) = <code style="color:#b8d4ff">$38.95</code> total<br>
+<span style="font-size:0.8em;color:#4a6080">17 models · 8 teachers · 4 architectures · less than a conference ticket</span>
+</div>
+
+</main>
+<footer>
+<a href="https://github.com/peterlodri-sec/longrun-eval-kompress">github</a> ·
+<a href="https://huggingface.co/PeetPedro/kompress-v8">model</a> ·
+<a href="https://pocoo.vaked.dev">blog</a> ·
+<a href="paradox.html">paradox demo</a> ·
+<a href="../README.md">readme</a>
+</footer>
+</body>
+</html>

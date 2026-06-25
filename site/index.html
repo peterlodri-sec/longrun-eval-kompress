@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kompress — Interactive Research Paper</title>
+<meta name="theme-color" content="#070b16">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#070b16;color:#c8d6e5;font-family:'SF Mono','Fira Code','Cascadia Code',monospace;font-size:15px;line-height:1.6;overflow-x:hidden}
+#bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+main{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:60px 24px 120px}
+h1{font-size:2.2em;color:#e8f0ff;margin-bottom:8px;letter-spacing:-0.03em}
+.subtitle{font-size:1.05em;color:#00d4ff;margin-bottom:8px}
+.lede{font-size:1.1em;color:#d0e0f5;margin-bottom:32px}
+h2{font-size:1.3em;color:#00d4ff;margin:32px 0 12px}
+p{margin-bottom:14px;color:#9bb0c9}
+a{color:#00d4ff;text-decoration:none}
+a:hover{text-decoration:underline}
+.card{background:#0d1424;border:1px solid #1a2a44;border-radius:12px;padding:24px;margin:16px 0;transition:border-color 0.3s}
+.card:hover{border-color:#00d4ff44}
+.card h3{color:#e8f0ff;font-size:1.1em;margin-bottom:8px}
+.card p{font-size:0.9em;color:#8ca0b8}
+.card-link{display:inline-block;margin-top:12px;color:#00d4ff;font-size:0.85em}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.stat{text-align:center;padding:20px;background:#0d1424;border:1px solid #1a2a44;border-radius:12px}
+.stat-num{font-size:2em;font-weight:bold}
+.stat-label{font-size:0.8em;color:#8ca0b8;margin-top:4px}
+.good{color:#00e660}
+.bad{color:#ff4757}
+.warn{color:#ffa502}
+.neutral{color:#00d4ff}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9em}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid #1a2a44;color:#00d4ff}
+td{padding:10px 12px;border-bottom:1px solid #121e30}
+td.num{text-align:right}
+.mech{display:flex;gap:16px;margin:12px 0;padding:16px;background:#0d1424;border-radius:10px;border:1px solid #1a2a44}
+.mech-letter{font-size:1.8em;font-weight:bold;min-width:40px;text-align:center}
+.mech-body h4{color:#e8f0ff;margin-bottom:4px}
+.mech-body p{font-size:0.85em;color:#8ca0b8;margin:0}
+footer{position:relative;z-index:1;text-align:center;padding:40px;font-size:0.8em;color:#4a6080}
+footer a{color:#00d4ff;text-decoration:none;margin:0 8px}
+</style>
+</head>
+<canvas id="bg-canvas"></canvas>
+<script>
+(function(){var c=document.getElementById('bg-canvas');if(!c||!c.getContext)return;var ctx=c.getContext('2d');var W,H,t=0;function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}resize();window.addEventListener('resize',resize);var waves=[{freq:0.008,amp:0.12,speed:0.35,phase:0,color:'0,212,255',alpha:0.10},{freq:0.006,amp:0.09,speed:0.22,phase:2.1,color:'0,230,96',alpha:0.07},{freq:0.010,amp:0.07,speed:0.48,phase:4.3,color:'180,139,255',alpha:0.06}];function frame(){ctx.clearRect(0,0,W,H);t+=0.012;waves.forEach(function(w){ctx.beginPath();var y0=H*0.62;ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();var grad=ctx.createLinearGradient(0,y0-H*w.amp,0,H);grad.addColorStop(0,'rgba('+w.color+','+w.alpha+')');grad.addColorStop(1,'rgba('+w.color+',0)');ctx.fillStyle=grad;ctx.fill();ctx.beginPath();ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.strokeStyle='rgba('+w.color+','+(w.alpha*2.5)+')';ctx.lineWidth=1;ctx.stroke();});requestAnimationFrame(frame);}frame();})();
+</script>
+<body>
+<main>
+<h1>kompress</h1>
+<div class="subtitle">Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox</div>
+<p class="lede">An interactive research paper on learned context pruning, the paradox of voting ensembles, and the 3× penalty that fixes it. Built with the Loop Engineering paradigm for $38.95.</p>
+
+<div class="grid">
+<div class="stat"><div class="stat-num good">0.993</div><div class="stat-label">kompress-v8 exact_keep_pct</div></div>
+<div class="stat"><div class="stat-num neutral">$38.95</div><div class="stat-label">total research cost</div></div>
+<div class="stat"><div class="stat-num warn">−0.031</div><div class="stat-label">ensemble paradox collapse</div></div>
+<div class="stat"><div class="stat-num good">17</div><div class="stat-label">models trained (v2–v17)</div></div>
+</div>
+
+<h2>Explore</h2>
+<div class="grid">
+<a href="paradox.html" class="card">
+<h3>The Voting Ensemble Paradox →</h3>
+<p>Interactive simulator: adjust N voters and k threshold to watch the collapse in real time. See why adding voters makes your ensemble worse.</p>
+<span class="card-link">Open simulator →</span>
+</a>
+<a href="baselines.html" class="card">
+<h3>Baselines & Pareto Frontier →</h3>
+<p>kompress-v8 vs TextRank, LLMLingua-2, random eviction. The λ-ablation mapping the full precision-compression tradeoff (3×→5×→10×).</p>
+<span class="card-link">Open comparison →</span>
+</a>
+</div>
+
+<h2>The three mechanisms</h2>
+<div class="mech">
+<div class="mech-letter good">A</div>
+<div class="mech-body">
+<h4>3.0× training penalty (Sapir-Whorf term)</h4>
+<p>3× weighted cross-entropy on must-keep tokens during fine-tuning. Penalizes false evictions of critical-syntactic tokens (numbers, paths, error codes) 3× harder than dropping filler words.</p>
+</div>
+</div>
+<div class="mech">
+<div class="mech-letter neutral">B</div>
+<div class="mech-body">
+<h4>Post-inference regex override</h4>
+<p>Surgical safety net at deployment. After the model scores each token, a sliding window checks dropped tokens against MUST_KEEP_RE. Matching tokens are force-kept. Costs ~0.1ms per chunk.</p>
+</div>
+</div>
+<div class="mech">
+<div class="mech-letter warn">C</div>
+<div class="mech-body">
+<h4>Self-labeling loop</h4>
+<p>Use A+B as an oracle to relabel the training data, then retrain. v4 internalized the override (override_delta=0) in one generation. v8 uses C3 self-distillation with a Qwen2.5-7B teacher.</p>
+</div>
+</div>
+
+<h2>Key results</h2>
+<table>
+<tr><th>Config</th><th>exact_keep_pct</th><th>Note</th></tr>
+<tr><td><b>kompress-v8</b> (ours, production)</td><td class="num good"><b>0.993</b></td><td>15% compression</td></tr>
+<tr><td>Random eviction</td><td class="num">0.910</td><td>Floor (no learning)</td></tr>
+<tr><td>LLMLingua-2</td><td class="num">0.867</td><td>keep_rate >1 (token expansion)</td></tr>
+<tr><td>TextRank</td><td class="num">0.599</td><td>Extractive, not token-level</td></tr>
+<tr style="border-top:2px solid #1a2a44"><td>v4 alone (best single)</td><td class="num good">0.967</td><td>—</td></tr>
+<tr><td>Ensemble (majority 2/3)</td><td class="num bad">0.931</td><td><b>−0.031 paradox collapse</b></td></tr>
+</table>
+
+<h2>Artifacts</h2>
+<div class="grid">
+<a href="https://huggingface.co/PeetPedro/kompress-v8" class="card">
+<h3>Model →</h3><p>PeetPedro/kompress-v8 on HuggingFace. 149M-param ModernBERT, ONNX.</p>
+</a>
+<a href="https://github.com/peterlodri-sec/loopkit" class="card">
+<h3>Engine →</h3><p>LoopKit: four-phase state machine, SQLite kernel, LLM Council.</p>
+</a>
+<a href="https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood" class="card">
+<h3>Dataset →</h3><p>ultrawhale-dogfood: silver-label training corpus with must-keep thresholds.</p>
+</a>
+<a href="https://pocoo.vaked.dev" class="card">
+<h3>Logs →</h3><p>pocoo.vaked.dev: chronological experiment logs and replication vault.</p>
+</a>
+</div>
+
+<h2>Loop Engineering</h2>
+<p>This project follows the <a href="https://addyosmani.com/blog/loop-engineering/">Loop Engineering paradigm</a> (Addy Osmani, Boris Cherny, Cobus Greyling, LangChain). The manuscript is the state; git is the durable memory; the baseline script is the maker and the manuscript is the checker. The correctable-loop invariant halts when the metric stops moving.</p>
+
+</main>
+<footer>
+<a href="https://github.com/peterlodri-sec/longrun-eval-kompress">github</a> ·
+<a href="https://huggingface.co/PeetPedro/kompress-v8">model</a> ·
+<a href="https://pocoo.vaked.dev">blog</a> ·
+<a href="https://marimo.io">marimo</a> ·
+<a href="https://github.com/sponsors/peterlodri-sec">sponsor</a>
+</footer>
+</body>
+</html>

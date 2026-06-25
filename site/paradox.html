@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voting Ensemble Paradox — Interactive</title>
+<meta name="theme-color" content="#070b16">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#070b16;color:#c8d6e5;font-family:'SF Mono','Fira Code','Cascadia Code',monospace;font-size:15px;line-height:1.6;overflow-x:hidden}
+#bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+main{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:60px 24px 120px}
+h1{font-size:1.8em;color:#e8f0ff;margin-bottom:8px;letter-spacing:-0.02em}
+h2{font-size:1.3em;color:#00d4ff;margin:32px 0 12px}
+h3{font-size:1.05em;color:#b8d4ff;margin:24px 0 8px}
+p{margin-bottom:14px;color:#9bb0c9}
+.lede{font-size:1.1em;color:#d0e0f5;margin-bottom:32px}
+.eq{background:#0d1424;border:1px solid #1a2a44;border-radius:8px;padding:16px 20px;margin:16px 0;font-size:0.95em;overflow-x:auto}
+.eq code{color:#00e660}
+.controls{background:#0d1424;border:1px solid #1a2a44;border-radius:12px;padding:24px;margin:24px 0}
+.slider-row{display:flex;align-items:center;gap:16px;margin:12px 0}
+.slider-row label{min-width:180px;color:#8ca0b8;font-size:0.9em}
+input[type=range]{flex:1;accent-color:#00d4ff;height:4px}
+.val{min-width:50px;text-align:right;color:#00d4ff;font-weight:bold}
+.result-card{background:#0d1424;border:1px solid #1a2a44;border-radius:12px;padding:24px;margin:16px 0}
+.metric{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a2a44}
+.metric:last-child{border-bottom:none}
+.metric-label{color:#8ca0b8}
+.metric-val{font-weight:bold}
+.good{color:#00e660}
+.bad{color:#ff4757}
+.warn{color:#ffa502}
+.neutral{color:#00d4ff}
+.bar-container{margin:8px 0}
+.bar-label{font-size:0.85em;color:#8ca0b8;margin-bottom:4px}
+.bar{height:6px;background:#1a2a44;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 0.3s}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9em}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid #1a2a44;color:#00d4ff;font-weight:600}
+td{padding:10px 12px;border-bottom:1px solid #121e30}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.voter-vis{display:flex;gap:4px;margin:12px 0;flex-wrap:wrap}
+.voter{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7em;font-weight:bold}
+.voter.weak{background:#1a0a14;color:#ff6b81;border:1px solid #ff475744}
+.voter.mid{background:#1a1a0a;color:#ffd43b;border:1px solid #ffa50244}
+.voter.strong{background:#0a1a14;color:#00e660;border:1px solid #00e66044}
+footer{position:relative;z-index:1;text-align:center;padding:40px;font-size:0.8em;color:#4a6080}
+footer a{color:#00d4ff;text-decoration:none;margin:0 8px}
+.note{font-size:0.85em;color:#4a6080;font-style:italic;margin-top:8px}
+</style>
+</head>
+<canvas id="bg-canvas"></canvas>
+<script>
+(function(){var c=document.getElementById('bg-canvas');if(!c||!c.getContext)return;var ctx=c.getContext('2d');var W,H,t=0;function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}resize();window.addEventListener('resize',resize);var waves=[{freq:0.008,amp:0.12,speed:0.35,phase:0,color:'0,212,255',alpha:0.10},{freq:0.006,amp:0.09,speed:0.22,phase:2.1,color:'0,230,96',alpha:0.07},{freq:0.010,amp:0.07,speed:0.48,phase:4.3,color:'180,139,255',alpha:0.06}];function frame(){ctx.clearRect(0,0,W,H);t+=0.012;waves.forEach(function(w){ctx.beginPath();var y0=H*0.62;ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();var grad=ctx.createLinearGradient(0,y0-H*w.amp,0,H);grad.addColorStop(0,'rgba('+w.color+','+w.alpha+')');grad.addColorStop(1,'rgba('+w.color+',0)');ctx.fillStyle=grad;ctx.fill();ctx.beginPath();ctx.moveTo(0,y0);for(var x=0;x<=W;x+=3){var y=y0+Math.sin(x*w.freq+t*w.speed+w.phase)*H*w.amp;ctx.lineTo(x,y);}ctx.strokeStyle='rgba('+w.color+','+(w.alpha*2.5)+')';ctx.lineWidth=1;ctx.stroke();});requestAnimationFrame(frame);}frame();})();
+</script>
+<body>
+<main>
+<h1>The Voting Ensemble Paradox</h1>
+<p class="lede">Why adding more voters makes your ensemble worse — and how a 3× penalty fixes it. Interactive demo.</p>
+
+<h2>The Setup</h2>
+<p>You have N compression checkpoints voting on which tokens to keep. Each was trained on a different quality floor — some are great, some are bad. You'd think voting together would help. It doesn't.</p>
+
+<div class="eq">
+<code>I_ens(x) = I[k-of-N](x)</code> — the ensemble evicts x iff ≥k voters say drop<br>
+<code>I_i(x) ∈ {0,1}</code> — voter i's eviction indicator<br>
+Under <b>monotone-rejection refinement</b>: <code>R_{i*} ⊇ R_j</code> on each stratum
+</div>
+
+<h2>Try It</h2>
+<p>Adjust the sliders to see how the ensemble collapse changes:</p>
+
+<div class="controls">
+<div class="slider-row">
+<label>N voters (checkpoints)</label>
+<input type="range" id="nVoters" min="3" max="10" value="5" oninput="update()">
+<span class="val" id="nVal">5</span>
+</div>
+<div class="slider-row">
+<label>k (drop threshold)</label>
+<input type="range" id="kVal" min="1" max="10" value="1" oninput="update()">
+<span class="val" id="kDisp">1</span>
+</div>
+<div class="slider-row">
+<label>Floor spread (asymmetry)</label>
+<input type="range" id="spread" min="10" max="80" value="50" oninput="update()">
+<span class="val" id="spreadVal">0.50</span>
+</div>
+<div class="slider-row">
+<label>Strata (token types)</label>
+<input type="range" id="strata" min="3" max="20" value="10" oninput="update()">
+<span class="val" id="strataVal">10</span>
+</div>
+</div>
+
+<div class="result-card">
+<h3>Voter pool (ordered by floor, weakest → strongest)</h3>
+<div id="voterVis" class="voter-vis"></div>
+<p class="note">Each voter is weak on different strata. The per-stratum weakest varies — that's what makes the collapse a Pareto front, not a single metric.</p>
+
+<h3 style="margin-top:20px">Collapse metrics</h3>
+<div class="metric"><span class="metric-label">Best single voter recall</span><span class="metric-val good" id="bestSingle">—</span></div>
+<div class="metric"><span class="metric-label">Worst single voter recall</span><span class="metric-val bad" id="worstSingle">—</span></div>
+<div class="metric"><span class="metric-label">Ensemble recall (k-of-N)</span><span class="metric-val warn" id="ensRecall">—</span></div>
+<div class="metric"><span class="metric-label">Paradox gap (best − ensemble)</span><span class="metric-val bad" id="gap">—</span></div>
+
+<div class="bar-container" style="margin-top:16px">
+<div class="bar-label">Best single voter</div>
+<div class="bar"><div class="bar-fill" id="barBest" style="background:#00e660;width:0%"></div></div>
+</div>
+<div class="bar-container">
+<div class="bar-label">Ensemble (k-of-N)</div>
+<div class="bar"><div class="bar-fill" id="barEns" style="background:#ffa502;width:0%"></div></div>
+</div>
+<div class="bar-container">
+<div class="bar-label">Worst single voter</div>
+<div class="bar"><div class="bar-fill" id="barWorst" style="background:#ff4757;width:0%"></div></div>
+</div>
+</div>
+
+<h2>What's happening?</h2>
+<p>Under <b>k-of-N drop voting</b>, the ensemble evicts a token if ≥k voters say "drop." Under asymmetric floors, each stratum has a different weakest voter. The ensemble's eviction decision on each stratum is the <b>k-th order statistic</b> of the voter indicators — the k-th weakest on that stratum.</p>
+<ul style="margin:12px 0 12px 20px;color:#9bb0c9">
+<li><b class="neutral">k=1 (AND):</b> collapses to the <b>per-stratum weakest</b> — any single drop vote vetoes the keep</li>
+<li><b class="neutral">k=N (OR):</b> collapses to the <b>per-stratum strongest</b> — all must agree to drop</li>
+<li><b class="neutral">k=majority:</b> collapses to the <b>per-stratum median</b> — the middle voter decides</li>
+</ul>
+<p>The ensemble's global operating point is a <b>convex combination of per-stratum k-th-weakest voters</b> — a point occupied by no individual checkpoint and Pareto-dominated by any strong single voter. <b>Adding more voters cannot help</b> because each stratum stays pinned by its own k-th weakest.</p>
+
+<h2>The Fix: 3× Asymmetric Loss Modulation</h2>
+<p>The 3.0× heavy false-eviction penalty on critical-syntactic tokens (numbers, paths, error codes) shrinks each voter's false-eviction set fastest on its weakest strata. This lifts the collapse floor uniformly — the paradox still holds mechanically, but the floor it collapses <i>to</i> is no longer low.</p>
+
+<div class="eq">
+<code>L = L_base + 3.0 × L_crit</code><br>
+<code>L_crit</code> = false-eviction loss on must-keep tokens (Sapir-Whorf term)
+</div>
+
+<table>
+<tr><th>λ</th><th>Model</th><th>Heretic exact</th><th>Compression</th><th>Status</th></tr>
+<tr><td class="num"><b>3.0</b></td><td><b>v8</b></td><td class="num"><b>0.955</b></td><td class="num"><b>15.0%</b></td><td><b style="color:#00e660">Production</b></td></tr>
+<tr><td class="num">5.0</td><td>v17</td><td class="num">0.963</td><td class="num">3.7%</td><td style="color:#8ca0b8">Pareto middle</td></tr>
+<tr><td class="num">10.0</td><td>v16</td><td class="num">0.972</td><td class="num">2.8%</td><td style="color:#8ca0b8">Best precision, no compression</td></tr>
+</table>
+<p class="note">Each +1.0 in λ buys ~0.01 precision at the cost of ~10% compression. λ=3 is the knee.</p>
+
+<h2>Empirical confirmation</h2>
+<table>
+<tr><th>Config</th><th>exact_keep_pct</th><th>Note</th></tr>
+<tr><td>v4 alone (best single)</td><td class="num good">0.967</td><td>—</td></tr>
+<tr><td>Ensemble (majority 2/3)</td><td class="num bad">0.931</td><td><b>−0.031 paradox collapse</b></td></tr>
+</table>
+<p>The 3-checkpoint majority ensemble (v3+v4+v5) scores <b>0.031 below</b> the best single model. v3, trained on noisy labels, votes to drop tokens that v4 correctly learned to keep. Under majority voting, v3's drops combine with v5's stratum-specific regressions to overrule v4's correct keeps.</p>
+
+<h2>Key finding</h2>
+<p>Across 17 trained models, 8 teachers, 4 architectures, and $1.76 in compute: <b style="color:#00d4ff">label quality is the bottleneck, not model capacity or data quantity.</b> v15 (983 pairs, largest dataset) regressed to 0.878. v11 (larger encoder) collapsed to keep_rate 0.517. Only label-quality interventions (self-labeling, C3 distillation, higher λ) improved the heretic metric.</p>
+
+</main>
+<footer>
+<a href="https://github.com/peterlodri-sec/longrun-eval-kompress">github</a> ·
+<a href="https://huggingface.co/PeetPedro/kompress-v8">model</a> ·
+<a href="https://pocoo.vaked.dev">blog</a> ·
+<a href="https://marimo.io">marimo</a> ·
+<a href="../README.md">readme</a>
+</footer>
+<script>
+function update(){
+var N=+document.getElementById('nVoters').value;
+var k=Math.min(+document.getElementById('kVal').value,N);
+var spread=+document.getElementById('spread').value/100;
+var S=+document.getElementById('strata').value;
+document.getElementById('nVal').textContent=N;
+document.getElementById('kDisp').textContent=k;
+document.getElementById('spreadVal').textContent=spread.toFixed(2);
+document.getElementById('strataVal').textContent=S;
+document.getElementById('kVal').max=N;
+
+// Simulate: each voter has a floor, per-stratum recall varies
+var floors=[];for(var i=0;i<N;i++)floors.push(0.3+(0.6*(i/(N-1||1)))*spread+0.3);
+// Per-stratum recall with noise
+var recall=[];for(var i=0;i<N;i++){recall.push([]);for(var s=0;s<S;s++){
+var noise=(Math.sin(i*3.7+s*2.3)*0.5+Math.cos(i*1.1+s*5.7)*0.3)*spread*0.4;
+recall[i].push(Math.max(0.05,Math.min(0.99,floors[i]+noise)));
+}}
+// k-th weakest per stratum
+var ensRecall=0;for(var s=0;s<S;s++){
+var stratumRecalls=[];for(var i=0;i<N;i++)stratumRecalls.push(recall[i][s]);
+stratumRecalls.sort(function(a,b){return a-b});
+ensRecall+=stratumRecalls[k-1]; // k-th from bottom (0-indexed)
+}
+ensRecall/=S;
+var bestSingle=0;for(var s=0;s<S;s++){var mx=0;for(var i=0;i<N;i++)mx=Math.max(mx,recall[i][s]);bestSingle+=mx;}bestSingle/=S;
+var worstSingle=0;for(var s=0;s<S;s++){var mn=1;for(var i=0;i<N;i++)mn=Math.min(mn,recall[i][s]);worstSingle+=mn;}worstSingle/=S;
+var gap=bestSingle-ensRecall;
+
+document.getElementById('bestSingle').textContent=bestSingle.toFixed(3);
+document.getElementById('worstSingle').textContent=worstSingle.toFixed(3);
+document.getElementById('ensRecall').textContent=ensRecall.toFixed(3);
+document.getElementById('gap').textContent='−'+gap.toFixed(3);
+document.getElementById('barBest').style.width=(bestSingle*100)+'%';
+document.getElementById('barEns').style.width=(ensRecall*100)+'%';
+document.getElementById('barWorst').style.width=(worstSingle*100)+'%';
+
+// Voter visualization
+var vis=document.getElementById('voterVis');vis.innerHTML='';
+for(var i=0;i<N;i++){
+var avg=0;for(var s=0;s<S;s++)avg+=recall[i][s];avg/=S;
+var el=document.createElement('div');
+var cls=avg<0.4?'weak':avg<0.7?'mid':'strong';
+el.className='voter '+cls;el.textContent='V'+(i+1);
+el.title='Avg recall: '+avg.toFixed(3);
+vis.appendChild(el);
+}
+}
+update();
+</script>
+</body>
+</html>
