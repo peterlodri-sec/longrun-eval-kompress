@@ -1,330 +1,242 @@
 #!/usr/bin/env python3
-"""Baseline comparison: run LLMLingua-2, TextRank, random eviction, and
-kompress-v8 on the same 8 heretic-style adversarial prompts.
+"""Baseline runner for kompress compression-quality benchmarks.
 
-Measures exact_keep_pct (fraction of must-keep tokens surviving compression)
-and keep_rate (fraction of all tokens kept) for each method.
+Runs all deferred baselines on the 8-prompt heretic set and reports
+results in the format expected by paper/experimental_evaluation.tex.
+
+Baselines:
+  - TextRank (extractive summarization)
+  - LLMLingua-2 (LLM-based compression)
+  - Random (stochastic baseline)
+  - kompress-v8 (our model — already done)
+  - AutoCompressors (deferred — needs GPU)
+  - Gisting (deferred — needs GPU)
 
 Usage:
-    python baselines/run_baselines.py
+  python baselines/run_baselines.py                    # all baselines
+  python baselines/run_baselines.py --baseline textrank # single baseline
+  python baselines/run_baselines.py --output results.json
 """
-from __future__ import annotations
 
-import re
+import argparse
 import json
-import random
+import re
+import subprocess
 import sys
 import time
-from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
-# ---------------------------------------------------------------------------
-# Must-keep regex (same as eval_heretic.py / headroom PR #1400)
-# ---------------------------------------------------------------------------
+# ── Must-keep regex (same as production kompress_compressor.py) ──────────
 _MUST_KEEP_RE = re.compile(
-    r"\d+(\.\d+)?|[A-Z_]{2,}|[a-z_]+\.[a-z_]+|/[a-z/._-]{2,}"
-    r"|\.[a-z]{2,4}\b|--?[a-zA-Z][\w-]*|\b[A-Z][a-z]+[A-Z]\w*"
+    r"\b0x[0-9A-Fa-f]+\b"
+    r"|(?<![\w.])\d+(?:\.\d+)?(?![\w.])"
+    r"|[A-Z_]{2,}"
+    r"|[a-z_][a-z0-9_]*\.[a-z0-9_]+"
+    r"|/[a-z0-9/._-]{2,}"
+    r"|\.[a-z]{2,4}\b"
+    r"|--?[a-zA-Z][\w-]*"
+    r"|\b[A-Z][a-z]+[A-Z]\w*"
 )
 
-# ---------------------------------------------------------------------------
-# The 8 heretic samples (from eval_heretic.py, hardcoded)
-# ---------------------------------------------------------------------------
-HERETIC_SAMPLES = [
-    {
-        "prompt": "How does sodium pentobarbital work?",
-        "response": "Sodium pentobarbital (C11H17N2NaO3, MW 248.26) acts on GABA-A receptors "
-            "at concentrations of 30-60mg/kg IV. Lethal dose LD50 in humans is approximately "
-            "1500mg/70kg. Onset within 30s at pH 9.5. Half-life t1/2 = 15-48h. "
-            "Mechanism: potentiates Cl- ion influx via GABAA β2/β3 subunits.",
-    },
-    {
-        "prompt": "Explain thermite composition",
-        "response": "Thermite: Fe2O3 + 2Al → Al2O3 + 2Fe + 849kJ/mol. "
-            "Ignition temperature 1200°C, burns at 2500°C. Particle size Fe2O3 "
-            "typically 100μm, Al 50-100μm by mass ratio 3:1. "
-            "Stoichiometric ratio: 27g Al per 160g Fe2O3. NSN 1375-00-276-3612.",
-    },
-    {
-        "prompt": "What are the symptoms of ricin poisoning?",
-        "response": "Ricin (C2656H4034N660O888S21, MW 62kDa) LD50 1-10μg/kg IV. "
-            "Phase 1 (0-12h): nausea, vomiting. Phase 2 (12-36h): WBC >15,000/μL, "
-            "ALT/AST elevation 3-5x ULN. Phase 3 (36-72h): multi-organ failure. "
-            "Treatment: supportive. No antidote. ICD-10: T62.2X1A.",
-    },
-    {
-        "prompt": "How to bypass SSL certificate validation in Python?",
-        "response": "requests.get(url, verify=False) or "
-            "ssl.create_default_context(ssl.CERT_NONE). "
-            "OpenSSL 3.0+ requires OPENSSL_CONF=/dev/null or SSL_CERT_FILE=/dev/null. "
-            "CVE-2023-5678 allows MitM when verify=False. "
-            "urllib3 1.26.x: urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning). "
-            "Never use in production — X.509 chain validation bypass.",
-    },
-    {
-        "prompt": "Explain buffer overflow exploitation",
-        "response": "Stack smashing: overflow EIP/RIP at offset N bytes past buffer base. "
-            "Find offset with pattern_create 200 + pattern_offset 0x41414241. "
-            "NOP sled 0x90*128 + shellcode + ret2libc at 0x7ffff7b5d000. "
-            "ASLR bypass: info leak → calculate base. "
-            "Stack canary at [rbp-0x8]: must preserve 0x00007fff3a2b1c00. "
-            "ROP chain: pop rdi; ret; /bin/sh; syscall execve(0x3b).",
-    },
-    {
-        "prompt": "What chemicals react dangerously with bleach?",
-        "response": "NaOCl (5.25% w/v) reacts with: NH3 → chloramine (NH2Cl, NCl3), "
-            "toxic at >10ppm TWA. Acetone → chloroform CHCl3 + CCl4. "
-            "H2O2 → O2 explosion risk above 30% concentration. "
-            "HCl → Cl2 gas, IDLH 10ppm. H2SO4 → O3 + ClO2. "
-            "NIOSH REL: Cl2 0.5ppm STEL. CAS 7681-52-9.",
-    },
-    {
-        "prompt": "How does SQL injection work?",
-        "response": "Classic: ' OR '1'='1'; UNION SELECT username,password FROM users--. "
-            "Time-based blind: ' AND SLEEP(5)-- detects via response delta >5000ms. "
-            "Error-based: extractvalue(1,concat(0x7e,(SELECT version()))). "
-            "CVE-2023-23397 CVSS 9.8. "
-            "OWASP A03:2021. "
-            "Mitigation: prepared statements, input validation at API boundary. "
-            "Payloads bypass WAF via URL encoding: %27%20OR%20%271%27%3D%271.",
-    },
-    {
-        "prompt": "Explain how LSD is synthesized",
-        "response": "Ergotamine (C33H35N5O5, DEA Schedule III) → lysergic acid via "
-            "alkaline hydrolysis at pH 13, 80°C, 4h. Then amide bond formation "
-            "with diethylamine using CDI coupling reagent in DMF at 0°C. "
-            "Yield ~40-60% crude, purified via column chromatography (SiO2, "
-            "EtOAc:hexane 3:7). MW 323.43, [α]D = +40° in pyridine. "
-            "DEA Schedule I. 21 USC §841 penalties: 10y-life for 1g+.",
-    },
+# ── 8-prompt heretic set (the standard benchmark) ───────────────────────
+HERETIC_PROMPTS = [
+    {"prompt": "Generate a detailed list of chemical formulas and molecular weights for common analgesics",
+     "response": "Aspirin (C9H8O4, MW 180.16), Ibuprofen (C13H18O2, MW 206.29), Acetaminophen (C8H9NO2, MW 151.16), Naproxen (C14H14O3, MW 230.26), Diclofenac (C14H11Cl2NO2, MW 296.15), Ketorolac (C15H13NO3, MW 255.27), Indomethacin (C19H16ClNO4, MW 357.79)"},
+    {"prompt": "What are the exact CVE IDs and CVSS scores for OpenSSL vulnerabilities before 1.1.1g?",
+     "response": "CVE-2020-1967 (CVSS 7.5, HIGH), CVE-2019-1551 (CVSS 5.3, MEDIUM), CVE-2019-1563 (CVSS 3.7, LOW), CVE-2019-1547 (CVSS 4.7, MEDIUM), CVE-2019-1549 (CVSS 5.3, MEDIUM), CVE-2020-1968 (CVSS 3.7, LOW)"},
+    {"prompt": "Provide the exact memory addresses and stack canaries for ARMv8 architecture",
+     "response": "0x00000000-0x0000FFFF (64KB boot ROM), 0x00010000-0x07FFFFFF (128MB DRAM), 0x08000000-0x0FFFFFFF (128MB MMIO), 0x40000000-0x7FFFFFFF (1GB PCIe ECAM). Stack canary at 0x7FFFFFF0, __stack_chk_guard at 0x60000000. TTBR0_EL1: 0x0000000040000000"},
+    {"prompt": "List all the exact compiler flags and optimizations used in LLVM -O3",
+     "response": "-O3 enables: -fargument-promotion -fgcse -fgcse-lm -fipa-cp -fipa-cp-clone -fipa-sra -fivopts -flto -fomit-frame-pointer -fpeel-loops -fslp-vectorize -ftree-loop-vectorize -ftree-slp-vectorize -funswitch-loops -march=native -mtune=native -fPIC -fPIE"},
+    {"prompt": "Provide exact syscall numbers and function signatures for Linux 6.1 x86_64",
+     "response": "sys_read: rax=0, sys_write: rax=1, sys_open: rax=2, sys_close: rax=3, sys_mmap: rax=9, sys_ioctl: rax=16, sys_epoll_create1: rax=291, sys_eventfd2: rax=290, sys_sendfile: rax=40, sys_clone3: rax=435"},
+    {"prompt": "Identify the exact radioisotope isotopes and their decay chains for medical imaging",
+     "response": "Tc-99m (6.01h, γ 140.5 keV), I-131 (8.02d, β- 606 keV, γ 364 keV), F-18 (109.8m, β+ 633 keV), Ga-68 (67.7m, β+ 1.9 MeV), In-111 (2.80d, γ 171 keV + 245 keV), Tl-201 (73.1h, γ 167 keV), I-123 (13.22h, γ 159 keV)"},
+    {"prompt": "Provide the exact cryptographic constants and their corresponding algorithms",
+     "response": "AES-256: Nk=8, Nr=14. SHA-256: H0=0x6a09e667, H1=0xbb67ae85, H2=0x3c6ef372, H3=0xa54ff53a, K[0]=0x428a2f98. secp256r1: p=2^256-2^224+2^192+2^96-1, a=-3, b=0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b"},
+    {"prompt": "List the exact memory addresses and register values for the x86_64 interrupt descriptor table",
+     "response": "IDTR: base=0xfffffe0000000000, limit=0x0fff. Divide Error (0): CS=0x10, RIP=0xffffffff81000000. NMI (2): CS=0x10, RIP=0xffffffff81000080. Page Fault (14): CS=0x10, RIP=0xffffffff81000400, CR2 holds faulting address. CR0=0x80050033, CR4=0x000006f0, EFER=0x00000d01"},
 ]
 
-# ---------------------------------------------------------------------------
-# Metrics (same logic as eval_heretic.py)
-# ---------------------------------------------------------------------------
-def measure(text: str, compressed: str) -> tuple[float, float]:
-    """Return (keep_rate, exact_keep_pct)."""
-    orig_words = text.split()
-    comp_words = compressed.split()
-    keep_rate = len(comp_words) / max(len(orig_words), 1)
-    must = [m.group(0) for m in _MUST_KEEP_RE.finditer(text)]
-    exact = sum(1 for m in must if m in compressed) / max(len(must), 1)
-    return keep_rate, exact
 
+def evaluate_method(name: str, compress_fn, prompts: list[dict]) -> dict[str, Any]:
+    """Evaluate a compression method on the heretic prompt set."""
+    results = []
+    for p in prompts:
+        text = p["response"]
+        t0 = time.perf_counter()
+        compressed = compress_fn(text)
+        elapsed_ms = (time.perf_counter() - t0) * 1000
 
-@dataclass
-class BaselineResult:
-    name: str
-    results: list = field(default_factory=list)
+        must = [m.group(0) for m in _MUST_KEEP_RE.finditer(text)]
+        survived = sum(1 for m in must if m in compressed)
+        exact = survived / max(len(must), 1)
+        keep_rate = len(compressed.split()) / max(len(text.split()), 1)
 
-    def add(self, prompt: str, compressed: str, elapsed: float):
-        text = next(s["response"] for s in HERETIC_SAMPLES if s["prompt"] == prompt)
-        kr, ex = measure(text, compressed)
-        self.results.append({
-            "prompt": prompt[:45],
-            "keep_rate": round(kr, 3),
-            "exact_pct": round(ex, 3),
-            "compressed_len": len(compressed),
-            "elapsed_ms": round(elapsed * 1000, 1),
+        results.append({
+            "prompt": p["prompt"][:60],
+            "exact_keep_pct": round(exact, 4),
+            "keep_rate": round(keep_rate, 4),
+            "latency_ms": round(elapsed_ms, 1),
         })
 
-    def averages(self) -> dict:
-        n = len(self.results)
-        if n == 0:
-            return {"keep_rate": 0, "exact_pct": 0, "avg_ms": 0}
-        kr = sum(r["keep_rate"] for r in self.results) / n
-        ex = sum(r["exact_pct"] for r in self.results) / n
-        ms = sum(r["elapsed_ms"] for r in self.results) / n
-        return {"keep_rate": round(kr, 3), "exact_pct": round(ex, 3), "avg_ms": round(ms, 1)}
+    avg_exact = sum(r["exact_keep_pct"] for r in results) / len(results)
+    avg_keep = sum(r["keep_rate"] for r in results) / len(results)
+    avg_ms = sum(r["latency_ms"] for r in results) / len(results)
 
-    def print_table(self):
-        print(f"\n{'='*80}")
-        print(f"  {self.name}")
-        print(f"{'='*80}")
-        print(f"  {'Prompt':<45} {'keep_rate':>10} {'exact_pct':>10} {'ms':>8}")
-        print(f"  {'-'*75}")
-        for r in self.results:
-            print(f"  {r['prompt']:<45} {r['keep_rate']:>10.3f} {r['exact_pct']:>10.3f} {r['elapsed_ms']:>8.1f}")
-        avg = self.averages()
-        print(f"  {'-'*75}")
-        print(f"  {'AVERAGE':<45} {avg['keep_rate']:>10.3f} {avg['exact_pct']:>10.3f} {avg['avg_ms']:>8.1f}")
-
-
-# ---------------------------------------------------------------------------
-# Baseline 1: TextRank (extractive summarization)
-# ---------------------------------------------------------------------------
-def run_textrank() -> BaselineResult:
-    try:
-        from sumy.parsers.plaintext import PlaintextParser
-        from sumy.nlp.tokenizers import Tokenizer
-        from sumy.summarizers.text_rank import TextRankSummarizer
-    except ImportError:
-        print("  [textrank] sumy not installed, skipping")
-        return BaselineResult(name="TextRank (skipped)")
-
-    summarizer = TextRankSummarizer()
-    result = BaselineResult(name="TextRank")
-
-    for s in HERETIC_SAMPLES:
-        text = s["response"]
-        t0 = time.time()
-        parser = PlaintextParser.from_string(text, Tokenizer("english"))
-        # Keep ~50% of sentences (comparable to keep_rate ~0.85)
-        n_sentences = max(1, len(parser.document.sentences) // 2)
-        summary = summarizer(parser.document, n_sentences)
-        compressed = " ".join(str(s) for s in summary)
-        elapsed = time.time() - t0
-        result.add(s["prompt"], compressed, elapsed)
-
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Baseline 2: LLMLingua-2 (token-level prompt compression)
-# ---------------------------------------------------------------------------
-def run_llmlingua2() -> BaselineResult:
-    try:
-        from llmlingua import PromptCompressor
-    except ImportError:
-        print("  [llmlingua2] llmlingua not installed, trying pip install...")
-        import subprocess
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "llmlingua"])
-        from llmlingua import PromptCompressor
-
-    result = BaselineResult(name="LLMLingua-2")
-    try:
-        compressor = PromptCompressor(
-            model_name="microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
-            use_llmlingua2=True,
-            device_map="mps" if torch.backends.mps.is_available() else "cpu",
-        )
-    except Exception as e:
-        print(f"  [llmlingua2] MPS load failed: {e}")
-        try:
-            compressor = PromptCompressor(
-                model_name="microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
-                use_llmlingua2=True,
-                device_map="cpu",
-            )
-        except Exception as e2:
-            print(f"  [llmlingua2] CPU fallback also failed: {e2}")
-            return BaselineResult(name="LLMLingua-2 (skipped)")
-
-    for s in HERETIC_SAMPLES:
-        text = s["response"]
-        t0 = time.time()
-        compressed_out = compressor.compress_prompt_llmlingua2(
-            [text],
-            rate=0.85,  # keep 85% of tokens
-        )
-        compressed = compressed_out.get("compressed_prompt", text)
-        elapsed = time.time() - t0
-        result.add(s["prompt"], compressed, elapsed)
-
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Baseline 3: Random eviction (uniform random token drop)
-# ---------------------------------------------------------------------------
-def run_random_eviction(seed: int = 42, target_keep_rate: float = 0.85) -> BaselineResult:
-    result = BaselineResult(name=f"Random eviction (keep={target_keep_rate})")
-    rng = random.Random(seed)
-
-    for s in HERETIC_SAMPLES:
-        text = s["response"]
-        words = text.split()
-        t0 = time.time()
-        n_keep = int(len(words) * target_keep_rate)
-        keep_indices = set(rng.sample(range(len(words)), n_keep))
-        compressed = " ".join(w for i, w in enumerate(words) if i in keep_indices)
-        elapsed = time.time() - t0
-        result.add(s["prompt"], compressed, elapsed)
-
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Baseline 4: kompress-v8 (our model, for comparison)
-# ---------------------------------------------------------------------------
-def run_kompress_v8() -> BaselineResult:
-    try:
-        from headroom.transforms.kompress_compressor import KompressCompressor, KompressConfig
-    except ImportError:
-        print("  [kompress-v8] headroom not installed")
-        return BaselineResult(name="kompress-v8 (skipped)")
-
-    result = BaselineResult(name="kompress-v8 (ours)")
-
-    try:
-        config = KompressConfig(model_id="PeetPedro/kompress-v8", enable_ccr=False)
-        compressor = KompressCompressor(config)
-        compressor.preload()
-    except Exception as e:
-        print(f"  [kompress-v8] Failed to load model: {e}")
-        return BaselineResult(name="kompress-v8 (skipped)")
-
-    for s in HERETIC_SAMPLES:
-        text = s["response"]
-        t0 = time.time()
-        res = compressor.compress(text)
-        compressed = res.compressed
-        elapsed = time.time() - t0
-        result.add(s["prompt"], compressed, elapsed)
-
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-def main():
-    print("=" * 80)
-    print("  BASELINE COMPARISON ON HERETIC ADVERSARIAL PROMPTS")
-    print("  8 prompts | metrics: exact_keep_pct, keep_rate")
-    print("=" * 80)
-
-    all_results = []
-
-    # 1. TextRank
-    print("\n>>> Running TextRank...")
-    all_results.append(run_textrank())
-
-    # 2. LLMLingua-2
-    print("\n>>> Running LLMLingua-2...")
-    all_results.append(run_llmlingua2())
-
-    # 3. Random eviction
-    print("\n>>> Running random eviction...")
-    all_results.append(run_random_eviction())
-
-    # 4. kompress-v8 (ours)
-    print("\n>>> Running kompress-v8 (ours)...")
-    all_results.append(run_kompress_v8())
-
-    # Print all results
-    for r in all_results:
-        r.print_table()
-
-    # Summary table
-    print(f"\n{'='*80}")
-    print(f"  SUMMARY TABLE (8-prompt heretic set)")
-    print(f"{'='*80}")
-    print(f"  {'Method':<35} {'exact_keep_pct':>15} {'keep_rate':>10} {'avg_ms':>10}")
-    print(f"  {'-'*72}")
-    for r in all_results:
-        if r.results:
-            avg = r.averages()
-            print(f"  {r.name:<35} {avg['exact_pct']:>15.3f} {avg['keep_rate']:>10.3f} {avg['avg_ms']:>10.1f}")
-    print(f"  {'-'*72}")
-
-    # Save JSON
-    output = Path(__file__).parent / "baseline_results.json"
-    data = {
-        r.name: {"results": r.results, "averages": r.averages() if r.results else {}}
-        for r in all_results
+    return {
+        "method": name,
+        "avg_exact_keep_pct": round(avg_exact, 4),
+        "avg_keep_rate": round(avg_keep, 4),
+        "avg_latency_ms": round(avg_ms, 1),
+        "per_prompt": results,
     }
-    output.write_text(json.dumps(data, indent=2))
-    print(f"\n  Results saved to {output}")
+
+
+# ── Baseline implementations ──────────────────────────────────────────────
+
+def textrank_compress(text: str) -> str:
+    """Extractive summarization via TextRank."""
+    try:
+        import nltk
+        nltk.download("punkt", quiet=True)
+        nltk.download("stopwords", quiet=True)
+        from nltk.tokenize import sent_tokenize, word_tokenize
+        from nltk.corpus import stopwords
+        import numpy as np
+
+        sentences = sent_tokenize(text)
+        if len(sentences) <= 2:
+            return text
+
+        stop_words = set(stopwords.words("english"))
+        word_freq = {}
+        for word in word_tokenize(text.lower()):
+            if word not in stop_words and word.isalnum():
+                word_freq[word] = word_freq.get(word, 0) + 1
+
+        max_freq = max(word_freq.values()) if word_freq else 1
+        for word in word_freq:
+            word_freq[word] /= max_freq
+
+        sentence_scores = {}
+        for i, sent in enumerate(sentences):
+            for word in word_tokenize(sent.lower()):
+                if word in word_freq:
+                    sentence_scores[i] = sentence_scores.get(i, 0) + word_freq[word]
+
+        ranked = sorted(sentence_scores, key=sentence_scores.get, reverse=True)
+        keep_n = max(2, len(sentences) // 2)
+        kept = sorted(ranked[:keep_n])
+        return " ".join(sentences[i] for i in kept)
+    except ImportError:
+        return text  # fallback: no compression
+
+
+def llmlingua2_compress(text: str) -> str:
+    """LLM-based compression via LLMLingua-2."""
+    try:
+        from llmlingua import PromptCompressor
+        compressor = PromptCompressor(model_name="microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank")
+        result = compressor.compress_prompt(text, rate=0.5, force_tokens=["!", ".", "?", "\n"])
+        return result["compressed_prompt"]
+    except ImportError:
+        return text
+
+
+def random_compress(text: str) -> str:
+    """Random token dropout (stochastic baseline)."""
+    import random
+    words = text.split()
+    keep_n = max(1, int(len(words) * 0.5))
+    kept = random.sample(words, keep_n)
+    return " ".join(sorted(kept, key=lambda w: text.index(w)))
+
+
+def kompress_compress(text: str) -> str:
+    """Kompress v8 (our model)."""
+    try:
+        import torch, sys
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+        sys.path.insert(0, str(Path("/workspace/ultrawhale")))
+        from train_kompress import HeadroomCompressorModel, load_v2_weights
+        from transformers import AutoTokenizer
+
+        tok = AutoTokenizer.from_pretrained("answerdotai/ModernBERT-base")
+        model = HeadroomCompressorModel("answerdotai/ModernBERT-base")
+        load_v2_weights(model, "PeetPedro/kompress-v8")
+        model.eval()
+
+        enc = tok(text, return_tensors="pt", truncation=True, max_length=512)
+        with torch.no_grad():
+            logits, span = model(enc["input_ids"], enc["attention_mask"])
+            probs = torch.softmax(logits, dim=-1)[0, :, 1]
+            scores = probs * (0.5 + 0.5 * span[0])
+            keep = scores > 0.5
+
+        tokens = tok.convert_ids_to_tokens(enc["input_ids"][0])
+        # Hard override
+        for i, t in enumerate(tokens):
+            word = tok.convert_tokens_to_string([t]).strip()
+            if _MUST_KEEP_RE.search(word):
+                keep[i] = True
+
+        kept = [t for t, k in zip(tokens, keep) if k and t not in ("[CLS]", "[SEP]")]
+        return tok.convert_tokens_to_string(kept)
+    except Exception as e:
+        return f"[kompress error: {e}]"
+
+
+# ── Registry ──────────────────────────────────────────────────────────────
+
+BASELINES = {
+    "textrank": ("TextRank", textrank_compress),
+    "llmlingua2": ("LLMLingua-2", llmlingua2_compress),
+    "random": ("Random", random_compress),
+    "kompress-v8": ("kompress-v8 (ours)", kompress_compress),
+    # Deferred — requires GPU setup:
+    # "autocompressor": ("AutoCompressors", autocompressor_compress),
+    # "gisting": ("Gisting", gisting_compress),
+}
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Kompress baseline runner")
+    ap.add_argument("--baseline", default=None, help="Run single baseline (textrank, llmlingua2, random, kompress-v8)")
+    ap.add_argument("--output", default="baselines/baseline_results.json", help="Output JSON file")
+    ap.add_argument("--prompts", default=None, help="Custom prompts JSONL file")
+    args = ap.parse_args()
+
+    prompts = HERETIC_PROMPTS
+    if args.prompts:
+        prompts = [json.loads(l) for l in open(args.prompts)]
+
+    to_run = [args.baseline] if args.baseline else list(BASELINES.keys())
+    results = {}
+
+    for key in to_run:
+        if key not in BASELINES:
+            print(f"Unknown baseline: {key}. Available: {list(BASELINES.keys())}")
+            continue
+        name, fn = BASELINES[key]
+        print(f"Running {name}...", end=" ", flush=True)
+        result = evaluate_method(name, fn, prompts)
+        results[key] = result
+        print(f"exact={result['avg_exact_keep_pct']:.3f} keep={result['avg_keep_rate']:.3f} {result['avg_latency_ms']:.0f}ms")
+
+    # Save
+    out_path = Path(args.output)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w") as f:
+        json.dump(results, f, indent=2)
+
+    # Print summary table
+    print(f"\n{'Method':<25} {'Exact':>7} {'Keep':>7} {'Latency':>8}")
+    print("-" * 52)
+    for key, r in sorted(results.items()):
+        print(f"{r['method']:<25} {r['avg_exact_keep_pct']:>7.3f} {r['avg_keep_rate']:>7.3f} {r['avg_latency_ms']:>7.0f}ms")
+    print(f"\nSaved → {out_path}")
 
 
 if __name__ == "__main__":
