@@ -14,7 +14,7 @@ Learn more about marimo: https://marimo.io
 import marimo
 
 __generated_with = "0.23.11"
-app = marimo.App(width="medium", title="Voting Ensemble Paradox — Interactive Research Paper")
+app = marimo.App(width="medium")
 
 
 @app.cell
