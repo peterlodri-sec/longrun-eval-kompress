@@ -86,14 +86,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check AGENTS.md exists
-        run: test -f AGENTS.md && echo "AGENTS.md: OK"
+        run: test -f AGENTS.md && echo "AGENTS.md OK"
       - name: Check MCP server exists
-        run: test -f mcp_server/server.py && echo "MCP server: OK"
+        run: test -f mcp_server/server.py && echo "MCP server OK"
       - name: Check notebook exists
-        run: test -f notebook.py && echo "Notebook: OK"
+        run: test -f notebook.py && echo "Notebook OK"
       - name: Check README exists
-        run: test -f README.md && echo "README: OK"
+        run: test -f README.md && echo "README OK"
       - name: Check LINKS.txt exists
-        run: test -f LINKS.txt && echo "LINKS.txt: OK"
+        run: test -f LINKS.txt && echo "LINKS.txt OK"
       - name: Check LICENSE exists
-        run: test -f LICENSE && echo "LICENSE: OK"
+        run: test -f LICENSE && echo "LICENSE OK"
