@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite both the repository and the paper."
+title: "Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox in Learned Context-Pruning Ensembles"
+type: software
+authors:
+  - given-names: "Peter"
+    family-names: "Lodri"
+    orcid: "https://huggingface.co/PeetPedro"
+    affiliation: "Independent, community-funded research"
+repository-code: "https://github.com/peterlodri-sec/longrun-eval-kompress"
+url: "https://pocoo.vaked.dev"
+abstract: >-
+  Multi-checkpoint voting ensembles with asymmetric training-data floors
+  collapse to the per-stratum weakest voter under k-of-N drop voting. A 3.0x
+  heavy false-eviction penalty on critical-syntactic tokens resolves this by
+  lifting the collapse floor uniformly. We instantiate the method in
+  kompress-v8, a 149M-parameter dual-head ModernBERT trained via C3
+  self-distillation with a Qwen2.5-7B teacher. 17 models trained, 8 teachers,
+  4 architectures, $38.95 total cost.
+keywords:
+  - context-pruning
+  - voting-ensemble
+  - loop-engineering
+  - modernbert
+  - token-compression
+  - asymmetric-loss
+  - self-distillation
+license: Apache-2.0
+version: 1.0.0
+date-released: "2026-06-25"
+preferred-citation:
+  type: unpublished
+  title: "Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox in Learned Context-Pruning Ensembles"
+  authors:
+    - given-names: "Peter"
+      family-names: "Lodri"
+      affiliation: "Independent, community-funded research"
+  year: 2026
+  notes: "ICLR 2027 submission. arXiv preprint forthcoming."

@@ -4,6 +4,11 @@
 >
 > Open-source LaTeX paper + baseline scripts + marimo notebook + MCP server. Total research cost: **$38.95** ($37.19 DeepSeek + $1.76 GPU).
 
+[![CI](https://github.com/peterlodri-sec/longrun-eval-kompress/actions/workflows/ci.yml/badge.svg)](https://github.com/peterlodri-sec/longrun-eval-kompress/actions/workflows/ci.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Built with marimo](https://img.shields.io/badge/built%20with-marimo-00d4ff.svg)](https://marimo.io)
+[![Sponsor](https://img.shields.io/badge/sponsor-peterlodri--sec-ff69b4.svg)](https://github.com/sponsors/peterlodri-sec)
+
 ---
 
 ## ELI5 (Explain Like I'm 5)
@@ -168,6 +173,18 @@ Key posts:
 
 Apache License 2.0 — see [LICENSE](LICENSE).
 
+## Citing
+
+If you use this work, cite the repository and the paper. Click "Cite this repository" on GitHub or use the BibTeX in [CITATION.cff](CITATION.cff).
+
+## Funding
+
+This project follows a **decentralized open-source funding model**. No
+institutional grants. Community council guides donations for infrastructure
+costs. If you'd like to support this work:
+
+**GitHub Sponsors:** https://github.com/sponsors/peterlodri-sec
+
 ## Use this as a template
 
 This repo is a **loop-experiment-researcher** template. Scaffold a new research
@@ -186,26 +203,49 @@ for the full guide.
 
 Or click **"Use this template"** on GitHub to create a new repo from this one.
 
-## Contributing
+---
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome.
+## Be the example you want to see in the world
 
-## Security
+This project is built on a simple motto: **be the example you want to see in
+the world.** Every choice — open-source artifacts, real baseline numbers,
+honest documentation of dead ends, $38.95 total cost, a template anyone can
+clone — was made to show what's possible when you don't wait for permission,
+institutional grants, or a "proper" research lab.
 
-See [SECURITY.md](SECURITY.md).
+The kompress line has 17 models. 11 of them were dead ends. We published
+them anyway. v15 had the largest dataset (983 pairs) and the worst result
+(0.878). We documented it honestly. v11 had a bigger encoder and collapsed
+to keep_rate 0.517. We wrote about it. The dead ends are the research — they
+show what doesn't work, which is as valuable as what does, if you're honest
+about it.
 
-## Funding
+This repo is the example. The manuscript, the baselines, the notebook, the
+MCP server, the template, the CI, the devcontainer — all of it exists so that
+the next person who has an idea and a $40 budget can start from here instead
+of from zero.
 
-This project follows a **decentralized open-source funding model**. No
-institutional grants. Community council guides donations for infrastructure
-costs. If you'd like to support this work:
+## Closing the loop
 
-**GitHub Sponsors:** https://github.com/sponsors/peterlodri-sec
+The loop is the goal, not the destination. This project started as an inner
+loop of [ultrawhale](https://github.com/peterlodri-sec/ultrawhale), which is
+an inner loop of [vaked](https://protocol.vaked.dev). The compression model
+makes the outer loops cheaper to run; the outer loops produce the data that
+trains the compression model. Each loop feeds the one above it and the one
+below it. That's the infinite goal — not a paper, not a product, but a
+self-reinforcing cycle that gets better every iteration.
+
+The correctable loop invariant says: if the metric doesn't improve in 3
+iterations, stop. The loop has stopped improving for now. v8 is the production
+model. The paradox is proven. The fix works. The paper is written.
+
+Until the next loop starts.
 
 ---
 
 <p align="center">
   <sub>Built with the <a href="https://addyosmani.com/blog/loop-engineering/">Loop Engineering</a> paradigm.<br>
+  <em>Be the example you want to see in the world.</em><br>
   Research cost: $37.19 (DeepSeek API) + $1.76 (GPU compute) = <strong>$38.95</strong>.<br>
   Support this project on <a href="https://github.com/sponsors/peterlodri-sec">GitHub Sponsors</a>.</sub>
 </p>
