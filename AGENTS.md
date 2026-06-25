@@ -80,6 +80,48 @@ The bot is advisory, not authoritative. It fixes factual drift (broken links,
 stale numbers, missing table entries) but never adds content on its own.
 Human review is still expected before major releases.
 
+### CI Agent Suite
+Six agents in `agents/` package, invoked via CLI or MCP:
+
+| Agent | Trigger | What it does | Cost |
+|-------|---------|-------------|------|
+| `citation-guard` | paper/*.tex changes | Validates \cite{} against CrossRef DOIs | $0.00 |
+| `metric-watchdog` | baselines/ changes | Detects metric regressions between commits | $0.00 |
+| `changelog-gen` | push to main | Auto-generates CHANGELOG.md from git log | $0.00 |
+| `hf-card-sync` | push to main | Syncs HuggingFace model card with current metrics | $0.001 |
+| `latex-guard` | paper/*.tex changes | Compiles PDF, gates on LaTeX errors | $0.00 |
+| `doc-sync` | push to main | DeepSeek v4-flash reviews diff, fixes docs | $0.001 |
+
+**CLI usage:**
+```bash
+python tools/ci_agents.py list              # list all agents
+python tools/ci_agents.py run citation-guard # run one
+python tools/ci_agents.py run-all           # run all
+python tools/ci_agents.py run-all --dry-run # preview without side effects
+```
+
+**Taskfile usage:**
+```bash
+task agents:list        # list all
+task agents:run AGENT=citation-guard  # run one
+task agents:run-all     # run all
+task agents:dry-run     # dry run
+```
+
+**MCP usage:**
+```json
+{"tool": "list_ci_agents"}
+{"tool": "run_ci_agent", "arguments": {"agent": "citation-guard"}}
+{"tool": "run_ci_agent", "arguments": {"agent": "metric-watchdog", "dry_run": true}}
+```
+
+**Adding a new agent:**
+1. Create `agents/my_agent.py` with class inheriting `CIAgent`
+2. Implement `run(dry_run) -> AgentResult`
+3. Call `register(MyAgent())` at module level
+4. Add import to `agents/__init__.py`, `tools/ci_agents.py`, `mcp_server/server.py`
+5. Add CI job in `.github/workflows/ci-agents.yml`
+
 ### When editing the manuscript
 1. **Never fabricate numbers.** All metrics come from pocoo.vaked.dev blog posts or
    the baseline_results.json file. If a number is not sourced, mark it `\tbd`.

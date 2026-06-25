@@ -201,6 +201,15 @@ realizes Greyling's \texttt{loop-run-log.md} convention
 living documentation without human intervention, closing the loop between
 code and narrative.
 
+The doc-sync agent is part of a six-agent CI suite
+(\texttt{agents/} package, invoked via \texttt{tools/ci\_agents.py} or MCP).
+The suite follows a layered abstraction: each agent inherits from
+\texttt{CIAgent}, returns a standardized \texttt{AgentResult}, and is
+discovered via a registry. The CLI and MCP server expose the same interface,
+so agents run identically in GitHub Actions, local development, or agent-to-agent
+calls. Agents are advisory by design---they report pass/fail with structured
+details but never block the shipping loop.
+
 \subsection{Reproducibility and cost}
 \label{sec:loopkit:repro}
 

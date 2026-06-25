@@ -89,11 +89,33 @@ tasks:
     cmds:
       - task: paper:check
       - task: seal:verify
+      - task: agents:run-all
       - |
         echo "=== Python syntax ==="
         python3 -m py_compile baselines/run_baselines.py && echo "  baselines: OK"
         python3 -m py_compile mcp_server/server.py && echo "  mcp: OK"
         python3 -m py_compile notebook.py && echo "  notebook: OK"
+
+  # ── CI Agents ──────────────────────────────────────────
+  agents:list:
+    desc: List all CI agents
+    cmds:
+      - python tools/ci_agents.py list
+
+  agents:run:
+    desc: Run a specific CI agent (usage: task agents:run AGENT=citation-guard)
+    cmds:
+      - python tools/ci_agents.py run {{.AGENT}}
+
+  agents:run-all:
+    desc: Run all CI agents
+    cmds:
+      - python tools/ci_agents.py run-all
+
+  agents:dry-run:
+    desc: Dry-run all CI agents (no side effects)
+    cmds:
+      - python tools/ci_agents.py run-all --dry-run
 
   # ── Genesis Seal ───────────────────────────────────────
   seal:verify:

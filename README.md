@@ -29,10 +29,11 @@ The fix is called **kompress-v8**. It's a small AI model (149M parameters) that 
 |------|------|
 | `paper/` | LaTeX manuscript (9 files, ~1600 lines) — the actual paper |
 | `baselines/` | Baseline comparison scripts + results (TextRank, LLMLingua-2, random, kompress-v8) |
+| `agents/` | CI agent suite — 6 agents (citation, metrics, changelog, HF card, LaTeX, doc-sync) |
 | `notebook.py` | [marimo](https://marimo.io) interactive notebook — explore the paradox, mechanisms, baselines |
 | `site/` | marimo WASM export — interactive notebook running in-browser (no server) |
-| `mcp_server/` | MCP server for agent interaction (7 tools) |
-| `Taskfile.yml` | Task runner — 16 commands for paper, site, baselines, CI |
+| `mcp_server/` | MCP server for agent interaction (7 tools + 2 CI agent tools) |
+| `Taskfile.yml` | Task runner — 20+ commands for paper, site, baselines, CI, agents |
 | `flake.nix` | Nix flake — reproducible dev shell with Python, LaTeX, treefmt, pre-commit hooks |
 | `AGENTS.md` | Operating instructions for AI agents working in this repo |
 
@@ -163,7 +164,7 @@ This project follows the [Loop Engineering paradigm](https://addyosmani.com/blog
 - **State:** the manuscript is the state; git is the durable memory
 - **Skills:** `AGENTS.md` encodes project conventions once
 - **Maker/checker:** baseline script (maker) vs manuscript (checker)
-- **Automated doc sync:** DeepSeek v4-flash agent reviews every push, auto-fixes drifted docs, never blocks
+- **CI agent suite:** 6 agents (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard, doc-sync) — all advisory, never blocking
 - **Correctable loop:** if the metric doesn't improve in 3 iterations, stop
 - **Hill climbing:** v9-v14 explored post-production; none surpassed v8
 

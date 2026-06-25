@@ -37,6 +37,15 @@ REPO_ROOT = Path(__file__).parent.parent
 PAPER_DIR = REPO_ROOT / "paper"
 BASELINES_DIR = REPO_ROOT / "baselines"
 
+# Import CI agents
+sys.path.insert(0, str(REPO_ROOT))
+import agents.citation_guard  # noqa: F401
+import agents.metric_watchdog  # noqa: F401
+import agents.changelog_gen  # noqa: F401
+import agents.hf_card_sync  # noqa: F401
+import agents.latex_guard  # noqa: F401
+from agents import list_agents, get_agent
+
 server = Server("kompress-research")
 
 
@@ -93,6 +102,30 @@ async def list_tools() -> list[Tool]:
             description="Get repository status: git log, file tree, and TODO/placeholder markers in the manuscript.",
             inputSchema={"type": "object", "properties": {}, "required": []},
         ),
+        Tool(
+            name="run_ci_agent",
+            description="Run a CI agent (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard). Returns pass/fail with details.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "agent": {
+                        "type": "string",
+                        "description": "Agent name (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard)",
+                    },
+                    "dry_run": {
+                        "type": "boolean",
+                        "description": "If true, show what would happen without making changes",
+                        "default": False,
+                    },
+                },
+                "required": ["agent"],
+            },
+        ),
+        Tool(
+            name="list_ci_agents",
+            description="List all available CI agents and their descriptions.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
     ]
 
 
@@ -112,6 +145,10 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         return _search_paper(arguments["query"])
     elif name == "get_repo_status":
         return _get_repo_status()
+    elif name == "run_ci_agent":
+        return _run_ci_agent(arguments["agent"], arguments.get("dry_run", False))
+    elif name == "list_ci_agents":
+        return _list_ci_agents()
     else:
         return [TextContent(type="text", text=f"Unknown tool: {name}")]
 
@@ -266,7 +303,22 @@ def _get_repo_status() -> list[TextContent]:
     return [TextContent(type="text", text="\n".join(lines))]
 
 
-async def main():
+def _run_ci_agent(agent_name: str, dry_run: bool) -> list[TextContent]:
+    agent = get_agent(agent_name)
+    if not agent:
+        available = ", ".join(sorted(list_agents().keys()))
+        return [TextContent(type="text", text=f"Unknown agent: {agent_name}\nAvailable: {available}")]
+    result = agent.run(dry_run=dry_run)
+    return [TextContent(type="text", text=result.to_text())]
+
+
+def _list_ci_agents() -> list[TextContent]:
+    agents = list_agents()
+    lines = ["# CI Agents\n"]
+    for name, desc in sorted(agents.items()):
+        lines.append(f"- **{name}**: {desc}")
+    lines.append(f"\nRun with: `run_ci_agent(agent=\"{list(agents.keys())[0]}\")`")
+    return [TextContent(type="text", text="\n".join(lines))]
     async with stdio_server() as (read_stream, write_stream):
         await server.run(read_stream, write_stream, server.create_initialization_options())
 
