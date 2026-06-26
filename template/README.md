@@ -42,14 +42,38 @@ my-research-idea/
 └── llms.txt                ← LLM-optimized summary
 ```
 
-## The Loop Engineering workflow
+## Loop Engineering workflow
 
 1. **Write the genesis contract** (`loop/genesis.md`): what are you reducing? when do you stop? what must never be sacrificed?
 2. **Write the skill file** (`loop/SKILL.md`): define your benchmark, architecture, and training procedure.
 3. **Run the loop**: `python loop/loop.py "your hypothesis"`
-4. **Each iteration**: Plan → Execute → Evaluate → Decide (SHIP / RETRAIN / PIVOT)
+4. **Each iteration**: Plan -> Execute -> Evaluate -> Decide (SHIP / RETRAIN / PIVOT)
 5. **The correctable loop invariant**: if the metric doesn't improve in 3 iterations, stop and pivot.
 6. **Write up**: the LaTeX manuscript in `paper/` is the durable state; git is the memory.
+
+## Examples
+
+Six complete, runnable examples in `examples/`:
+
+| Example | Domain | What it optimizes | Key metric | Files |
+|---------|--------|-------------------|------------|-------|
+| [prompt-compression](examples/prompt-compression/) | NLP | Compress sentiment prompts while preserving accuracy | accuracy >= 0.85, compression <= 0.70 | 7 |
+| [log-summarizer](examples/log-summarizer/) | DevOps | Summarize verbose logs while retaining critical fields | retention >= 0.90, compression <= 0.60 | 7 |
+| [url-slug-optimizer](examples/url-slug-optimizer/) | Web | Generate readable, short URL slugs from page titles | readability >= 0.40, length <= 45 chars | 7 |
+| [issue-enricher](examples/issue-enricher/) | Project mgmt | Enrich issues with cross-refs, code refs, related issues | precision >= 0.60, coverage >= 0.50 | 8 |
+| [commit-optimizer](examples/commit-optimizer/) | Dev workflow | Generate conventional commit messages from git diffs | score >= 60/100, grammar >= 0.70 | 7 |
+| [ralph-loop](examples/ralph-loop/) | Philosophy | Ultra cavemanified loop. one file. no fancy. just loop. | vibes | 3 |
+
+Each example has a complete loop: `loop.py` (Plan->Execute->Evaluate->Decide), plus experiment/evaluate/data files. The ralph-loop is intentionally minimal -- one file, no separation of concerns, pure caveman engineering.
+
+```bash
+cd examples/prompt-compression
+python loop.py "baseline: no compression"
+python loop.py "keyword extraction preserves sentiment signal"
+
+cd ../ralph-loop
+python ralph.py  # that's it. no arguments. just ralph.
+```
 
 ## What the scaffold script does
 

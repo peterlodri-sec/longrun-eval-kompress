@@ -94,3 +94,23 @@ jobs:
         with:
           python-version: '3.12'
       - run: python tools/ci_agents.py run linker
+
+  todo-scanner:
+    name: Todo Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/ci_agents.py run todo-scanner
+
+  secret-scanner:
+    name: Secret Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/ci_agents.py run secret-scanner

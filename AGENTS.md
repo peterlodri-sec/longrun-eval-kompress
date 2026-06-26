@@ -81,7 +81,7 @@ stale numbers, missing table entries) but never adds content on its own.
 Human review is still expected before major releases.
 
 ### CI Agent Suite
-Seven agents in `agents/` package, invoked via CLI or MCP:
+Nine agents in `agents/` package, invoked via CLI or MCP:
 
 | Agent | Trigger | What it does | Cost |
 |-------|---------|-------------|------|
@@ -92,6 +92,8 @@ Seven agents in `agents/` package, invoked via CLI or MCP:
 | `latex-guard` | paper/*.tex changes | Compiles PDF, gates on LaTeX errors | $0.00 |
 | `doc-sync` | push to main | DeepSeek v4-flash reviews diff, fixes docs | $0.001 |
 | `linker` | **/*.md, *.tex changes | Ensures LINKS.txt <-> file reference consistency | $0.00 |
+| `todo-scanner` | **/* changes | Reports TODO/FIXME/HACK/XXX/TBD markers | $0.00 |
+| `secret-scanner` | **/* changes | Detects leaked credentials in tracked files | $0.00 |
 
 **CLI usage:**
 ```bash

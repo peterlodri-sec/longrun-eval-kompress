@@ -21,6 +21,8 @@ import agents.changelog_gen  # noqa: F401
 import agents.hf_card_sync  # noqa: F401
 import agents.latex_guard  # noqa: F401
 import agents.linker  # noqa: F401
+import agents.todo_scanner  # noqa: F401
+import agents.secret_scanner  # noqa: F401
 
 from agents import list_agents, get_agent
 

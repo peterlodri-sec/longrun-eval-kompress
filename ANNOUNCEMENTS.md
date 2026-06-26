@@ -58,6 +58,8 @@ Built with the Loop Engineering paradigm (@addyosmani @cobusgreyling @LangChainA
 
 The repo is also a template: `python template/scaffold.py --name "my-idea"` gives you a full research project scaffold — manuscript, loop runner, MCP server, notebook, CI, devcontainer.
 
+3 runnable examples included: prompt compression, log summarization, URL slug optimization. Each demonstrates the full Plan->Execute->Evaluate->Decide cycle.
+
 Be the example you want to see in the world. 🔄
 
 ---
@@ -142,3 +144,50 @@ We prove that multi-checkpoint voting ensembles with asymmetric training-data fl
 - Interactive paper: https://kompress.vaked.dev/notebook/
 
 Built with the Loop Engineering paradigm (Addy Osmani, Cobus Greyling, LangChain). The repo is also a reusable template for loop-experiment-researcher projects.
+
+---
+
+## Bluesky
+
+**Post 1 (main announcement):**
+just open-sourced an ICLR 2027 manuscript: "Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox in Learned Context-Pruning Ensembles"
+
+17 models. 8 teachers. 4 architectures. $38.95 total cost.
+
+the paradox: adding voters to a compression ensemble makes it WORSE. we prove it and fix it.
+
+paper + code: github.com/peterlodri-sec/longrun-eval-kompress
+
+**Post 2 (ralph-loop):**
+meet ralph-loop -- the most stripped-down Loop Engineering example possible.
+
+one file. no imports. no separation of concerns. just vibes-based compression.
+
+ralph picks a ratio, compresses some numbers, scores it, and either ships it or tries harder. that's the whole loop.
+
+named after ralph wiggum, who famously said "i'm in danger!" (same energy as most ML researchers during training)
+
+template/examples/ralph-loop/
+
+**Post 3 (template + examples):**
+the repo is also a reusable template for loop-experiment-researcher projects.
+
+6 runnable examples included:
+- prompt compression (NLP)
+- log summarization (DevOps)
+- URL slug optimization (Web)
+- issue enrichment (project mgmt)
+- commit message optimization (dev workflow)
+- ralph-loop (philosophy)
+
+python template/scaffold.py --name "my-idea" gives you a full research scaffold.
+
+**Post 4 (ENTHEA + agents):**
+the site has three layers:
+- ENTHEA landing (kompress.vaked.dev) -- full psychedelic neural field visualizer
+- interactive paper (kompress.vaked.dev/notebook/) -- paradox simulator + baselines
+- paper PDF (kompress.vaked.dev/paper/main.pdf) -- the ICLR 2027 manuscript
+
+9 CI agents run on every push: citation guard, metric watchdog, changelog gen, HF card sync, LaTeX guard, doc sync, link checker, todo scanner, secret scanner.
+
+all advisory. never blocks shipping. $0.01 per push.

@@ -33,7 +33,7 @@ The fix is called **kompress-v8**. It's a small AI model (149M parameters) that 
 |------|------|
 | `paper/` | LaTeX manuscript (9 files, ~1600 lines) — the actual paper |
 | `baselines/` | Baseline comparison scripts + results (TextRank, LLMLingua-2, random, kompress-v8) |
-| `agents/` | CI agent suite — 7 agents (citation, metrics, changelog, HF card, LaTeX, doc-sync, linker) |
+| `agents/` | CI agent suite — 9 agents (citation, metrics, changelog, HF card, LaTeX, doc-sync, linker, todo, secret) |
 | `notebook.py` | [marimo](https://marimo.io) interactive notebook — explore the paradox, mechanisms, baselines |
 | `site/` | marimo WASM export — interactive notebook running in-browser (no server) |
 | `mcp_server/` | MCP server for agent interaction (7 tools + 2 CI agent tools) |
@@ -169,7 +169,7 @@ This project follows the [Loop Engineering paradigm](https://addyosmani.com/blog
 - **State:** the manuscript is the state; git is the durable memory
 - **Skills:** `AGENTS.md` encodes project conventions once
 - **Maker/checker:** baseline script (maker) vs manuscript (checker)
-- **CI agent suite:** 7 agents (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard, doc-sync, linker) — all advisory, never blocking
+- **CI agent suite:** 9 agents (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard, doc-sync, linker, todo-scanner, secret-scanner) — all advisory, never blocking
 - **Correctable loop:** if the metric doesn't improve in 3 iterations, stop
 - **Hill climbing:** v9-v14 explored post-production; none surpassed v8
 

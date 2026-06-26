@@ -38,3 +38,24 @@ my-research/
 6. Write up in `paper/`
 
 See [template/README.md](https://github.com/peterlodri-sec/longrun-eval-kompress/blob/main/template/README.md) for the full guide.
+
+## Included examples
+
+Six runnable examples in `template/examples/`:
+
+- **`prompt-compression`** -- compress sentiment prompts while preserving accuracy
+- **`log-summarizer`** -- summarize verbose logs while retaining critical fields
+- **`url-slug-optimizer`** -- generate readable, short URL slugs
+- **`issue-enricher`** -- enrich issues with cross-refs, code refs, related issues
+- **`commit-optimizer`** -- generate conventional commit messages from git diffs
+- **`ralph-loop`** -- ultra cavemanified loop. one file. just vibes. ([deep dive](Ralph-Loop.md))
+
+Each has a complete loop (`loop.py`, `experiment.py`, `evaluate.py`, `data.py`, `STATE.md`, `genesis.md`, `SKILL.md`). Run them:
+
+```bash
+cd template/examples/prompt-compression
+python loop.py "baseline: no compression"
+
+cd ../ralph-loop
+python ralph.py  # that's it. no arguments. just ralph.
+```

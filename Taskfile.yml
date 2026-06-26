@@ -126,9 +126,19 @@ tasks:
       - "{{.PYTHON}} tools/ci_agents.py run linker"
 
   agents:link-fix:
-    desc: Auto-append missing links to LINKS.md
+    desc: Auto-append missing links to LINKS.txt
     cmds:
       - "{{.PYTHON}} tools/ci_agents.py run linker"
+
+  agents:todos:
+    desc: Scan for TODO/FIXME/HACK/XXX/TBD comments
+    cmds:
+      - "{{.PYTHON}} tools/ci_agents.py run todo-scanner"
+
+  agents:secrets:
+    desc: Scan for leaked credentials in tracked files
+    cmds:
+      - "{{.PYTHON}} tools/ci_agents.py run secret-scanner"
 
   # -- Genesis Seal 
   seal:verify:
