@@ -1,0 +1,32 @@
+<!-- JSON-LD BlogPosting template — inject into each pocoo.vaked.dev post <head> -->
+<!-- Replace {{TITLE}}, {{URL}}, {{DESCRIPTION}}, {{DATE}}, {{AUTHOR}}, {{TAGS}} -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{TITLE}}",
+  "description": "{{DESCRIPTION}}",
+  "url": "{{URL}}",
+  "datePublished": "{{DATE}}",
+  "author": {
+    "@type": "Person",
+    "name": "Lodri Peter"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "pocoo",
+    "url": "https://pocoo.vaked.dev"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{URL}}"
+  },
+  "articleSection": "loop-engineering",
+  "keywords": [{{TAGS}}],
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "pocoo",
+    "url": "https://pocoo.vaked.dev"
+  }
+}
+</script>

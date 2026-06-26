@@ -1,0 +1,148 @@
+# pocoo — Loop Engineering Experiment Logs
+
+> Chronological registry of experiments in learned context-pruning,
+> loop engineering, and the kompress-v8 production model. 24 posts
+> from June 11-25, 2026.
+
+## About
+
+pocoo.vaked.dev is the public experiment log for the kompress research
+program. Each post documents a specific finding, technique, or
+milestone in the development of kompress-v8 — a 149M-parameter
+dual-head ModernBERT for learned context pruning.
+
+The research produced the ICLR 2027 manuscript "Asymmetric Loss
+Modulation Resolves the Voting Ensemble Paradox in Learned
+Context-Pruning Ensembles."
+
+## Posts (newest first)
+
+### 2026-06-25
+
+- **Fine-tuning Kompress: the Sapir-Whorf case**
+  https://pocoo.vaked.dev/posts/2026-06-25-fine-tuning-kompress-sapir-whorf.html
+  3.0x penalty on critical-syntactic tokens (signal names, file paths,
+  exit codes) during fine-tuning. The Sapir-Whorf hypothesis applied
+  to token-level compression.
+
+- **Iterative self-labeling**
+  https://pocoo.vaked.dev/posts/2026-06-25-iterative-self-labeling.html
+  v3→v4 self-labeling loop: use A+B mechanisms as oracle to relabel
+  training data, then retrain. Each iteration improves label quality.
+
+- **Heretic adversarial eval**
+  https://pocoo.vaked.dev/posts/2026-06-25-kompress-heretic-eval.html
+  Override lift 0.942→0.969. The heretic set is 8 prompts designed
+  to test must-keep token preservation under adversarial conditions.
+
+- **Closing the Training-Production Gap (v6 agent distribution)**
+  https://pocoo.vaked.dev/posts/2026-06-25-kompress-v6-agent-distribution.html
+  Agent-distribution training: expose the model to diverse compression
+  scenarios during training to close the gap between train and deploy.
+
+- **Loop engineering applied**
+  https://pocoo.vaked.dev/posts/2026-06-25-loop-engineering-applied.html
+  Mapping Osmani + Anthropic patterns to the kompress development loop.
+  Four-tier loop structure: outer (API), inner (GPU), local (MCP), meta (CI).
+
+- **LoopKit starter kit**
+  https://pocoo.vaked.dev/posts/2026-06-25-loopkit.html
+  Open-source release of the four-phase autonomous state machine
+  implementing Loop Engineering for compression model training.
+
+- **The loop shipped**
+  https://pocoo.vaked.dev/posts/2026-06-25-the-loop-shipped.html
+  17 models trained, 8 teachers, 4 architectures, $38.95 total compute.
+  The entire research program cost less than a conference registration.
+
+- **The silver label problem**
+  https://pocoo.vaked.dev/posts/2026-06-25-the-silver-label-problem.html
+  28% noise floor diagnostic. Average mk_in_ref across 9 domains: 0.43.
+  Label quality is the bottleneck, not model capacity.
+
+- **We ran the loop**
+  https://pocoo.vaked.dev/posts/2026-06-25-we-ran-the-loop.html
+  14-step roadmap post-mortem. What worked, what didn't, what we'd
+  do differently.
+
+### 2026-06-24
+
+- **Compressing the loop**
+  https://pocoo.vaked.dev/posts/2026-06-24-compressing-the-loop.html
+  Headroom + Honey benchmarks. Comparing compression approaches.
+
+- **Form the tool to ourselves (freedom of tools)**
+  https://pocoo.vaked.dev/posts/2026-06-24-freedom-of-tools.html
+  Philosophical reflection on tool use and agency in AI development.
+
+- **The genesis contract, formally**
+  https://pocoo.vaked.dev/posts/2026-06-24-genesis-contract-formally.html
+  Formal specification of the genesis contract — the initial state
+  commitment that binds the research program.
+
+- **Loop Radio**
+  https://pocoo.vaked.dev/posts/2026-06-24-loop-radio.html
+  Music and audio experiments related to loop engineering patterns.
+
+- **Local M3/M1 dogfeed loop**
+  https://pocoo.vaked.dev/posts/2026-06-24-m3-dogfeed-headroom.html
+  Running the compression pipeline on local Apple Silicon. Dogfooding
+  the tools on consumer hardware.
+
+- **Reduce till it's a loop**
+  https://pocoo.vaked.dev/posts/2026-06-24-reduce-till-its-a-loop.html
+  The core insight: keep reducing until the process becomes a loop.
+  When you can't reduce further, you've found the invariant.
+
+- **Slop is data**
+  https://pocoo.vaked.dev/posts/2026-06-24-slop-is-data.html
+  AI-generated content ("slop") is training data for the next iteration.
+  The loop consumes its own output.
+
+- **The correctable loop**
+  https://pocoo.vaked.dev/posts/2026-06-24-the-correctable-loop.html
+  The loop must be correctable: if the eval metric doesn't improve
+  in 3 iterations, stop. This is the invariant.
+
+- **The loop is already here**
+  https://pocoo.vaked.dev/posts/2026-06-24-the-loop-is-already-here.html
+  You're already in a loop. The question is whether it's correctable.
+
+- **Your first free infinite loop**
+  https://pocoo.vaked.dev/posts/2026-06-24-your-first-free-infinite-loop.html
+  Getting started with Loop Engineering. The basics of the four-tier
+  loop structure.
+
+### 2026-06-23
+
+- **Maxwell's Demon and honest work**
+  https://pocoo.vaked.dev/posts/2026-06-23-maxwell-demon-honest-work.html
+  Thermodynamic analogy for information compression. Maxwell's demon
+  as a metaphor for the compression agent.
+
+- **MLIR agent topology**
+  https://pocoo.vaked.dev/posts/2026-06-23-mlir-agent-topology.html
+  Using MLIR (Multi-Level Intermediate Representation) concepts to
+  model agent communication topology.
+
+- **Stigmergy: routing without asking**
+  https://pocoo.vaked.dev/posts/2026-06-23-stigmergy-routing-without-asking.html
+  Stigmergic coordination: agents communicate through the environment
+  rather than directly. Applied to compression routing.
+
+- **Vaked language above Nix**
+  https://pocoo.vaked.dev/posts/2026-06-23-vaked-language-above-nix.html
+  The vaked programming language as a higher-level abstraction over
+  Nix for reproducible research environments.
+
+## Ecosystem
+
+- Interactive paper: https://kompress.vaked.dev
+- Paper PDF: https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf
+- GitHub: https://github.com/peterlodri-sec/longrun-eval-kompress
+- Model: https://huggingface.co/PeetPedro/kompress-v8
+- Dataset: https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood
+- Training engine: https://github.com/peterlodri-sec/loopkit
+- Outer loop: https://github.com/peterlodri-sec/ultrawhale
+- Chat: https://chat.vaked.dev
+- Protocol: https://protocol.vaked.dev

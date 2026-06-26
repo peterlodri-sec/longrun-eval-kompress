@@ -1,0 +1,37 @@
+# kompress — Voting Ensemble Paradox Interactive Paper
+
+> Multi-checkpoint voting ensembles with asymmetric training-data floors collapse
+> to the per-stratum weakest voter under k-of-N drop voting. The 3.0x heavy
+> false-eviction penalty on critical-syntactic tokens resolves this.
+
+## Paper
+
+- [PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)
+- [GitHub](https://github.com/peterlodri-sec/longrun-eval-kompress)
+
+## Model & Data
+
+- kompress-v8: https://huggingface.co/PeetPedro/kompress-v8
+- Training dataset: https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood
+- Training engine: https://github.com/peterlodri-sec/loopkit
+
+## Experiment Logs
+
+- Blog: https://pocoo.vaked.dev
+- Key posts:
+  - [Fine-tuning Kompress: the Sapir-Whorf case](https://pocoo.vaked.dev/posts/2026-06-25-fine-tuning-kompress-sapir-whorf.html)
+  - [Iterative self-labeling](https://pocoo.vaked.dev/posts/2026-06-25-iterative-self-labeling.html)
+  - [Heretic adversarial eval](https://pocoo.vaked.dev/posts/2026-06-25-kompress-heretic-eval.html)
+  - [The silver label problem](https://pocoo.vaked.dev/posts/2026-06-25-the-silver-label-problem.html)
+  - [The loop shipped](https://pocoo.vaked.dev/posts/2026-06-25-the-loop-shipped.html)
+
+## Key Results
+
+- v8 heretic exact: 0.955, keep_rate: 0.854, override_delta: 0.000
+- Pareto frontier: lambda=3 (v8, 0.955, 15%), lambda=5 (v17, 0.963, 3.7%), lambda=10 (v16, 0.972, 2.8%)
+- 17 models trained, 8 teachers, 4 architectures, $38.95 total compute
+- Label quality is the bottleneck, not model capacity or data quantity
+
+## License
+
+Apache-2.0. Blog posts at pocoo.vaked.dev are public domain.
