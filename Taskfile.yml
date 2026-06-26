@@ -45,13 +45,13 @@ tasks:
 
   # -- Site ----------------------------------------------------
   site:build:
-    desc: Export marimo notebook to WASM HTML site
+    desc: Build full site — ENTHEA landing + marimo notebook + paper PDF
     cmds:
-      - uvx marimo export html-wasm {{.NOTEBOOK}} -o {{.SITE_DIR}} --no-execute --no-show-code -f
-      - sed -i '' 's|content="a marimo app"|content="Voting Ensemble Paradox - kompress-v8"|' {{.SITE_DIR}}/index.html
-      - sed -i '' 's|<title>notebook</title>|<title>Voting Ensemble Paradox - kompress-v8</title>|' {{.SITE_DIR}}/index.html
-      - sed -i '' 's|</title>|</title>\n    <script src="./assets/enthea-bg.js" defer></script>|' {{.SITE_DIR}}/index.html
-      - "{{.PYTHON}} tools/seo_inject.py {{.SITE_DIR}}/index.html"
+      # Export marimo notebook to subdirectory
+      - uvx marimo export html-wasm {{.NOTEBOOK}} -o {{.SITE_DIR}}/notebook --no-execute --no-show-code -f
+      - sed -i '' 's|content="a marimo app"|content="Voting Ensemble Paradox - kompress-v8"|' {{.SITE_DIR}}/notebook/index.html
+      - sed -i '' 's|<title>notebook</title>|<title>Voting Ensemble Paradox - kompress-v8</title>|' {{.SITE_DIR}}/notebook/index.html
+      - "{{.PYTHON}} tools/seo_inject.py {{.SITE_DIR}}/notebook/index.html"
 
   site:serve:
     desc: Serve site locally for preview
