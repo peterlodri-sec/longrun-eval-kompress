@@ -3239,5 +3239,80 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
+<!-- 🥚 easter eggs -->
+<div id="eggGame" style="position:fixed;inset:0;z-index:99;display:none;background:rgba(5,6,10,.95);font-family:var(--mono);color:var(--accent2);align-items:center;justify-content:center;flex-direction:column">
+  <canvas id="eggCanvas" width="400" height="400" style="border:1px solid var(--accent);border-radius:12px"></canvas>
+  <p style="margin-top:12px;font-size:11px;color:var(--dim)">🐋 whale runner · arrows to move · esc to close · score: <b id="eggScore" style="color:#fff">0</b></p>
+</div>
+<script>
+// ── easter eggs ──
+let eggActive=false, eggScore=0, eggSnake=[{x:10,y:10}], eggDir={x:1,y:0}, eggFood={x:15,y:15}, eggLoop=null;
+
+// Konami code detector
+let konami=[], kcode=[38,38,40,40,37,39,37,39,66,65];
+document.addEventListener('keydown',e=>{
+  konami.push(e.keyCode); if(konami.length>10)konami.shift();
+  if(konami.join(',')===kcode.join(',')){ startEggGame(); konami=[]; }
+});
+
+// Whale mode: type 'whale' anywhere
+let whaleBuf='';
+document.addEventListener('keypress',e=>{
+  whaleBuf+=e.key.toLowerCase(); if(whaleBuf.length>5)whaleBuf=whaleBuf.slice(-5);
+  if(whaleBuf==='whale'){
+    document.body.style.transition='filter 2s';
+    document.body.style.filter='hue-rotate('+Math.random()*360+'deg) saturate(2)';
+    console.log('%c🐋 whale mode activated %c— the loop is watching','color:#3ee8c5;font-size:16px','color:#9a93b8');
+    setTimeout(()=>{document.body.style.filter=''},3000);
+    whaleBuf='';
+  }
+  // Secret: type 'loop' for ASCII art
+  if(whaleBuf==='loopk'){
+    console.log(
+      '%c   ╭──────╮    ╭──────╮\n  ╱ ╲    ╱ ╲  ╱ ╲    ╱ ╲\n ╱   ╲  ╱   ╲╱   ╲  ╱   ╲\n╱     ╲╱     ╲     ╲╱     ╲\n╲     ╱╲     ╱     ╱╲     ╱\n ╲   ╱  ╲   ╱╲   ╱  ╲   ╱\n  ╲ ╱    ╲ ╱  ╲ ╱    ╲ ╱\n   ╰──────╯    ╰──────╯',
+      'color:#3ee8c5;font-size:8px;line-height:1');
+    console.log('%c the loop shipped. the paradox is proven. label quality is the bottleneck.','color:#9a93b8;font-size:12px');
+    whaleBuf='';
+  }
+});
+
+function startEggGame(){
+  document.getElementById('eggGame').style.display='flex';
+  eggActive=true; eggScore=0; eggSnake=[{x:10,y:10}]; eggDir={x:1,y:0};
+  eggFood={x:Math.floor(Math.random()*18)+1,y:Math.floor(Math.random()*18)+1};
+  document.getElementById('eggScore').textContent='0';
+  if(eggLoop)clearInterval(eggLoop);
+  eggLoop=setInterval(tickEgg,120);
+}
+function tickEgg(){
+  if(!eggActive)return;
+  const head={x:eggSnake[0].x+eggDir.x,y:eggSnake[0].y+eggDir.y};
+  if(head.x<0||head.x>19||head.y<0||head.y>19||eggSnake.some(s=>s.x===head.x&&s.y===head.y)){
+    eggActive=false;clearInterval(eggLoop);
+    document.getElementById('eggScore').textContent=eggScore+' (game over — esc to close)';
+    return;
+  }
+  eggSnake.unshift(head);
+  if(head.x===eggFood.x&&head.y===eggFood.y){eggScore+=10;eggFood={x:Math.floor(Math.random()*18)+1,y:Math.floor(Math.random()*18)+1}}
+  else eggSnake.pop();
+  document.getElementById('eggScore').textContent=eggScore;
+  drawEgg();
+}
+function drawEgg(){
+  const cv=document.getElementById('eggCanvas'),ctx=cv.getContext('2d');
+  ctx.fillStyle='#05060a';ctx.fillRect(0,0,400,400);
+  ctx.fillStyle='#62e6c9';eggSnake.forEach(s=>ctx.fillRect(s.x*20,s.y*20,18,18));
+  ctx.fillStyle='#f7768e';ctx.fillRect(eggFood.x*20,eggFood.y*20,18,18);
+}
+document.addEventListener('keydown',e=>{
+  if(!eggActive)return;
+  if(e.key==='Escape'){eggActive=false;clearInterval(eggLoop);document.getElementById('eggGame').style.display='none';return}
+  const m={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};
+  if(m[e.key]&&!(m[e.key].x===-eggDir.x&&m[e.key].y===-eggDir.y))eggDir=m[e.key];
+});
+
+console.log('%c🥚 easter eggs loaded %c— konami code · type whale · type loopk','color:#ffcf7a','color:#9a93b8');
+</script>
+
 </body>
 </html>
