@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kompress · notebook</title>
+<style>
+  :root {
+    --bg: #05060a; --ink: #e7e2f7; --dim: #9a93b8; --line: rgba(170,150,255,.18);
+    --glass: rgba(11,10,21,.88); --accent: #b48bff; --accent2: #62e6c9;
+    --mono: "SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .card {
+    max-width: 600px;
+    width: 100%;
+    background: linear-gradient(150deg,rgba(18,15,32,.96),rgba(9,8,18,.96));
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.8);
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: 22px;
+    letter-spacing: .12em;
+    background: linear-gradient(92deg,var(--accent),#7bdcff,var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 24px;
+  }
+  .options {
+    display: grid;
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .btn {
+    display: block;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-family: var(--mono);
+    font-size: 13px;
+    text-decoration: none;
+    transition: .2s;
+    border: 1px solid var(--line);
+  }
+  .btn.primary {
+    background: linear-gradient(135deg,rgba(180,139,255,.24),rgba(98,230,201,.12));
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px -8px rgba(180,139,255,.3); }
+  .btn.secondary { background: rgba(255,255,255,.03); color: var(--ink); }
+  .btn.secondary:hover { border-color: var(--accent); color: #fff; }
+  .btn .icon { font-size: 18px; margin-right: 8px; }
+  p { font-size: 13px; line-height: 1.6; color: var(--dim); margin: 8px 0; }
+  a { color: var(--accent2); }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>kompress · notebook</h1>
+  <div class="tag">loop engineering · interactive</div>
+  <p>Run the LoopKit hello loop in your browser. No GPU, no setup — just Python.</p>
+
+  <div class="options">
+    <a href="https://colab.research.google.com/github/peterlodri-sec/loopkit/blob/main/notebooks/loopkit_hello.ipynb" class="btn primary" target="_blank">
+      <span class="icon">▶️</span> Open in Google Colab
+    </a>
+    <a href="https://github.com/peterlodri-sec/loopkit/blob/main/notebooks/loopkit_hello.ipynb" class="btn secondary" target="_blank">
+      <span class="icon">📓</span> View on GitHub
+    </a>
+    <a href="https://pocoo.vaked.dev/demos/glyphcss/whale-tui.html" class="btn secondary" target="_blank">
+      <span class="icon">🐋</span> Whale TUI Demo
+    </a>
+  </div>
+
+  <p style="margin-top:20px">
+    <a href="/">← back to kompress.vaked.dev</a>
+  </p>
+</div>
+</body>
+</html>
