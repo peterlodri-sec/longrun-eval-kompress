@@ -1,3 +1,5 @@
+<p align="center"><a href="https://pocoo.vaked.dev"><img src="https://pocoo.vaked.dev/assets/logo.svg" width="64" alt="pocoo.vaked.dev"/></a></p>
+
 # longrun-eval-kompress
 
 > "ah and just one more this you know then I think we can close this loop [deepseek] xd"
