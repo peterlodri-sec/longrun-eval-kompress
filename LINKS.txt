@@ -65,6 +65,7 @@ https://www.langchain.com/blog/better-harness-a-recipe-for-harness-hill-climbing
 https://peterlodri-sec.github.io/loopkit/ — LoopKit docs site
 
 # --- Vaked ecosystem ---
+https://kompress.vaked.dev — interactive paper (ENTHEA neural field background)
 https://vaked.dev/ultrawhale — ultrawhale landing
 https://vaked.dev/ultrawhale/docs — ultrawhale docs
 https://vaked.dev/ultrawhale/book — ultrawhale mdBook
