@@ -85,12 +85,12 @@
   .tg.on .sw{background:linear-gradient(90deg,var(--accent),var(--accent2))}
   .tg.on .sw::after{left:16px;background:#fff}
 
-  .fab{position:fixed;z-index:7;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);
+  .fab{position:fixed;z-index:7;width:52px;height:52px;border-radius:12px;border:1px solid var(--line);
     background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:var(--ink);cursor:pointer;
-    font-size:17px;display:grid;place-items:center;transition:.18s}
+    font-size:20px;display:grid;place-items:center;transition:.18s}
   .fab:hover{border-color:var(--accent);color:#fff;transform:translateY(-1px)}
-  #burger{top:18px;right:18px}
-  #infoBtn{top:18px;right:70px}
+  #burger{top:16px;right:16px}
+  #infoBtn{top:16px;right:78px}
 
   #hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:5;font-family:var(--mono);font-size:9.5px;
     letter-spacing:.12em;color:var(--dim);background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
@@ -182,11 +182,16 @@
   @media (max-width:640px){ .subs{grid-template-columns:repeat(2,1fr)} #phaseHUD{top:auto;bottom:56px} }
 
   @media (max-width:640px){
-    #panel{width:86vw}#title{left:18px;top:14px}#title h1{font-size:17px}
+    #panel{width:86vw}#title{left:18px;top:14px}#title h1{font-size:20px}
   }
 </style>
 </head>
 <body>
+<body
+  <div id="epilepsy" style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(247,118,142,.95);color:#fff;text-align:center;padding:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;display:block;cursor:pointer" onclick="this.style.display='none';document.body.style.overflow=''">
+    ⚠ This page contains animated patterns and color cycling that may trigger photosensitive epilepsy. Click to dismiss.
+  </div>
+
 <canvas id="gl"></canvas>
 
 <div id="title">
@@ -210,7 +215,7 @@
 <button class="fab" id="infoBtn" title="the science (i)">𝒾</button>
 <button class="fab" id="burger" title="toggle panel (h)">☰</button>
 
-<div id="panel">
+<div id="panel" class="hidden">
   <div id="panelCollapse" title="collapse · H">‹</div>
   <div class="group">
     <div class="label" style="color:var(--accent2)">✦ ASCENSION <span class="val" id="ascV">0.00</span></div>
@@ -224,10 +229,10 @@
     <div class="subdesc" id="flipDesc">stack the sacraments — candy · hippie · kitty · jedi · trinity…</div>
   </div>
   <div class="group">
-    <div class="label">substance emulation <span class="val" id="subInfoBtn" style="cursor:pointer">𝒾 about</span></div>
+    <div class="label">substance emulation <span class="val" id="subInfoBtn" style="display:none" style="cursor:pointer">𝒾 about</span></div>
     <div class="subs" id="subs"></div>
-    <div class="subdesc" id="subDesc">pick a substance to load its visual signature — or stay in manual mode</div>
-    <button class="tripbtn" id="tripBtn">▶ begin trip arc</button>
+    <div class="subdesc" id="subDesc" style="display:none">pick a substance to load its visual signature — or stay in manual mode</div>
+    <button class="tripbtn" id="tripBtn" style="display:none">▶ begin trip arc</button>
   </div>
   <div class="group">
     <div class="label">audio · music visualizer</div>
@@ -353,7 +358,7 @@
 <div id="mathHUD"></div>
 
 <div id="hint">
-  <b>space</b> cycle · <b>A</b> autopilot · <b>=</b> math · <b>T</b> trip · <b>K</b> flicker · <b>M</b> mic · <b>↑↓</b> dose · <b>F</b> full · <b>𝒾</b> science · <b>↑↑↓↓←→←→BA</b> 🜄
+  <b>drag</b> orbit · <b>scroll</b> zoom · <b>h</b> panel · <b>=</b> math · <b>T</b> trip · <b>K</b> flicker · <b>M</b> mic · <b>↑↓</b> dose · <b>F</b> full · <b>𝒾</b> science · <b>↑↑↓↓←→←→BA</b> 🜄
 </div>
 
 <div id="breath"><div id="breathRing"><div id="breathTxt">breathe in</div></div></div>
