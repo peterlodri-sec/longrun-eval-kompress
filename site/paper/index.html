@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kompress · paper</title>
+<style>
+  :root { --bg:#05060a;--ink:#e7e2f7;--dim:#9a93b8;--line:rgba(170,150,255,.18);--accent:#b48bff;--accent2:#62e6c9;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);padding:40px 20px;min-height:100vh}
+  .paper{max-width:720px;margin:0 auto;background:linear-gradient(150deg,rgba(18,15,32,.96),rgba(9,8,18,.96));border:1px solid var(--line);border-radius:18px;padding:48px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}
+  h1{font-family:var(--mono);font-size:24px;letter-spacing:.08em;background:linear-gradient(92deg,var(--accent),#7bdcff,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px}
+  .authors{font-family:var(--mono);font-size:12px;color:var(--dim);margin-bottom:8px}
+  .venue{font-family:var(--mono);font-size:11px;color:var(--accent2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px}
+  h2{font-family:var(--mono);font-size:14px;color:var(--accent2);margin:24px 0 8px;letter-spacing:.06em}
+  p{font-size:14px;line-height:1.7;color:var(--ink);margin-bottom:12px}
+  .math{font-family:var(--mono);font-size:12px;background:rgba(180,139,255,.08);border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin:12px 0;color:var(--accent2);overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin:12px 0}
+  th,td{padding:6px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--accent2);font-weight:500}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .back{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:24px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="paper">
+  <h1>Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox in Learned Context-Pruning Ensembles</h1>
+  <div class="authors">Peter Lodri</div>
+  <div class="venue">ICLR 2027 Submission · Open Science</div>
+
+  <h2>Abstract</h2>
+  <p>Multi-checkpoint voting ensembles of learned context-pruning models paradoxically <em>underperform</em> their best single-voter constituent. We formalize this: under <em>k</em>-of-<em>N</em> drop voting, the ensemble eviction indicator equals the <em>k</em>-th order statistic of the per-voter indicators — the ensemble collapses to its weakest member on every stratum. Three mechanisms resolve the paradox: asymmetric loss modulation during training (λ=3.0), regex-based inference overrides, and C3 self-distillation with a stronger teacher. We train 17 kompress models (149M-param ModernBERT) for $38.95 total, achieving a Pareto-optimal 0.955 heretic-exact at 15% compression with kompress-v8.</p>
+
+  <h2>Theorem 1 (Voting Ensemble Paradox)</h2>
+  <div class="math">Let E be an ensemble of N voters, each producing a per-token keep indicator I<sub>i</sub> ∈ {0,1}. Under k-of-N drop voting, I<sub>E</sub> = 1 iff Σ I<sub>i</sub> ≥ k. Then I<sub>E</sub> = I<sub>(N-k+1)</sub> — the (N−k+1)-th order statistic — and the ensemble's precision ≤ min<sub>i</sub> precision(I<sub>i</sub>).</div>
+
+  <h2>Results</h2>
+  <table>
+    <tr><th>Version</th><th>Heretic</th><th>Keep</th><th>Note</th></tr>
+    <tr><td>v2-base</td><td>0.975</td><td>0.897</td><td>precision ceiling</td></tr>
+    <tr style="color:var(--accent2)"><td><b>v8 ★</b></td><td><b>0.955</b></td><td><b>0.854</b></td><td><b>production</b></td></tr>
+    <tr><td>v16</td><td>0.972</td><td>0.972</td><td>endpoint (10x)</td></tr>
+    <tr><td>v17</td><td>0.963</td><td>0.963</td><td>tradeoff (5x)</td></tr>
+  </table>
+
+  <h2>Links</h2>
+  <p>
+    <a href="https://github.com/peterlodri-sec/longrun-eval-kompress">GitHub</a> ·
+    <a href="https://huggingface.co/PeetPedro">Models (18)</a> ·
+    <a href="https://github.com/peterlodri-sec/loopkit">LoopKit</a> ·
+    <a href="https://huggingface.co/spaces/PeetPedro/headroom-eval">Eval Space</a> ·
+    <a href="https://pocoo.vaked.dev">Blog</a>
+  </p>
+
+  <a href="/" class="back">← back to kompress.vaked.dev</a>
+</div>
+</body>
+</html>
