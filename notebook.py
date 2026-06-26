@@ -40,13 +40,13 @@ def _():
 
 @app.cell
 def _(mo):
-    mo.md("""
+    mo.md(r"""
     ## 1. The Voting Ensemble Paradox (Theorem 1)
 
     Under **per-stratum monotone-rejection refinement** and **unanimity-to-keep (AND) voting**,
     the ensemble eviction indicator equals the per-stratum weakest voter's indicator:
 
-    $$\\mathbb{I}_{\\mathrm{ens}}(x) = \\mathbb{I}_{i^\\star_k}(x) \\quad \\forall x \\in S_k$$
+    $$\mathbb{I}_{\mathrm{ens}}(x) = \mathbb{I}_{i^\star_k}(x) \quad \forall x \in S_k$$
 
     Under $k$-of-$N$ drop voting (Remark 1), this generalizes to the per-stratum
     $k$-th order statistic. Adjust the voting threshold to see how the collapse moves:
@@ -61,7 +61,7 @@ def _(mo):
     k_slider = mo.ui.slider(1, 5, value=1, label="k (drop threshold: evict if ≥k voters say drop)")
     n_voters = mo.ui.slider(3, 10, value=5, label="N (number of voters)")
 
-    mo.md(f"""
+    mo.md(rf"""
     {k_slider}
 
     {n_voters}
@@ -69,7 +69,7 @@ def _(mo):
     **Interpretation:**
     - $k=1$ (AND): ensemble collapses to the **weakest** voter on each stratum
     - $k=N$ (OR): ensemble collapses to the **strongest** voter (but requires all to agree on drop)
-    - $k=\\lfloor N/2 \\rfloor$ (majority): collapse to the per-stratum **median** voter
+    - $k=\lfloor N/2 \rfloor$ (majority): collapse to the per-stratum **median** voter
     """)
     return k_slider, n_voters, np
 
