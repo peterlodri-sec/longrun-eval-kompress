@@ -1,5 +1,5 @@
 {
-  "background_color": "#0a0a12",
+  "background_color": "#ffffff",
   "display": "standalone",
   "icons": [
     {
@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "name": "kompress — Voting Ensemble Paradox",
-  "short_name": "kompress",
-  "theme_color": "#0a0a12"
+  "name": "marimo",
+  "short_name": "marimo",
+  "theme_color": "#ffffff"
 }

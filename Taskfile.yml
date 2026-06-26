@@ -52,10 +52,6 @@ tasks:
       - sed -i '' 's|<title>notebook</title>|<title>Voting Ensemble Paradox - kompress-v8</title>|' {{.SITE_DIR}}/index.html
       - sed -i '' 's|</title>|</title>\n    <script src="./assets/enthea-bg.js" defer></script>|' {{.SITE_DIR}}/index.html
       - "{{.PYTHON}} tools/seo_inject.py {{.SITE_DIR}}/index.html"
-      - cp site/robots.txt {{.SITE_DIR}}/robots.txt
-      - cp site/llms.txt {{.SITE_DIR}}/llms.txt
-      - cp site/llms-full.txt {{.SITE_DIR}}/llms-full.txt
-      - cp site/sitemap.xml {{.SITE_DIR}}/sitemap.xml
 
   site:serve:
     desc: Serve site locally for preview
