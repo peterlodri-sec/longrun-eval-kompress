@@ -2513,7 +2513,7 @@ document.getElementById('phStop').onclick=()=>endTrip();
 document.getElementById('dose').addEventListener('input',()=>{ if(S.trip) endTrip(); });
 
 const panelEl=document.getElementById('panel'), edgeEl=document.getElementById('edge');
-let collapsed=false, peekTimer=null;
+let collapsed=true, peekTimer=null;
 function setCollapsed(v){ collapsed=v; document.body.classList.toggle('collapsed',v);
   panelEl.classList.toggle('hidden',v); panelEl.classList.remove('peek'); clearTimeout(peekTimer); }
 function togglePanel(){ setCollapsed(!collapsed); }
