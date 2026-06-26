@@ -184,6 +184,50 @@
   @media (max-width:640px){
     #panel{width:86vw}#title{left:18px;top:14px}#title h1{font-size:24px}
   }
+
+  /* ── funky sota CSS ── */
+  ::selection{background:var(--accent);color:#000;text-shadow:none}
+  *{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+
+  /* glow pulse on buttons */
+  .fab{box-shadow:0 0 0 0 rgba(180,139,255,0);transition:all .25s cubic-bezier(.4,0,.2,1)}
+  .fab:hover{box-shadow:0 0 24px -4px rgba(180,139,255,.5),0 4px 12px -4px rgba(0,0,0,.6)}
+
+  /* rainbow border on hover for links */
+  .navlink{transition:all .3s;border-bottom:1px solid transparent}
+  .navlink:hover{border-bottom-color:var(--accent);text-shadow:0 0 8px rgba(180,139,255,.4)}
+
+  /* floating animation for the fun overlay */
+  #funOverlay{animation:float 6s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+
+  /* subtle parallax on hover for the title */
+  #title{transition:transform .5s cubic-bezier(.25,.1,.25,1)}
+  #title:hover{transform:scale(1.03) translateY(-2px)}
+
+  /* gradient border animation on the panel */
+  #panel{position:relative}
+  #panel::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2),#ff9ad5,var(--accent));
+    background-size:300% 300%;animation:borderGlow 8s ease infinite;
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  @keyframes borderGlow{0%,100%{background-position:0 0}50%{background-position:300% 0}}
+
+  /* glass tilt on cards */
+  .card{transition:transform .3s ease}
+  .card:hover{transform:perspective(800px) rotateY(-1deg) rotateX(.5deg)}
+
+  /* smooth fade for epilepsy banner */
+  #epilepsy{transition:opacity .4s,transform .4s}
+
+  /* pixel-crisp rendering */
+  canvas{image-rendering:crisp-edges}
+
+  /* smooth page load */
+  body{animation:fadeIn .6s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
 </style>
 </head>
 <body>
