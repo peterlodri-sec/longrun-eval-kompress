@@ -7,7 +7,7 @@ vars:
   PYTHON: uv run python
 
 tasks:
-  # ── Paper ──────────────────────────────────────────────
+  # -- Paper ---------------------------------------------------
   paper:build:
     desc: Compile LaTeX paper to PDF
     dir: "{{.PAPER_DIR}}"
@@ -43,7 +43,7 @@ tasks:
         echo "=== VERIFY flags in refs ==="
         grep -rn "VERIFY" references.bib || echo "  none"
 
-  # ── Site ───────────────────────────────────────────────
+  # -- Site ----------------------------------------------------
   site:build:
     desc: Export marimo notebook to WASM HTML site
     cmds:
@@ -51,7 +51,7 @@ tasks:
       - sed -i '' 's|content="a marimo app"|content="Voting Ensemble Paradox - kompress-v8"|' {{.SITE_DIR}}/index.html
       - sed -i '' 's|<title>notebook</title>|<title>Voting Ensemble Paradox - kompress-v8</title>|' {{.SITE_DIR}}/index.html
       - sed -i '' 's|</title>|</title>\n    <script src="./assets/enthea-bg.js" defer></script>|' {{.SITE_DIR}}/index.html
-      - {{.PYTHON}} tools/seo_inject.py {{.SITE_DIR}}/index.html
+      - "{{.PYTHON}} tools/seo_inject.py {{.SITE_DIR}}/index.html"
       - cp site/robots.txt {{.SITE_DIR}}/robots.txt
       - cp site/llms.txt {{.SITE_DIR}}/llms.txt
       - cp site/llms-full.txt {{.SITE_DIR}}/llms-full.txt
@@ -62,7 +62,7 @@ tasks:
     cmds:
       - uv run python -m http.server --directory {{.SITE_DIR}}
 
-  # ── Notebook ───────────────────────────────────────────
+  # -- Notebook 
   nb:edit:
     desc: Open marimo notebook in interactive editor
     cmds:
@@ -78,19 +78,19 @@ tasks:
     cmds:
       - uvx marimo check --fix {{.NOTEBOOK}}
 
-  # ── Baselines ──────────────────────────────────────────
+  # -- Baselines 
   baselines:run:
     desc: Run all baseline comparisons
     cmds:
       - "{{.PYTHON}} baselines/run_baselines.py"
 
-  # ── MCP Server ─────────────────────────────────────────
+  # -- MCP Server 
   mcp:
     desc: Start MCP server (stdio)
     cmds:
       - "{{.PYTHON}} mcp_server/server.py"
 
-  # ── CI / Lint ──────────────────────────────────────────
+  # -- CI / Lint 
   ci:
     desc: Run all CI checks locally
     cmds:
@@ -103,7 +103,7 @@ tasks:
         {{.PYTHON}} -m py_compile mcp_server/server.py && echo "  mcp: OK"
         {{.PYTHON}} -m py_compile notebook.py && echo "  notebook: OK"
 
-  # ── CI Agents ──────────────────────────────────────────
+  # -- CI Agents 
   agents:list:
     desc: List all CI agents
     cmds:
@@ -124,7 +124,7 @@ tasks:
     cmds:
       - "{{.PYTHON}} tools/ci_agents.py run-all --dry-run"
 
-  # ── Genesis Seal ───────────────────────────────────────
+  # -- Genesis Seal 
   seal:verify:
     desc: Verify genesis seal
     cmds:
@@ -135,13 +135,13 @@ tasks:
     cmds:
       - "{{.PYTHON}} tools/genesis_seal.py"
 
-  # ── Devcontainer ───────────────────────────────────────
+  # -- Devcontainer 
   dev:
     desc: Open in VS Code devcontainer
     cmds:
       - code --folder-uri vscode-remote://dev-container+{{.WORKSPACE}}/
 
-  # ── One-shot: full rebuild ─────────────────────────────
+  # -- One-shot: full rebuild 
   all:
     desc: Build paper + site + verify
     cmds:
@@ -149,7 +149,7 @@ tasks:
       - task: site:build
       - task: ci
 
-  # ── Doc Sync ───────────────────────────────────────────
+  # -- Doc Sync 
   doc:sync:
     desc: Run doc-sync agent locally (simulates CI)
     cmds:
@@ -167,7 +167,7 @@ tasks:
         echo "To run the full agent, push to main or set DEEPSEEK_API_KEY and run:"
         echo "  DEEPSEEK_API_KEY=... uv run python tools/doc_sync.py"
 
-  # ── Publish ────────────────────────────────────────────
+  # -- Publish 
   publish:
     desc: Commit, push, and trigger Pages deploy
     cmds:
