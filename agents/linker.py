@@ -40,6 +40,29 @@ SKIP_URLS = {
     "https://github.com/peterlodri-sec/longrun-eval-kompress/security",
 }
 
+# Reference-only URLs in LINKS.txt that are NOT cited in code files
+# (upstream repos, ecosystem links, dependency references)
+REFERENCE_URLS = {
+    "https://addyo.substack.com/p/loop-engineering",
+    "https://cobusgreyling.github.io/loop-engineering/",
+    "https://cobusgreyling.substack.com/p/loop-engineering",
+    "https://github.com/Green-PT/honey-for-devs",
+    "https://github.com/headroomlabs-ai/headroom",
+    "https://github.com/headroomlabs-ai/headroom/pull/1363",
+    "https://github.com/headroomlabs-ai/headroom/pull/1400",
+    "https://github.com/headroomlabs-ai/headroom/pull/1418",
+    "https://github.com/headroomlabs-ai/headroom/pull/1419",
+    "https://github.com/peterlodri-sec",
+    "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+    "https://huggingface.co/answerdotai/ModernBERT-base",
+    "https://huggingface.co/chopratejas/kompress-v2-base",
+    "https://music.vaked.dev",
+    "https://vaked.dev/ultrawhale",
+    "https://vaked.dev/ultrawhale/book",
+    "https://vaked.dev/ultrawhale/docs",
+    "https://x.com/0xp3t3rl",
+}
+
 URL_RE = re.compile(
     r"https?://[^\s\)\]\"'>\}\`\$\\]+"
 )
@@ -134,10 +157,10 @@ class LinkerAgent(CIAgent):
                 files = sorted(str(p) for p in file_urls[original])
                 missing.append((original, files))
 
-        # 2. Links in LINKS.txt but NOT used anywhere
+        # 2. Links in LINKS.txt but NOT used anywhere (skip reference-only)
         orphaned = []
         for norm, original in sorted(registry_normalized.items()):
-            if norm not in files_normalized:
+            if norm not in files_normalized and original not in REFERENCE_URLS:
                 orphaned.append(original)
 
         # 3. Auto-append missing links (non-dry-run only)

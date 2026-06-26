@@ -36,12 +36,20 @@ https://github.com/headroomlabs-ai/headroom/pull/1363 — tool_result protection
 
 # --- Blog posts (pocoo.vaked.dev) ---
 https://pocoo.vaked.dev — main blog / log registry
+https://pocoo.vaked.dev/posts/2026-06-23-maxwell-demon-honest-work.html — Maxwell demon honest work
+https://pocoo.vaked.dev/posts/2026-06-23-mlir-agent-topology.html — MLIR agent topology
+https://pocoo.vaked.dev/posts/2026-06-23-stigmergy-routing-without-asking.html — stigmergy routing
+https://pocoo.vaked.dev/posts/2026-06-23-vaked-language-above-nix.html — vaked language above nix
+https://pocoo.vaked.dev/posts/2026-06-24-freedom-of-tools.html — freedom of tools
+https://pocoo.vaked.dev/posts/2026-06-24-loop-radio.html — loop radio
 https://pocoo.vaked.dev/posts/2026-06-25-fine-tuning-kompress-sapir-whorf.html — Sapir-Whorf fine-tuning
 https://pocoo.vaked.dev/posts/2026-06-25-iterative-self-labeling.html — self-labeling loop (v3→v4→v5)
 https://pocoo.vaked.dev/posts/2026-06-25-kompress-heretic-eval.html — heretic adversarial eval
 https://pocoo.vaked.dev/posts/2026-06-25-kompress-v6-agent-distribution.html — agent-distribution training
 https://pocoo.vaked.dev/posts/2026-06-25-loop-engineering-applied.html — Loop Engineering applied
 https://pocoo.vaked.dev/posts/2026-06-25-loopkit.html — LoopKit starter kit
+https://pocoo.vaked.dev/posts/2026-06-25-the-loop-shipped.html — the loop shipped (17 models, $38.95)
+https://pocoo.vaked.dev/sitemap.xml — pocoo blog sitemap
 https://pocoo.vaked.dev/posts/2026-06-25-the-silver-label-problem.html — silver label analysis
 https://pocoo.vaked.dev/posts/2026-06-25-we-ran-the-loop.html — 14-step roadmap post-mortem
 https://pocoo.vaked.dev/posts/2026-06-24-compressing-the-loop.html — Headroom + Honey benchmarks
@@ -65,17 +73,32 @@ https://www.langchain.com/blog/better-harness-a-recipe-for-harness-hill-climbing
 https://peterlodri-sec.github.io/loopkit/ — LoopKit docs site
 
 # --- Vaked ecosystem ---
-https://kompress.vaked.dev — interactive paper (ENTHEA neural field background)
+https://kompress.vaked.dev — ENTHEA neural field visualizer (landing page)
+https://kompress.vaked.dev/notebook/ — interactive paper (marimo WASM)
+https://kompress.vaked.dev/paper/main.pdf — paper PDF
 https://vaked.dev/ultrawhale — ultrawhale landing
 https://vaked.dev/ultrawhale/docs — ultrawhale docs
 https://vaked.dev/ultrawhale/book — ultrawhale mdBook
 https://protocol.vaked.dev — vaked protocol
 https://chat.vaked.dev — vaked chat
 https://music.vaked.dev — loop radio
-https://beat.vaked.dev — vaked beat
-https://irc.vaked.dev — vaked IRC
 
 # --- Social ---
 https://x.com/0xp3t3rl — Peter Lodri on X
 https://github.com/peterlodri-sec — GitHub organization
 https://github.com/sponsors/peterlodri-sec — GitHub Sponsors (donations)
+https://huggingface.co/PeetPedro — Peter Lodri on HuggingFace
+
+# --- Tools & dependencies ---
+https://marimo.io — marimo (interactive notebooks)
+https://marimo.io/gallery/ — marimo gallery
+https://keepachangelog.com/ — Keep a Changelog
+https://opensource.org/licenses/Apache-2.0 — Apache 2.0 license
+https://nixos.wiki/wiki/Flakes — Nix Flakes
+https://llmstxt.org — llmstxt.org (LLMs.txt standard)
+https://schema.org — Schema.org (structured data)
+https://semver.org/ — Semantic Versioning
+https://taskfile.dev — Taskfile (task runner)
+https://taskfile.dev/install.sh — Taskfile install script
+https://www.contributor-covenant.org — Contributor Covenant
+https://www.contributor-covenant.org/version/2/1/code_of_conduct.html — Contributor Covenant v2.1
