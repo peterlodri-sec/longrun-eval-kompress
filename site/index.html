@@ -16,7 +16,7 @@
   canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0}
 
   #title{position:fixed;top:18px;left:22px;z-index:8;pointer-events:auto;cursor:pointer;mix-blend-mode:screen;transition:opacity .5s}
-  #title h1{margin:0;position:relative;font-family:var(--mono);font-size:22px;letter-spacing:.42em;font-weight:600;
+  #title h1{margin:0;position:relative;font-family:var(--mono);font-size:33px;letter-spacing:.42em;font-weight:600;
     background:linear-gradient(92deg,#b48bff,#7bdcff,#62e6c9,#ffd36e,#ff9ad5,#9b7bff,#b48bff);-webkit-background-clip:text;background-clip:text;color:transparent;
     background-size:300% 100%;animation:hue 17s linear infinite, aura 7s ease-in-out infinite}
   #title h1::after{content:attr(data-text);position:absolute;left:0;top:0;pointer-events:none;   /* shimmer glint sweeping across */
@@ -85,9 +85,9 @@
   .tg.on .sw{background:linear-gradient(90deg,var(--accent),var(--accent2))}
   .tg.on .sw::after{left:16px;background:#fff}
 
-  .fab{position:fixed;z-index:7;width:52px;height:52px;border-radius:12px;border:1px solid var(--line);
+  .fab{position:fixed;z-index:7;width:60px;height:60px;border-radius:12px;border:1px solid var(--line);
     background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:var(--ink);cursor:pointer;
-    font-size:20px;display:grid;place-items:center;transition:.18s}
+    font-size:24px;display:grid;place-items:center;transition:.18s}
   .fab:hover{border-color:var(--accent);color:#fff;transform:translateY(-1px)}
   #burger{top:16px;right:16px}
   #infoBtn{top:16px;right:78px}
@@ -109,7 +109,7 @@
   .card .refs{font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--dim);border-top:1px solid var(--line);padding-top:13px;margin-top:4px}
   .card .refs b{color:var(--accent);font-weight:500}
   .card .flag{font-size:11.5px;color:#ffcf7a;background:rgba(255,170,80,.08);border:1px solid rgba(255,170,80,.25);border-radius:8px;padding:9px 11px;margin:0 0 13px}
-  .card .close{float:right;cursor:pointer;color:var(--dim);font-size:20px;line-height:1;margin:-6px -6px 0 0}
+  .card .close{float:right;cursor:pointer;color:var(--dim);font-size:24px;line-height:1;margin:-6px -6px 0 0}
   .card .close:hover{color:#fff}
 
   #breath{position:fixed;inset:0;z-index:8;display:none;place-items:center;pointer-events:none}
@@ -161,7 +161,7 @@
     background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);
     border-radius:30px;padding:8px 14px 8px 12px;box-shadow:0 10px 40px -12px rgba(0,0,0,.7)}
   #phaseHUD.show{display:flex}
-  .ph-glyph{font-size:22px;filter:drop-shadow(0 0 8px rgba(180,139,255,.7))}
+  .ph-glyph{font-size:33px;filter:drop-shadow(0 0 8px rgba(180,139,255,.7))}
   .ph-meta{text-align:left;min-width:74px}
   .ph-name{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:#fff}
   .ph-phase{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
@@ -182,7 +182,7 @@
   @media (max-width:640px){ .subs{grid-template-columns:repeat(2,1fr)} #phaseHUD{top:auto;bottom:56px} }
 
   @media (max-width:640px){
-    #panel{width:86vw}#title{left:18px;top:14px}#title h1{font-size:20px}
+    #panel{width:86vw}#title{left:18px;top:14px}#title h1{font-size:24px}
   }
 </style>
 </head>
@@ -3100,13 +3100,13 @@ buildUI(); buildSubstanceUI(); buildAudioMeter(); buildFlipsUI(); buildScenesUI(
 ['tgChoreo','tgJourney','tgRay','tgDrop','tgCine','tgTrans'].forEach(idd=>{ const e=document.getElementById(idd); if(e) e.classList.add('on'); }); // default-on: choreography · autopilot · 3D · drop-detect · cinematic · transitions
 refreshDevices();
 requestAnimationFrame(frame);
-console.log('%cENTHEA','color:#b48bff;font-size:20px;font-weight:bold','— neural-field engine online. mathematics of hallucination running.');
+console.log('%cENTHEA','color:#b48bff;font-size:24px;font-weight:bold','— neural-field engine online. mathematics of hallucination running.');
 </script>
 
 <!-- Academic Paper Panel -->
 <div id="paperPanel" style="position:fixed;inset:0;z-index:25;display:none;place-items:center;background:rgba(3,3,8,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)">
   <div class="card" style="max-width:720px;max-height:88vh">
-    <span class="close" onclick="document.getElementById('paperPanel').style.display='none'" style="float:right;cursor:pointer;color:var(--dim);font-size:20px">&times;</span>
+    <span class="close" onclick="document.getElementById('paperPanel').style.display='none'" style="float:right;cursor:pointer;color:var(--dim);font-size:24px">&times;</span>
     <h2>Asymmetric Loss Modulation Resolves the Voting Ensemble Paradox</h2>
     <div class="tag">ICLR 2027 SUBMISSION · PETER LODRI · OPEN SCIENCE</div>
 
