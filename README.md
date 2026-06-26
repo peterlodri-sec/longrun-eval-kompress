@@ -11,7 +11,7 @@
 [![Built with marimo](https://img.shields.io/badge/built%20with-marimo-00d4ff.svg)](https://marimo.io)
 [![Sponsor](https://img.shields.io/badge/sponsor-peterlodri--sec-ff69b4.svg)](https://github.com/sponsors/peterlodri-sec)
 
-**[Interactive paper](https://kompress.vaked.dev)** | **[Download paper PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)** | **[Experiment logs](https://pocoo.vaked.dev)**
+**[ENTHEA visualizer](https://kompress.vaked.dev)** | **[Interactive paper](https://kompress.vaked.dev/notebook/)** | **[Paper PDF](https://kompress.vaked.dev/paper/main.pdf)** | **[Experiment logs](https://pocoo.vaked.dev)**
 
 ---
 
@@ -33,7 +33,7 @@ The fix is called **kompress-v8**. It's a small AI model (149M parameters) that 
 |------|------|
 | `paper/` | LaTeX manuscript (9 files, ~1600 lines) — the actual paper |
 | `baselines/` | Baseline comparison scripts + results (TextRank, LLMLingua-2, random, kompress-v8) |
-| `agents/` | CI agent suite — 6 agents (citation, metrics, changelog, HF card, LaTeX, doc-sync) |
+| `agents/` | CI agent suite — 7 agents (citation, metrics, changelog, HF card, LaTeX, doc-sync, linker) |
 | `notebook.py` | [marimo](https://marimo.io) interactive notebook — explore the paradox, mechanisms, baselines |
 | `site/` | marimo WASM export — interactive notebook running in-browser (no server) |
 | `mcp_server/` | MCP server for agent interaction (7 tools + 2 CI agent tools) |
@@ -44,10 +44,11 @@ The fix is called **kompress-v8**. It's a small AI model (149M parameters) that 
 ## Interactive notebook (marimo)
 
 This repo ships with a [marimo](https://marimo.io) notebook (`notebook.py`)
-that turns the paper into an interactive experience. It's also deployed as a
-standalone WASM site — no server needed:
+that turns the paper into an interactive experience. The site has three layers:
 
-**Live:** [peterlodri-sec.github.io/longrun-eval-kompress](https://peterlodri-sec.github.io/longrun-eval-kompress/)
+- **[ENTHEA landing](https://kompress.vaked.dev)** — full psychedelic neural-field visualizer
+- **[Interactive paper](https://kompress.vaked.dev/notebook/)** — paradox simulator, mechanism toggle, baselines
+- **[Paper PDF](https://kompress.vaked.dev/paper/main.pdf)** — the ICLR 2027 manuscript
 
 - **Paradox simulator** — adjust k (voting threshold) and N (voters) to watch
   the ensemble collapse in real time
@@ -168,7 +169,7 @@ This project follows the [Loop Engineering paradigm](https://addyosmani.com/blog
 - **State:** the manuscript is the state; git is the durable memory
 - **Skills:** `AGENTS.md` encodes project conventions once
 - **Maker/checker:** baseline script (maker) vs manuscript (checker)
-- **CI agent suite:** 6 agents (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard, doc-sync) — all advisory, never blocking
+- **CI agent suite:** 7 agents (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard, doc-sync, linker) — all advisory, never blocking
 - **Correctable loop:** if the metric doesn't improve in 3 iterations, stop
 - **Hill climbing:** v9-v14 explored post-production; none surpassed v8
 

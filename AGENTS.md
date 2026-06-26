@@ -81,7 +81,7 @@ stale numbers, missing table entries) but never adds content on its own.
 Human review is still expected before major releases.
 
 ### CI Agent Suite
-Six agents in `agents/` package, invoked via CLI or MCP:
+Seven agents in `agents/` package, invoked via CLI or MCP:
 
 | Agent | Trigger | What it does | Cost |
 |-------|---------|-------------|------|
@@ -91,6 +91,7 @@ Six agents in `agents/` package, invoked via CLI or MCP:
 | `hf-card-sync` | push to main | Syncs HuggingFace model card with current metrics | $0.001 |
 | `latex-guard` | paper/*.tex changes | Compiles PDF, gates on LaTeX errors | $0.00 |
 | `doc-sync` | push to main | DeepSeek v4-flash reviews diff, fixes docs | $0.001 |
+| `linker` | **/*.md, *.tex changes | Ensures LINKS.txt <-> file reference consistency | $0.00 |
 
 **CLI usage:**
 ```bash
@@ -106,6 +107,8 @@ task agents:list        # list all
 task agents:run AGENT=citation-guard  # run one
 task agents:run-all     # run all
 task agents:dry-run     # dry run
+task agents:link        # check link consistency
+task agents:link-fix    # auto-append missing links to LINKS.txt
 ```
 
 **MCP usage:**

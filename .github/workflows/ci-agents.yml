@@ -7,6 +7,8 @@ on:
       - 'paper/**'
       - 'baselines/**'
       - 'agents/**'
+      - 'LINKS.md'
+      - '**/*.md'
   pull_request:
     branches: [main]
   schedule:
@@ -82,3 +84,13 @@ jobs:
         with:
           python-version: '3.12'
       - run: python tools/ci_agents.py run hf-card-sync
+
+  linker:
+    name: Link Checker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/ci_agents.py run linker

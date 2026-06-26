@@ -120,6 +120,16 @@ tasks:
     cmds:
       - "{{.PYTHON}} tools/ci_agents.py run-all --dry-run"
 
+  agents:link:
+    desc: Check link consistency between LINKS.md and all files
+    cmds:
+      - "{{.PYTHON}} tools/ci_agents.py run linker"
+
+  agents:link-fix:
+    desc: Auto-append missing links to LINKS.md
+    cmds:
+      - "{{.PYTHON}} tools/ci_agents.py run linker"
+
   # -- Genesis Seal 
   seal:verify:
     desc: Verify genesis seal

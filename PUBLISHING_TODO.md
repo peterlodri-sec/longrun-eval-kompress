@@ -164,7 +164,7 @@
   (deadline June 28 — https://marimo.io)
 - [ ] **6.3** Enable GitHub Pages (Settings → Pages → Source: GitHub Actions)
   so the site/ HTML pages are live at
-  `https://peterlodri-sec.github.io/longrun-eval-kompress/`
+  `https://kompress.vaked.dev/notebook/`
 - [ ] **6.4** Add repo topics: `ml`, `compression`, `loop-engineering`,
   `context-pruning`, `modernbert`, `ensemble`, `open-science`
   (Settings → General → Topics)

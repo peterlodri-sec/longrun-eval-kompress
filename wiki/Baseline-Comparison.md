@@ -23,7 +23,7 @@ python baselines/run_baselines.py
 Results save to `baselines/baseline_results.json`.
 
 ## Interactive comparison
-https://peterlodri-sec.github.io/longrun-eval-kompress/baselines.html
+https://kompress.vaked.dev/notebook/
 
 ## Missing baselines
 AutoCompressors and Gisting require separate training on large corpora and are not runnable on a single M1 Pro. They are deferred to a revision with GPU resources.

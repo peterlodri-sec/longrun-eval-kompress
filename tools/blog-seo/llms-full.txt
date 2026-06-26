@@ -137,8 +137,8 @@ Context-Pruning Ensembles."
 
 ## Ecosystem
 
-- Interactive paper: https://kompress.vaked.dev
-- Paper PDF: https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf
+- Interactive paper: https://kompress.vaked.dev/notebook/
+- Paper PDF: https://kompress.vaked.dev/paper/main.pdf
 - GitHub: https://github.com/peterlodri-sec/longrun-eval-kompress
 - Model: https://huggingface.co/PeetPedro/kompress-v8
 - Dataset: https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood

@@ -1,8 +1,14 @@
 # Interactive Sites
 
-## marimo WASM site (live)
+## ENTHEA landing page (live)
 
-**URL:** https://peterlodri-sec.github.io/longrun-eval-kompress/
+**URL:** https://kompress.vaked.dev
+
+Full psychedelic neural-field visualizer derived from elder-plinius/ENTHEA (AGPL-3.0).
+
+## marimo WASM paper (live)
+
+**URL:** https://kompress.vaked.dev/notebook/
 
 A standalone marimo notebook exported to WebAssembly — runs entirely in the browser, no server needed. Contains:
 

@@ -6,7 +6,7 @@
 
 ## Paper
 
-- [PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)
+- [PDF](https://kompress.vaked.dev/paper/main.pdf)
 - [GitHub](https://github.com/peterlodri-sec/longrun-eval-kompress)
 
 ## Model & Data

@@ -20,7 +20,8 @@ Welcome to the wiki for the **longrun-eval-kompress** project — the ICLR 2027 
 
 ## Quick links
 
-- **Interactive site:** https://peterlodri-sec.github.io/longrun-eval-kompress/
+- **ENTHEA landing:** https://kompress.vaked.dev
+- **Interactive paper:** https://kompress.vaked.dev/notebook/
 - **Repo:** https://github.com/peterlodri-sec/longrun-eval-kompress
 - **Model:** https://huggingface.co/PeetPedro/kompress-v8
 - **Blog:** https://pocoo.vaked.dev

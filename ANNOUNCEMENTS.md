@@ -50,7 +50,8 @@ Everything is open-source:
 - Engine: github.com/peterlodri-sec/loopkit
 - Dataset: huggingface.co/datasets/PeetPedro/ultrawhale-dogfood
 - Logs: pocoo.vaked.dev
-- Interactive: peterlodri-sec.github.io/longrun-eval-kompress
+- ENTHEA visualizer: kompress.vaked.dev
+- Interactive paper: kompress.vaked.dev/notebook/
 
 **Tweet 7:**
 Built with the Loop Engineering paradigm (@addyosmani @cobusgreyling @LangChainAI).
@@ -80,9 +81,9 @@ If you use kompress-v8, please cite:
 
 ## Interactive demo
 
-Try the Voting Ensemble Paradox simulator: https://peterlodri-sec.github.io/longrun-eval-kompress/paradox.html
+Try the Voting Ensemble Paradox simulator: https://kompress.vaked.dev/notebook/
 
-Explore the full research: https://peterlodri-sec.github.io/longrun-eval-kompress/
+Explore the full research: https://kompress.vaked.dev
 ```
 
 ---
@@ -137,6 +138,7 @@ We prove that multi-checkpoint voting ensembles with asymmetric training-data fl
 **Everything is open-source:**
 - Paper + code: https://github.com/peterlodri-sec/longrun-eval-kompress
 - Model: https://huggingface.co/PeetPedro/kompress-v8
-- Interactive demo: https://peterlodri-sec.github.io/longrun-eval-kompress/
+- ENTHEA visualizer: https://kompress.vaked.dev
+- Interactive paper: https://kompress.vaked.dev/notebook/
 
 Built with the Loop Engineering paradigm (Addy Osmani, Cobus Greyling, LangChain). The repo is also a reusable template for loop-experiment-researcher projects.

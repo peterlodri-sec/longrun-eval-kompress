@@ -38,4 +38,4 @@ The 3-checkpoint majority ensemble (v3+v4+v5) scores 0.031 below the best single
 The 3.0× heavy false-eviction penalty on critical-syntactic tokens shrinks each voter's false-eviction set fastest on its weakest strata, lifting the collapse floor uniformly. See [[Three-Mechanisms]].
 
 ## Interactive demo
-Try it yourself: https://peterlodri-sec.github.io/longrun-eval-kompress/paradox.html
+Try it yourself: https://kompress.vaked.dev/notebook/
