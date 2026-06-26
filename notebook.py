@@ -193,21 +193,21 @@ def _(mo):
 
     results_path = Path(__file__).parent / "baselines" / "baseline_results.json"
     if results_path.exists():
-        data = json.loads(results_path.read_text())
-        rows = []
-        for name, d in data.items():
-            avg = d.get("averages", {})
+        baseline_data = json.loads(results_path.read_text())
+        baseline_rows = []
+        for bname, bd in baseline_data.items():
+            avg = bd.get("averages", {})
             if avg:
-                rows.append((name, avg.get("exact_pct", 0), avg.get("keep_rate", 0), avg.get("avg_ms", 0)))
+                baseline_rows.append((bname, avg.get("exact_pct", 0), avg.get("keep_rate", 0), avg.get("avg_ms", 0)))
 
-        table = "\n".join(
-            f"| {name} | {ex:.3f} | {kr:.3f} | {ms:.1f} |"
-            for name, ex, kr, ms in rows
+        baseline_table = "\n".join(
+            f"| {bname} | {ex:.3f} | {kr:.3f} | {ms:.1f} |"
+            for bname, ex, kr, ms in baseline_rows
         )
         mo.md(f"""
         | Method | exact_keep_pct | keep_rate | avg_ms |
         |--------|---------------|-----------|--------|
-        {table}
+        {baseline_table}
         """)
     else:
         mo.md("Run `python baselines/run_baselines.py` to generate baseline results.")
