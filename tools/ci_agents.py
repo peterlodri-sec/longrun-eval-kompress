@@ -23,6 +23,7 @@ import agents.latex_guard  # noqa: F401
 import agents.linker  # noqa: F401
 import agents.todo_scanner  # noqa: F401
 import agents.secret_scanner  # noqa: F401
+import agents.zenodo_publish  # noqa: F401
 
 from agents import list_agents, get_agent
 

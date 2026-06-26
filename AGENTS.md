@@ -81,7 +81,7 @@ stale numbers, missing table entries) but never adds content on its own.
 Human review is still expected before major releases.
 
 ### CI Agent Suite
-Nine agents in `agents/` package, invoked via CLI or MCP:
+Ten agents in `agents/` package, invoked via CLI or MCP:
 
 | Agent | Trigger | What it does | Cost |
 |-------|---------|-------------|------|
@@ -94,6 +94,7 @@ Nine agents in `agents/` package, invoked via CLI or MCP:
 | `linker` | **/*.md, *.tex changes | Ensures LINKS.txt <-> file reference consistency | $0.00 |
 | `todo-scanner` | **/* changes | Reports TODO/FIXME/HACK/XXX/TBD markers | $0.00 |
 | `secret-scanner` | **/* changes | Detects leaked credentials in tracked files | $0.00 |
+| `zenodo-publish` | GitHub release | Publishes release to Zenodo, mints DOI, updates CITATION.cff + README | $0.00 |
 
 **CLI usage:**
 ```bash

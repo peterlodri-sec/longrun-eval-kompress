@@ -47,6 +47,7 @@ import agents.latex_guard  # noqa: F401
 import agents.linker  # noqa: F401
 import agents.todo_scanner  # noqa: F401
 import agents.secret_scanner  # noqa: F401
+import agents.zenodo_publish  # noqa: F401
 from agents import list_agents, get_agent
 
 server = Server("kompress-research")
@@ -107,13 +108,13 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="run_ci_agent",
-            description="Run a CI agent (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard). Returns pass/fail with details.",
+            description="Run a CI agent (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard, linker, todo-scanner, secret-scanner, zenodo-publish). Returns pass/fail with details.",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "agent": {
                         "type": "string",
-                        "description": "Agent name (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard)",
+                        "description": "Agent name (citation-guard, metric-watchdog, changelog-gen, hf-card-sync, latex-guard, linker, todo-scanner, secret-scanner, zenodo-publish)",
                     },
                     "dry_run": {
                         "type": "boolean",
