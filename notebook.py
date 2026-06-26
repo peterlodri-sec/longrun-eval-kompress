@@ -21,7 +21,7 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     mo.md("""
-    **[Paper PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)** | **[GitHub](https://github.com/peterlodri-sec/longrun-eval-kompress)** | **[Experiment Logs](https://pocoo.vaked.dev)** | **[Model](https://huggingface.co/PeetPedro/kompress-v8)** | **[Dataset](https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood)**
+    **[Interactive Paper](https://kompress.vaked.dev)** | **[Paper PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)** | **[GitHub](https://github.com/peterlodri-sec/longrun-eval-kompress)** | **[Experiment Logs](https://pocoo.vaked.dev)** | **[Model](https://huggingface.co/PeetPedro/kompress-v8)** | **[Dataset](https://huggingface.co/datasets/PeetPedro/ultrawhale-dogfood)**
 
     ---
 

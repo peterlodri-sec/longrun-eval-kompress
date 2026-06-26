@@ -1,6 +1,21 @@
-// ENTHEA-inspired neural field background — minimal WebGL2 fragment shader
-// Inspired by elder-plinius/ENTHEA (AGPL-3.0). Standalone lightweight excerpt.
-// Renders at reduced resolution, caps FPS, respects prefers-reduced-motion.
+// ────────────────────────────────────────────────────────────────────────────
+// ENTHEA neural field background — self-hostable WebGL2 shader
+//
+// This is a derivative work of ENTHEA by elder-plinius (Pliny the Liberator).
+// Original: https://github.com/elder-plinius/ENTHEA
+// License: AGPL-3.0 — this file inherits that license.
+//
+// To self-host: drop this single file into any page. Zero dependencies.
+//   <script src="enthea-bg.js" defer></script>
+//
+// What it does:
+//   - Creates a fixed full-screen WebGL2 canvas behind your content
+//   - Renders a neural-field / reaction-diffusion pattern (Turing bifurcation)
+//   - Steganographically encodes a username into the visual seeds
+//   - 25% resolution, 20fps cap, low-power GPU, respects reduced-motion
+//
+// Respect the source. If you use this, credit elder-plinius/ENTHEA.
+// ────────────────────────────────────────────────────────────────────────────
 //
 // STEGANOGRAPHIC SIGNATURE:
 // The entire visual field is deterministically derived from the string
@@ -12,6 +27,19 @@
 (function () {
   "use strict";
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // inject CSS to make marimo containers transparent — lets WebGL show through
+  const style = document.createElement("style");
+  style.textContent = `
+    html, body, #root, .marimo, .marimo-container,
+    .theme-light, .theme-dark, [data-theme],
+    .cell, .output, .cm-editor, .markdown {
+      background: transparent !important;
+    }
+    body { background: #0a0a12 !important; }
+    body::before { display: none !important; }
+  `;
+  document.head.appendChild(style);
 
   // ── steganographic identity: peterlodri-sec ──
   // Each char's ASCII folds into the visual seeds below.
@@ -38,7 +66,7 @@
     height: "100%",
     zIndex: "-1",
     pointerEvents: "none",
-    opacity: "0.18",
+    opacity: "0.35",
   });
   document.body.prepend(canvas);
 
@@ -124,15 +152,15 @@ void main(){
   vec2 c=uv-vec2(r.x/r.y*.5,.5);
   float radius=length(c);
   float tunnel=1./(1.+radius*2.5);
-  // palette seeded from identity
-  vec3 a=vec3(.02+CP1*.06, .01+CP2*.03, .10+CP1*.08);
-  vec3 b=vec3(.08+CP2*.05, .20+CP1*.08, .25+CP2*.06);
-  vec3 c_=vec3(.35+CP1*.10, .25+CP2*.08, .08+CP1*.05);
+  // palette seeded from identity — bright enough to read on dark bg
+  vec3 a=vec3(.05+CP1*.12, .03+CP2*.08, .18+CP1*.15);
+  vec3 b=vec3(.12+CP2*.10, .30+CP1*.15, .38+CP2*.12);
+  vec3 c_=vec3(.45+CP1*.15, .35+CP2*.12, .12+CP1*.10);
   float m1=tanh(f1*.6+.5);
   float m2=tanh(f2*.5+.5);
   vec3 col=mix(a,b,m1);
   col=mix(col,c_,m2*.6);
-  col+=tunnel*.08*vec3(.1,.15,.2);
+  col+=tunnel*.12*vec3(.15,.22,.30);
   col*=.92+.08*sin(t*.3);
   o=vec4(col,1);
 }`;
