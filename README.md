@@ -11,7 +11,7 @@
 [![Built with marimo](https://img.shields.io/badge/built%20with-marimo-00d4ff.svg)](https://marimo.io)
 [![Sponsor](https://img.shields.io/badge/sponsor-peterlodri--sec-ff69b4.svg)](https://github.com/sponsors/peterlodri-sec)
 
-**[Download paper PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)** | **[Interactive notebook](https://peterlodri-sec.github.io/longrun-eval-kompress/)** | **[Experiment logs](https://pocoo.vaked.dev)**
+**[Interactive paper](https://kompress.vaked.dev)** | **[Download paper PDF](https://peterlodri-sec.github.io/longrun-eval-kompress/paper/main.pdf)** | **[Experiment logs](https://pocoo.vaked.dev)**
 
 ---
 
