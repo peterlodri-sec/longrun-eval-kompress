@@ -356,8 +356,8 @@ both task heads from scratch. Total trainable parameters: ${\sim}2$M out of
         batch size 16. The correctable-loop invariant halts at 3 epochs;
         v3.3 showed that near-memorization (loss $0.0007$) does not improve
         the heretic metric.
-  \item \textbf{Hardware:} vast.ai RTX~4090 at \$0.38/hr, ${\sim}15$--25
-        minutes per run. Total v3$\to$v4$\to$v5 chain: \$0.55.
+  \item \textbf{Hardware:} vast.ai RTX~4090, ${\sim}15$--25
+        minutes per run.
   \item \textbf{Export:} fp32 ONNX, pushed to HuggingFace Hub
         (\texttt{PeetPedro/kompress-v*}).
   \item \textbf{v8 specifics:} 97 Qwen2.5-7B-labeled C3 pairs + 200 generic

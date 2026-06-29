@@ -82,7 +82,7 @@
     5. "What would you reject this paper for?"
   - Paste the review into the GitHub issue
 
-- [ ] **2.4** Review with GLM (current model, different perspective):
+- [x] **2.4** Review with GLM (current model, different perspective):
   - Same manuscript, different prompt:
     1. "Act as a meta-reviewer. What are the top 3 weaknesses?"
     2. "Is the three-mechanism separation (A/B/C) clear, or does it conflate?"
@@ -90,7 +90,7 @@
     4. "Is the $38.95 cost framing relevant to the scientific contribution, or a distraction?"
   - Paste the review into the GitHub issue
 
-- [ ] **2.5** Address every actionable point from both reviews:
+- [x] **2.5** Address every actionable point from both reviews:
   - If both reviewers flag the same issue → fix it before submission
   - If one reviewer flags something the other doesn't → judgment call
   - Document what you changed and what you rejected, in the GitHub issue

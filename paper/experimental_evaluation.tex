@@ -39,8 +39,7 @@ were expanded to 32 using Qwen2.5-7B prompt generation. We report both the
         training reference labels (label-quality proxy).
 \end{itemize}
 
-\paragraph{Hardware and cost.} All training on vast.ai RTX~4090 instances at
-\$0.38/hr. Total compute across v3, v4, v5: \$0.55.
+\paragraph{Hardware.} All training on vast.ai RTX~4090 instances.
 
 \paragraph{Three mechanisms under test.} Per
 Section~\ref{sec:methodology}, we evaluate three complementary correctives:
@@ -52,9 +51,11 @@ v3+B as an oracle to relabel and retrain as v4, internalizing~B.
 \subsection{Mechanism A: the $3.0\times$ training penalty (v2$\to$v3)}
 \label{sec:eval:A}
 
-Table~\ref{tab:v2v3} isolates the effect of the $3.0\times$ weighted
+To address potential conflation between the learned penalty and the hard-coded
+regex override, Table~\ref{tab:v2v3} strictly isolates the effect of the $3.0\times$ weighted
 cross-entropy term (Mechanism~A) by comparing the v2 base model to the v3
-fine-tune, both evaluated \emph{without} the inference override.
+fine-tune, both evaluated \emph{entirely independent of Mechanism B} (i.e., with
+the inference override disabled).
 
 \begin{table}[h]
 \centering
@@ -351,7 +352,7 @@ v17 & Qwen2.5-7B, C3 ($\lambda{=}5$)  & $0.963$ & $0.963$ & 5x weight, 3.7\% com
 \end{table}
 
 \paragraph{Post-production exploration.} v9--v14 are the hill-climbing loop
-(Tier~4, Section~\ref{sec:loopkit:mapping}) continuing after v8 shipped.
+(Tier~4, Appendix~\ref{sec:loopkit:mapping}) continuing after v8 shipped.
 The council tested six hypotheses across teacher model, data composition,
 encoder size, and training method. None improved on v8, and the
 correctable-loop invariant correctly halted each direction: v9 (C3-only

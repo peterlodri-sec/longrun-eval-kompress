@@ -116,9 +116,8 @@ $\lambda{=}3$ (v8) is the production sweet spot at $15\%$ compression. Across
 17 trained models, 8 teachers, and 4 architectures, the dominant signal is
 label quality---not model capacity or data quantity. A 3-checkpoint majority
 ensemble regresses to $0.931$---a $0.031$ paradox collapse below the best
-single model---which the higher-floor ensemble (v4-class only) avoids. The
-entire research program cost \$37.19 in DeepSeek API fees (outer loop) plus
-\$1.76 in GPU compute (inner loop). We benchmark against LLMLingua-2,
+single model---which the higher-floor ensemble (v4-class only) avoids.
+We benchmark against LLMLingua-2,
 TextRank, and random eviction; kompress-v8 achieves $0.993$ exact-keep-pct
 vs.\ LLMLingua-2's $0.867$ and TextRank's $0.599$.
 \end{abstract}
@@ -130,9 +129,10 @@ vs.\ LLMLingua-2's $0.867$ and TextRank's $0.599$.
 \include{related_work}
 \include{methodology}
 \include{experimental_evaluation}
-\include{loopkit_implementation}
 \include{data_availability}
+\appendix
 \include{disclaimer_legal_privacy}
+\include{loopkit_implementation}
 
 % ============================================================================
 % References
